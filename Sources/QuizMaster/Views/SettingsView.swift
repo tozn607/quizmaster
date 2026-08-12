@@ -281,10 +281,9 @@ public struct SettingsView: View {
     }
     
     private func saveAndClose() {
-        storage.settings.apiKey = apiKey
+        storage.settings.apiKey = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
         storage.settings.defaultInputDirectory = inputDir
         storage.settings.defaultOutputDirectory = outputDir
-        storage.settings.language = loc.currentLanguage
         storage.saveSettings()
         dismiss()
     }

@@ -1,7 +1,7 @@
 {
-  "version": "1.0.2",
-  "buildNumber": 114,
-  "releaseTag": "v1.0.2-b114",
-  "buildDate": "2026-08-12T11:11:07Z",
-  "releaseNotes": "QuizMaster v1.0.2 (Build 114):\n- Prominent Download button added to README\n- Version bump to v1.0.2\n- Software update screen in Settings\n- Markdown documentation in DOCS/\n- Full 100% English & Vietnamese localization audit\n- AppIcon packaging fix\n- Move Quiz & Multi-select features"
+  "version": "1.0.3",
+  "buildNumber": 117,
+  "releaseTag": "v1.0.3-b117",
+  "buildDate": "2026-08-12T11:33:56Z",
+  "releaseNotes": "QuizMaster v1.0.3 (Build 117):\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
 }

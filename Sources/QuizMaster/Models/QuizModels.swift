@@ -61,7 +61,7 @@ public enum QuestionDepthMode: String, CaseIterable, Identifiable, Codable {
 }
 
 public struct AppVersionInfo {
-    public static let currentVersion = "v1.0.2"
+    public static let currentVersion = "v1.0.3"
     
     public static var buildNumber: String {
         if let path = Bundle.main.path(forResource: "build_number", ofType: "txt"),
@@ -100,26 +100,32 @@ extension View {
     }
 }
 
-public struct AppSettings: Codable {
+public struct AppSettings: Codable, Equatable {
     public var apiKey: String
-    public var modelName: String = "gemini-3.5-flash-lite"
     public var defaultInputDirectory: String
     public var defaultOutputDirectory: String
-    public var language: AppLanguage
     public var theme: AppTheme
-    public var fontSize: AppFontSize = .medium
+    public var fontSize: AppFontSize
+    public var isShuffleEnabled: Bool
+    
+    public init(
+        apiKey: String = "",
+        defaultInputDirectory: String = (FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first?.path ?? ""),
+        defaultOutputDirectory: String = (FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first?.path ?? ""),
+        theme: AppTheme = .system,
+        fontSize: AppFontSize = .medium,
+        isShuffleEnabled: Bool = true
+    ) {
+        self.apiKey = apiKey
+        self.defaultInputDirectory = defaultInputDirectory
+        self.defaultOutputDirectory = defaultOutputDirectory
+        self.theme = theme
+        self.fontSize = fontSize
+        self.isShuffleEnabled = isShuffleEnabled
+    }
     
     public static var defaultSettings: AppSettings {
-        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.path ?? ""
-        return AppSettings(
-            apiKey: "",
-            modelName: "gemini-3.5-flash-lite",
-            defaultInputDirectory: documentsPath,
-            defaultOutputDirectory: documentsPath,
-            language: .vietnamese,
-            theme: .system,
-            fontSize: .medium
-        )
+        return AppSettings()
     }
 }
 

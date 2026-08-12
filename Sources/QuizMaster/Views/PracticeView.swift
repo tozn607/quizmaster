@@ -76,10 +76,10 @@ public struct PracticeView: View {
             .padding()
             .background(Color(NSColor.controlBackgroundColor))
             
-            // Progress Bar
+            // Progress Bar (Progresses based on completed questions count)
             if !activeQuestions.isEmpty {
                 ProgressBar(
-                    value: Double(currentIndex + (isAnswered ? 1 : 0)) / Double(activeQuestions.count),
+                    value: Double(userAnswers.count) / Double(activeQuestions.count),
                     height: 6,
                     color: .blue
                 )

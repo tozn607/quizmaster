@@ -1,4 +1,4 @@
-# 🎓 QuizMaster (v1.0.2)
+# 🎓 QuizMaster (v1.0.3)
 
 > **Native macOS Self-Study & AI-Powered Multiple-Choice Quiz Generator**  
 > *Developed by [@tozn607](https://github.com/tozn607)*
@@ -7,7 +7,7 @@
 
 ### 🚀 Quick Download / Tải ứng dụng ngay:
 
-[![](https://img.shields.io/badge/⬇️_Download_Latest_macOS_Release-v1.0.2-brightgreen?style=for-the-badge&logo=apple)](https://github.com/tozn607/quizmaster/releases/latest)
+[![](https://img.shields.io/badge/⬇️_Download_Latest_macOS_Release-v1.0.3-brightgreen?style=for-the-badge&logo=apple)](https://github.com/tozn607/quizmaster/releases/latest)
 
 👉 **[Click here to download the latest QuizMaster.app macOS release](https://github.com/tozn607/quizmaster/releases/latest)**
 

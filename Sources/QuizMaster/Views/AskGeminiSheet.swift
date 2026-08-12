@@ -232,16 +232,31 @@ public struct AskGeminiSheet: View {
     }
     
     private func cleanMarkdownForSwiftUI(_ rawText: String) -> String {
-        // Strip markdown code fences if wrapped in ```markdown
         var str = rawText.trimmingCharacters(in: .whitespacesAndNewlines)
-        if str.hasPrefix("```markdown") {
-            str = String(str.dropFirst(11))
-        } else if str.hasPrefix("```") {
-            str = String(str.dropFirst(3))
+        
+        // Remove code fences
+        if str.hasPrefix("```markdown") { str = String(str.dropFirst(11)) }
+        if str.hasPrefix("```") { str = String(str.dropFirst(3)) }
+        if str.hasSuffix("```") { str = String(str.dropLast(3)) }
+        
+        // Clean line by line
+        let lines = str.components(separatedBy: "\n")
+        let cleanedLines = lines.map { line -> String in
+            var l = line.trimmingCharacters(in: .whitespaces)
+            // Replace markdown headers ### Header -> **Header**
+            if l.hasPrefix("### ") { l = "**" + l.dropFirst(4) + "**" }
+            else if l.hasPrefix("## ") { l = "**" + l.dropFirst(3) + "**" }
+            else if l.hasPrefix("# ") { l = "**" + l.dropFirst(2) + "**" }
+            
+            // Replace horizontal rules
+            if l == "---" || l == "***" || l == "___" { return "───────────────" }
+            
+            // Replace blockquotes
+            if l.hasPrefix("> ") { l = "💡 " + l.dropFirst(2) }
+            
+            return l
         }
-        if str.hasSuffix("```") {
-            str = String(str.dropLast(3))
-        }
-        return str.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        return cleanedLines.joined(separator: "\n")
     }
 }

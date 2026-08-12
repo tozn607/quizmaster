@@ -80,7 +80,7 @@ public struct FlashcardView: View {
                     } else if let card = currentCard {
                         Spacer()
                         
-                        // 3D Flip Card
+                        // 3D Flip Card Container
                         ZStack {
                             if !isFlipped {
                                 // Front: Question Side
@@ -105,7 +105,7 @@ public struct FlashcardView: View {
                                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 }
                             } else {
-                                // Back: Answer Side
+                                // Back: Answer Side (Rotated 180 so text is upright during 3D flip)
                                 GlassCard {
                                     VStack(spacing: 16 * fontScale) {
                                         BadgeView(text: loc.text("answerSide"), color: .green)
@@ -141,9 +141,12 @@ public struct FlashcardView: View {
                                     }
                                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 }
+                                .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
                             }
                         }
-                        .frame(width: 520 * fontScale, height: 340 * fontScale)
+                        .frame(width: 560 * fontScale, height: 360 * fontScale)
+                        .rotation3DEffect(.degrees(isFlipped ? 180 : 0), axis: (x: 0, y: 1, z: 0))
+                        .animation(.spring(response: 0.5, dampingFraction: 0.7), value: isFlipped)
                         .onTapGesture {
                             withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
                                 isFlipped.toggle()

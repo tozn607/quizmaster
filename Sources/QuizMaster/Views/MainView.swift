@@ -121,13 +121,13 @@ public struct MainView: View {
         .sheet(item: $activeExamQuiz) { quiz in
             if let proj = currentSelectedProject {
                 ExamView(project: proj, quiz: quiz, redoWrongOnly: false)
-                    .frame(minWidth: 820, minHeight: 620)
+                    .frame(minWidth: 900, idealWidth: 1080, minHeight: 650, idealHeight: 750)
             }
         }
         .sheet(item: $activeFlashcardQuiz) { quiz in
             if let proj = currentSelectedProject {
                 FlashcardView(project: proj, quiz: quiz)
-                    .frame(minWidth: 800, minHeight: 600)
+                    .frame(minWidth: 900, idealWidth: 1080, minHeight: 650, idealHeight: 750)
             }
         }
         .sheet(isPresented: $showMoveModal) {
@@ -150,6 +150,26 @@ public struct MainView: View {
                 }
                 
                 Spacer()
+                
+                // Shuffle toggle button
+                Button(action: {
+                    storage.settings.isShuffleEnabled.toggle()
+                    storage.saveSettings()
+                }) {
+                    HStack(spacing: 6) {
+                        Image(systemName: storage.settings.isShuffleEnabled ? "arrow.triangle.2.circlepath.circle.fill" : "arrow.triangle.2.circlepath.circle")
+                            .foregroundColor(storage.settings.isShuffleEnabled ? .purple : .gray)
+                        Text(loc.text("toggleShuffle"))
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(storage.settings.isShuffleEnabled ? Color.purple.opacity(0.12) : Color(NSColor.controlBackgroundColor))
+                    .cornerRadius(8)
+                }
+                .buttonStyle(.plain)
+                .help("Bật/tắt xáo trộn vị trí câu hỏi và các phương án A/B/C/D")
                 
                 // Multi-select toggle button
                 Button(action: {

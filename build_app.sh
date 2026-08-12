@@ -11,11 +11,11 @@ if [ -f "$BUILD_FILE" ]; then
     BUILD_NUMBER=$(cat "$BUILD_FILE")
     BUILD_NUMBER=$((BUILD_NUMBER + 1))
 else
-    BUILD_NUMBER=110
+    BUILD_NUMBER=116
 fi
 echo "$BUILD_NUMBER" > "$BUILD_FILE"
 
-VERSION="1.0.2"
+VERSION="1.0.3"
 RELEASE_TAG="v${VERSION}-b${BUILD_NUMBER}"
 
 echo "🔢 Building QuizMaster v${VERSION} (Build ${BUILD_NUMBER})..."
@@ -27,7 +27,7 @@ cat <<EOF > "build_info.json"
   "buildNumber": ${BUILD_NUMBER},
   "releaseTag": "${RELEASE_TAG}",
   "buildDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "releaseNotes": "QuizMaster v${VERSION} (Build ${BUILD_NUMBER}):\n- Prominent Download button added to README\n- Version bump to v1.0.2\n- Software update screen in Settings\n- Markdown documentation in DOCS/\n- Full 100% English & Vietnamese localization audit\n- AppIcon packaging fix\n- Move Quiz & Multi-select features"
+  "releaseNotes": "QuizMaster v${VERSION} (Build ${BUILD_NUMBER}):\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
 }
 EOF
 
@@ -35,15 +35,15 @@ EOF
 cat <<EOF > "release_notes.txt"
 # 🚀 QuizMaster v${VERSION} (Build ${BUILD_NUMBER}) Release Notes
 
-### 🌟 New Features & Enhancements in Build ${BUILD_NUMBER}:
-- **Download Button**: Prominent download link added to README.
-- **Version Bump**: Released v${VERSION} (Build ${BUILD_NUMBER}).
-- **Software Update Modal**: Interactive software update screen in Settings with release notes and one-click GitHub download.
-- **Complete English & Vietnamese Localization**: 100% language audit with instant AI question generation language note.
-- **App Icon Fix**: Bundled AppIcon.icns into app resources with immediate Finder cache refresh.
-- **Markdown Documentation**: Standalone documentation files in \`DOCS/\` linked from README.
-- **Quiz Moving & Multi-Select**: Single and bulk quiz set moving between projects.
-- **Progress Reset**: Reset study percentage for projects and individual quizzes.
+### 🌟 New Features & Enhancements in v${VERSION}:
+- **🔀 Question & Option Shuffling Toggle**: Added a dedicated shuffle checkbox on the dashboard top bar.
+- **🎛️ Resizable & Spacious Windows**: Flexible frame dimensions for Practice, Exam, and Flashcard study views.
+- **🃏 Restored 3D Flashcard Flip**: True 3D card rotation effect with upright text rendering.
+- **📊 Fixed Practice Mode Progress Bar**: Progress bar now advances strictly based on completed questions count.
+- **🚫 Exam Mode Anti-Cheating**: Removed Ask Gemini from Exam Mode to maintain test integrity.
+- **📝 Cleaned Ask Gemini Markdown Output**: Formatted markdown headers, blockquotes, and rules cleanly in response text views.
+- **📍 Question Navigator Pane**: Collapsible right-side sidebar for instant question jumping and status visualization.
+- **💾 Practice Checkpoint Resume**: Automatically save and resume at your exact question index.
 EOF
 
 echo "🎨 Generating AppIcon..."

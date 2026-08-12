@@ -92,20 +92,6 @@ public struct ExamView: View {
                                     HStack {
                                         BadgeView(text: "\(loc.text("questionHeader")) \(currentIndex + 1)", color: .orange)
                                         Spacer()
-                                        
-                                        Button(action: { askingGeminiQuestion = currentQuestion }) {
-                                            HStack(spacing: 6) {
-                                                Image(systemName: "sparkles")
-                                                Text("Hỏi Gemini AI về câu này")
-                                            }
-                                            .font(.system(size: 12 * fontScale, weight: .semibold))
-                                            .foregroundColor(.purple)
-                                            .padding(.horizontal, 10 * fontScale)
-                                            .padding(.vertical, 5 * fontScale)
-                                            .background(Color.purple.opacity(0.12))
-                                            .cornerRadius(8)
-                                        }
-                                        .buttonStyle(.plain)
                                     }
                                     
                                     Text(currentQuestion.text)
