@@ -32,17 +32,21 @@
 
 ---
 
-## 🇻🇳 Tiếng Việt: Tóm tắt Tính năng
+## 🇻🇳 Tiếng Việt: Tóm tắt Tính năng v1.0.3
 
 **QuizMaster** là ứng dụng native trên macOS được biên dịch 100% bằng **Swift** và **SwiftUI**. Ứng dụng tích hợp mô hình AI **Gemini 3.5 Flash Lite** từ Google AI Studio giúp sinh viên, học sinh và giáo viên tự động quét tài liệu bài giảng (PDF, Word `.docx`, TXT) để tạo ra các bộ đề thi trắc nghiệm chất lượng cao.
 
-### ✨ Tính năng Nổi bật:
-- 🚀 **Native macOS App**: Chạy mượt mà trên Apple Silicon (M1/M2/M3/M4) & Intel Mac.
-- 🔀 **100% Anti-Bias Choice Shuffling**: Tự động xáo trộn vị trí đáp án đúng ngẫu nhiên giữa A, B, C, D.
-- 🎚 **Chế độ Chi tiết (Depth Mode)**: Normal, Core, Thorough (sinh từ 35 đến 60+ câu hỏi chi tiết).
-- 📖 **3 Chế độ Ôn tập**: Luyện tập (Practice), Thi thử (Exam), Thẻ ghi nhớ (Flashcard 3D).
+### ✨ Tính năng Nổi bật trong v1.0.3:
+- 🚀 **Native macOS App**: Chạy mượt mà trên Apple Silicon (M1/M2/M3/M4) & Intel Mac với cửa sổ tùy chỉnh kích thước linh hoạt.
+- 🔀 **Công tắc Xáo trộn (Shuffling Toggle)**: Nút bật/tắt xáo trộn vị trí câu hỏi và phương án A/B/C/D ngay trên thanh công cụ chính.
+- 📍 **Thanh Điều hướng Câu hỏi (Question Navigator)**: Bảng bên phải hiển thị danh sách câu hỏi theo màu trạng thái (Đúng, Sai, Đã thuộc, Chưa làm) giúp di chuyển nhanh giữa các câu.
+- 💾 **Lưu vị trí Học tự động (Practice Checkpoint)**: Tự động lưu tiến độ làm bài luyện tập, cho phép thoát ra và quay lại đúng câu đang làm dở.
+- 🃏 **Thẻ ghi nhớ 3D (3D Flashcard)**: Lật thẻ 3D mượt mà với nút "Thẻ trước" (Previous Card) xem lại lịch sử thẻ.
+- 🚫 **Chế độ Thi thử Chống gian lận (Anti-Cheating Exam Mode)**: Môi trường thi thật không hiện đáp án và ẩn nút Hỏi AI.
+- ✨ **Hỏi Gemini AI Từng câu hỏi**: Yêu cầu AI giải thích chi tiết đáp án tại từng câu hỏi trong chế độ Luyện tập với định dạng Markdown rõ ràng.
 - 📁 **Quản lý & Chuyển Bộ đề**: Hỗ trợ Chọn nhiều (Multi-select) để xóa hoặc chuyển bộ đề sang dự án khác.
-- 📁 **Xuất đề**: Hỗ trợ xuất gói Zip Bundle (mặc định) và file Microsoft Word `.docx` chuẩn.
+- 🔄 **Đặt lại Tiến độ (Progress Reset)**: Xóa tiến độ học của cả dự án hoặc từng bộ đề thi khi muốn ôn tập lại từ đầu.
+- 🚀 **Kiểm tra Cập nhật Tự động**: Tích hợp màn hình xem thông tin bản cập nhật mới và tải về trực tiếp từ GitHub.
 
 ---
 
@@ -53,7 +57,8 @@
 | **Luyện tập & Thi thử** | `A`, `B`, `C`, `D` (hoặc `1`, `2`, `3`, `4`) | Chọn phương án A, B, C, D tương ứng |
 | **Luyện tập & Thi thử** | `Enter (↵)` | Chuyển sang câu tiếp theo / Nộp bài thi |
 | **Thi thử (Exam Mode)** | `Mũi tên Trái / Phải (← →)` | Di chuyển qua lại giữa các câu |
-| **Thẻ ghi nhớ (Flashcard)**| `Phím Cách (Spacebar ␣)` | Lật mặt trước / mặt sau của thẻ |
+| **Thẻ ghi nhớ (Flashcard)**| `Phím Cách (Spacebar ␣)` | Lật mặt trước / mặt sau của thẻ 3D |
+| **Thẻ ghi nhớ (Flashcard)**| `Mũi tên Trái (←)` | Quay lại thẻ trước (Previous Card) |
 | **Thẻ ghi nhớ (Flashcard)**| `Phím V` (hoặc `1`) | Đánh dấu thẻ **V - Đã thuộc** |
 | **Thẻ ghi nhớ (Flashcard)**| `Phím X` (hoặc `2`) | Đánh dấu thẻ **X - Chưa thuộc** |
 | **Tất cả các chế độ** | `Delete (⌫)` | Thoát chế độ học về màn hình chính |

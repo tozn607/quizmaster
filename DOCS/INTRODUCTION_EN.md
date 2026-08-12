@@ -1,4 +1,4 @@
-# 💡 QUIZMASTER APPLICATION INTRODUCTION (v1.0.1)
+# 💡 QUIZMASTER APPLICATION INTRODUCTION (v1.0.3)
 
 Author: **@tozn607**  
 Platform: Native macOS App (Swift & SwiftUI)
@@ -11,9 +11,20 @@ Platform: Native macOS App (Swift & SwiftUI)
 
 ---
 
-## 2. AI Technology & Core Algorithms
+## 2. AI Technology & Core Algorithms in v1.0.3
 
-- **Gemini 3.5 Flash Lite Model**: Direct API integration via Google AI Studio API Keys.
-- **100% Anti-Bias Option Shuffling**: Correct choices are randomly shuffled across A, B, C, and D after parsing, eliminating option A bias.
+- **Gemini 3.5 Flash Lite Model**: Direct API integration via personal Google AI Studio API Keys.
+- **Question & Option Shuffling Toggle**: User-controlled option and question randomization via a dedicated dashboard toggle.
 - **Question Depth Modes**: Customizable depth settings (Normal, Core, Thorough - generating up to 35–60+ detailed questions).
-- **Per-Question AI Assistance**: Direct "Ask Gemini AI" button on each question card.
+- **Per-Question AI Assistance with Clean Markdown**: Direct "Ask Gemini AI" button on Practice cards with clean, styled Markdown formatting.
+- **Question Navigator Sidebar**: Color-coded right-side sidebar for instant question jumping and status visualization.
+- **Automatic Practice Checkpoint Save**: Continuously saves question index and selected options so users can exit and resume practice tests smoothly.
+- **Anti-Cheating Exam Mode**: Suppresses correct answers and AI assistance during test simulations.
+- **3D Flashcards with Card History**: Smooth 3D card rotation effect with a Previous Card history button.
+
+---
+
+## 3. Export & Import Capabilities
+
+- **Zip Bundle (.zip)**: Packages RTF test files, answer keys, and JSON schemas. The only format supported for re-importing into QuizMaster.
+- **Microsoft Word (.docx)**: Generates standard formatted Word documents suitable for offline printing and archiving.
