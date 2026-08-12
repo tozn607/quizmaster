@@ -11,33 +11,34 @@ if [ -f "$BUILD_FILE" ]; then
     BUILD_NUMBER=$(cat "$BUILD_FILE")
     BUILD_NUMBER=$((BUILD_NUMBER + 1))
 else
-    BUILD_NUMBER=136
+    BUILD_NUMBER=137
 fi
 echo "$BUILD_NUMBER" > "$BUILD_FILE"
 
 VERSION="1.0.3"
 RELEASE_TAG="v${VERSION}-b${BUILD_NUMBER}"
 
-echo "🔢 Building QuizMaster v${VERSION} (Build ${BUILD_NUMBER})..."
+echo "🔢 Building QuizMaster v${VERSION} (Build ${BUILD_NUMBER})...."
 
 # Create build_info.json in source repository
 cat <<'EOF' > "build_info.json"
 {
   "version": "1.0.3",
-  "buildNumber": 137,
-  "releaseTag": "v1.0.3-b137",
-  "buildDate": "2026-08-12T13:00:00Z",
-  "releaseNotes": "QuizMaster v1.0.3 (Build 137):\n- Replaced solid gray container backgrounds with vibrant NSVisualEffectView Liquid Glass window backdrops\n- Translucent thinMaterial bar layers and floating specular glass cards\n- AppIcon added to top of README\n- Strict single release enforcement per version number on GitHub\n- Saved Ask Gemini AI answers persistent storage\n- Codesign & Gatekeeper quarantine launch error fix\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
+  "buildNumber": 138,
+  "releaseTag": "v1.0.3-b138",
+  "buildDate": "2026-08-12T13:05:00Z",
+  "releaseNotes": "QuizMaster v1.0.3 (Build 138):\n- Updated App Icon with vibrant rainbow gradient and pure white graduation cap main icon\n- Replaced solid gray container backgrounds with vibrant NSVisualEffectView Liquid Glass window backdrops\n- Translucent thinMaterial bar layers and floating specular glass cards\n- AppIcon added to top of README\n- Strict single release enforcement per version number on GitHub\n- Saved Ask Gemini AI answers persistent storage\n- Codesign & Gatekeeper quarantine launch error fix\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
 }
 EOF
 
 # Create release_notes.txt
 cat <<'EOF' > "release_notes.txt"
-# 🚀 QuizMaster v1.0.3 (Build 137) Release Notes
+# 🚀 QuizMaster v1.0.3 (Build 138) Release Notes
 
 ### 🌟 New Features & Enhancements:
-- **🧊 Authentic Liquid Glass Window Backdrop**: Removed flat solid gray backgrounds. The entire application now floats above a translucent, blurred macOS Liquid Glass backdrop (`NSVisualEffectView` behind-window blending) with ambient accent light mesh, matching native system apps like Safari and Apple Music.
-- **🖼️ README App Icon**: Added full-resolution App Icon at the top of README.
+- **🌈 Vibrant Rainbow Gradient App Icon**: Updated app icon with a rich, multi-color rainbow gradient (Coral Red → Orange → Gold → Emerald Green → Cyan → Purple) and a crisp, pure white graduation cap main icon.
+- **🧊 Authentic Liquid Glass Window Backdrop**: Translucent, blurred macOS Liquid Glass backdrop (`NSVisualEffectView` behind-window blending) with ambient accent light mesh, matching native system apps like Safari and Apple Music.
+- **🖼️ README App Icon**: Embedded full-resolution App Icon at the top of README.
 - **🎨 macOS Native System Accent Color**: Seamless integration with user's system accent color settings.
 - **🧹 Single Release Enforcement**: Automatically removes ALL previous builds of the same version number on GitHub, keeping only 1 release per version.
 - **💾 Persistent Ask Gemini Answers**: AI explanations are saved to persistent storage and restored whenever returning to that question.

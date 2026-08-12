@@ -17,17 +17,44 @@ func renderIcon(size: CGFloat) -> NSImage {
     context.addPath(path)
     context.clip()
     
-    // Gradient fill (Ocean Blue to Cyan Teal)
+    // Vibrant Rainbow Gradient (Red -> Orange -> Yellow -> Green -> Cyan -> Blue -> Purple)
     let colorSpace = CGColorSpaceCreateDeviceRGB()
     let colors = [
-        NSColor(calibratedRed: 0.0, green: 0.48, blue: 1.0, alpha: 1.0).cgColor,
-        NSColor(calibratedRed: 0.0, green: 0.78, blue: 0.75, alpha: 1.0).cgColor
+        NSColor(calibratedRed: 0.98, green: 0.28, blue: 0.42, alpha: 1.0).cgColor, // Coral Red
+        NSColor(calibratedRed: 1.00, green: 0.58, blue: 0.16, alpha: 1.0).cgColor, // Vibrant Orange
+        NSColor(calibratedRed: 0.98, green: 0.82, blue: 0.18, alpha: 1.0).cgColor, // Golden Yellow
+        NSColor(calibratedRed: 0.18, green: 0.82, blue: 0.48, alpha: 1.0).cgColor, // Emerald Green
+        NSColor(calibratedRed: 0.10, green: 0.72, blue: 0.95, alpha: 1.0).cgColor, // Cyan Blue
+        NSColor(calibratedRed: 0.55, green: 0.32, blue: 0.95, alpha: 1.0).cgColor  // Royal Purple
     ] as CFArray
-    if let gradient = CGGradient(colorsSpace: colorSpace, colors: colors, locations: [0.0, 1.0]) {
-        context.drawLinearGradient(gradient, start: CGPoint(x: 0, y: size), end: CGPoint(x: size, y: 0), options: [])
+    let locations: [CGFloat] = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+    
+    if let gradient = CGGradient(colorsSpace: colorSpace, colors: colors, locations: locations) {
+        context.drawLinearGradient(
+            gradient,
+            start: CGPoint(x: 0, y: size),
+            end: CGPoint(x: size, y: 0),
+            options: []
+        )
     }
     
-    // Draw Graduation Cap symbol
+    // Subtle glass shine overlay on top half
+    let shinePath = CGMutablePath()
+    shinePath.move(to: CGPoint(x: 0, y: size))
+    shinePath.addLine(to: CGPoint(x: size, y: size))
+    shinePath.addLine(to: CGPoint(x: size, y: size * 0.45))
+    shinePath.addCurve(
+        to: CGPoint(x: 0, y: size * 0.55),
+        control1: CGPoint(x: size * 0.65, y: size * 0.35),
+        control2: CGPoint(x: size * 0.35, y: size * 0.65)
+    )
+    shinePath.closeSubpath()
+    
+    context.setFillColor(NSColor.white.withAlphaComponent(0.14).cgColor)
+    context.addPath(shinePath)
+    context.fillPath()
+    
+    // Draw pure white main graduation cap icon with shadow for legibility & depth
     if let capSymbol = NSImage(systemSymbolName: "graduationcap.fill", accessibilityDescription: nil) {
         let symbolSize = size * 0.55
         let symbolRect = NSRect(
@@ -36,8 +63,26 @@ func renderIcon(size: CGFloat) -> NSImage {
             width: symbolSize,
             height: symbolSize
         )
-        NSColor.white.set()
-        capSymbol.draw(in: symbolRect)
+        
+        // Draw shadow
+        context.saveGState()
+        context.setShadow(
+            offset: CGSize(width: 0, height: -size * 0.03),
+            blur: size * 0.06,
+            color: NSColor.black.withAlphaComponent(0.35).cgColor
+        )
+        
+        // Render pure white SF Symbol
+        let config = NSImage.SymbolConfiguration(pointSize: symbolSize, weight: .semibold)
+            .applying(.init(paletteColors: [.white]))
+        if let whiteCap = capSymbol.withSymbolConfiguration(config) {
+            whiteCap.draw(in: symbolRect)
+        } else {
+            NSColor.white.set()
+            capSymbol.draw(in: symbolRect)
+        }
+        
+        context.restoreGState()
     }
     
     image.unlockFocus()
@@ -76,4 +121,4 @@ for (filename, sz) in sizes {
 let mainIcon = renderIcon(size: 256)
 savePNG(image: mainIcon, path: "AppIcon.png")
 
-print("AppIcon.iconset and AppIcon.png generated successfully!")
+print("AppIcon.iconset and AppIcon.png generated successfully with rainbow gradient and white main icon!")
