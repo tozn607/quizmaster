@@ -1,7 +1,7 @@
 {
-  "version": "1.0.1",
-  "buildNumber": 110,
-  "releaseTag": "v1.0.1-b110",
-  "buildDate": "2026-08-12T06:01:21Z",
-  "releaseNotes": "QuizMaster v1.0.1 (Build 110) release update."
+  "version": "1.0.2",
+  "buildNumber": 111,
+  "releaseTag": "v1.0.2-b111",
+  "buildDate": "2026-08-12T06:08:07Z",
+  "releaseNotes": "QuizMaster v1.0.2 (Build 111):\n- Prominent Download button added to README\n- Version bump to v1.0.2\n- Software update screen in Settings\n- Markdown documentation in DOCS/\n- Full 100% English & Vietnamese localization audit\n- AppIcon packaging fix\n- Move Quiz & Multi-select features"
 }

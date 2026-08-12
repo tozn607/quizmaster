@@ -12,6 +12,7 @@ public struct SettingsView: View {
     @State private var outputDir: String = ""
     @State private var isTestingKey: Bool = false
     @State private var keyValidationResult: Bool? = nil
+    @State private var showUpdateModal: Bool = false
     
     public var body: some View {
         VStack(spacing: 0) {
@@ -182,6 +183,11 @@ public struct SettingsView: View {
                                     Text("English").tag(AppLanguage.english)
                                 }
                                 .pickerStyle(.segmented)
+                                
+                                Text(loc.text("geminiLangNote"))
+                                    .font(.system(size: 11 * fontScale))
+                                    .foregroundColor(.purple)
+                                    .padding(.top, 4 * fontScale)
                             }
                         }
                     }
@@ -221,13 +227,11 @@ public struct SettingsView: View {
                                 Spacer()
                                 
                                 Button(action: {
-                                    Task {
-                                        await UpdateChecker.shared.checkForUpdates()
-                                    }
+                                    showUpdateModal = true
                                 }) {
                                     HStack(spacing: 4) {
                                         Image(systemName: "arrow.triangle.2.circlepath")
-                                        Text("Kiểm tra Cập nhật")
+                                        Text(loc.text("checkUpdates"))
                                     }
                                     .font(.system(size: 12 * fontScale, weight: .medium))
                                 }
@@ -252,7 +256,10 @@ public struct SettingsView: View {
             .padding()
             .background(Color(NSColor.controlBackgroundColor))
         }
-        .frame(width: 620 * fontScale, height: 720 * fontScale)
+        .frame(width: 620 * fontScale, height: 740 * fontScale)
+        .sheet(isPresented: $showUpdateModal) {
+            SoftwareUpdateView()
+        }
         .onAppear {
             apiKey = storage.settings.apiKey
             inputDir = storage.settings.defaultInputDirectory

@@ -61,7 +61,7 @@ public enum QuestionDepthMode: String, CaseIterable, Identifiable, Codable {
 }
 
 public struct AppVersionInfo {
-    public static let currentVersion = "v1.0.1"
+    public static let currentVersion = "v1.0.2"
     
     public static var buildNumber: String {
         if let path = Bundle.main.path(forResource: "build_number", ofType: "txt"),

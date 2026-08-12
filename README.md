@@ -1,7 +1,17 @@
-# 🎓 QuizMaster (v1.0.1)
+# 🎓 QuizMaster (v1.0.2)
 
 > **Native macOS Self-Study & AI-Powered Multiple-Choice Quiz Generator**  
 > *Developed by [@tozn607](https://github.com/tozn607)*
+
+---
+
+### 🚀 Quick Download / Tải ứng dụng ngay:
+
+[![](https://img.shields.io/badge/⬇️_Download_Latest_macOS_Release-v1.0.2-brightgreen?style=for-the-badge&logo=apple)](https://github.com/tozn607/quizmaster/releases/latest)
+
+👉 **[Click here to download the latest QuizMaster.app macOS release](https://github.com/tozn607/quizmaster/releases/latest)**
+
+---
 
 [![macOS Supported](https://img.shields.io/badge/macOS-13.0%2B-blue.svg)](https://apple.com)
 [![Language](https://img.shields.io/badge/Swift-5.9-orange.svg)](https://swift.org)
@@ -32,7 +42,7 @@
 - 🎚 **Chế độ Chi tiết (Depth Mode)**: Normal, Core, Thorough (sinh từ 35 đến 60+ câu hỏi chi tiết).
 - 📖 **3 Chế độ Ôn tập**: Luyện tập (Practice), Thi thử (Exam), Thẻ ghi nhớ (Flashcard 3D).
 - 📁 **Quản lý & Chuyển Bộ đề**: Hỗ trợ Chọn nhiều (Multi-select) để xóa hoặc chuyển bộ đề sang dự án khác.
-- 📁 **Hiển thị trong Finder**: Mở trực tiếp thư mục lưu trữ dữ liệu thực tế trên macOS.
+- 📁 **Xuất đề**: Hỗ trợ xuất gói Zip Bundle (mặc định) và file Microsoft Word `.docx` chuẩn.
 
 ---
 
