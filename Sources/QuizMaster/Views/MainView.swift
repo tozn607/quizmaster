@@ -329,13 +329,23 @@ public struct MainView: View {
                 quizToRename = quiz
                 renameTitleInput = quiz.title
             } label: {
-                Label("Đổi tên bộ đề thi", systemImage: "pencil")
+                Label(loc.text("renameQuiz"), systemImage: "pencil")
             }
+            
+            Button {
+                let outputDir = storage.settings.defaultOutputDirectory
+                let url = URL(fileURLWithPath: outputDir)
+                NSWorkspace.shared.open(url)
+            } label: {
+                Label(loc.text("showInFinder"), systemImage: "folder")
+            }
+            
+            Divider()
             
             Button(role: .destructive) {
                 storage.deleteQuiz(projectId: project.id, quizId: quiz.id)
             } label: {
-                Label("Xóa bộ đề này", systemImage: "trash")
+                Label(loc.text("deleteQuiz"), systemImage: "trash")
             }
         }
     }

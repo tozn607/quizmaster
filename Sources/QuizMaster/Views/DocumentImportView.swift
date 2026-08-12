@@ -1,43 +1,41 @@
 import SwiftUI
 import AppKit
+import UniformTypeIdentifiers
 
 public struct DocumentImportView: View {
     let project: StudyProject
+    
     @EnvironmentObject var storage: StorageManager
     @EnvironmentObject var loc: LocalizationManager
+    @Environment(\.appFontScale) var fontScale
     @Environment(\.dismiss) var dismiss
     
     // Section 1: Gemini AI Document Scanner
     @State private var docFileURL: URL? = nil
-    @State private var isCreateMultipleChoice: Bool = true
+    @State private var isCreateMultipleChoice: Bool = false // OFF by default as requested!
     @State private var depthMode: QuestionDepthMode = .normal
     @State private var geminiTitle: String = ""
     @State private var isProcessingGemini: Bool = false
     @State private var geminiError: String? = nil
     @State private var geminiSuccessQuiz: Quiz? = nil
     @State private var exportedZipPath: String? = nil
+    @State private var showScanConfirmation: Bool = false // Confirmation modal state
     
-    // Section 2: Pre-made Quiz File / Zip Import
-    @State private var premadeFileURL: URL? = nil
-    @State private var premadeTitle: String = ""
-    @State private var isProcessingPremade: Bool = false
-    @State private var premadeError: String? = nil
-    @State private var premadeSuccessMsg: String? = nil
+    // Section 2: Pre-made Quiz File Import
+    @State private var quizFileURL: URL? = nil
+    @State private var isProcessingQuizFile: Bool = false
+    @State private var quizFileError: String? = nil
     
     public var body: some View {
         VStack(spacing: 0) {
-            // Header
+            // Header Bar
             HStack {
-                Image(systemName: "doc.badge.plus")
-                    .font(.title2)
-                    .foregroundColor(.blue)
-                Text(loc.text("importTitle"))
-                    .font(.title2)
-                    .fontWeight(.bold)
+                Text(loc.text("importDoc"))
+                    .font(.system(size: 20 * fontScale, weight: .bold))
                 Spacer()
                 Button(action: { dismiss() }) {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.title2)
+                        .font(.system(size: 20 * fontScale))
                         .foregroundColor(.gray)
                 }
                 .buttonStyle(.plain)
@@ -48,255 +46,189 @@ public struct DocumentImportView: View {
             Divider()
             
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: 24 * fontScale) {
                     
-                    // Notice Banner
-                    HStack(alignment: .top, spacing: 12) {
-                        Image(systemName: "info.circle.fill")
-                            .font(.title3)
-                            .foregroundColor(.blue)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(loc.text("importNoticeTitle"))
-                                .font(.subheadline)
-                                .fontWeight(.bold)
-                                .foregroundColor(.blue)
-                            Text(loc.text("importNoticeBody"))
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .padding()
-                    .background(Color.blue.opacity(0.1))
-                    .cornerRadius(10)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.blue.opacity(0.3), lineWidth: 1)
-                    )
-                    
-                    // ==========================================
-                    // SECTION 1: GEMINI AI DOCUMENT SCANNER
-                    // ==========================================
+                    // SECTION 1: GEMINI AI ASSISTED DOCUMENT SCANNER
                     GlassCard {
-                        VStack(alignment: .leading, spacing: 14) {
+                        VStack(alignment: .leading, spacing: 14 * fontScale) {
                             HStack {
                                 Image(systemName: "sparkles")
+                                    .font(.system(size: 20 * fontScale))
                                     .foregroundColor(.purple)
                                 Text("PHẦN 1: QUÉT TÀI LIỆU VỚI GEMINI 3.5 FLASH LITE")
-                                    .font(.headline)
-                                    .fontWeight(.bold)
+                                    .font(.system(size: 16 * fontScale, weight: .bold))
                                     .foregroundColor(.purple)
                             }
                             
-                            Text("Dành cho tài liệu chưa có bộ đề (PDF, Word .docx, Văn bản bài giảng). AI sẽ tự động phân tích toàn bộ tài liệu và tạo bộ câu hỏi trắc nghiệm phủ rộng nội dung.")
-                                .font(.caption)
+                            Text("Khuyên dùng cho người dùng tải lên tài liệu bài giảng, sách giáo khoa hoặc tệp câu hỏi có sẵn (Word/PDF/TXT).")
+                                .font(.system(size: 12 * fontScale))
                                 .foregroundColor(.secondary)
                             
                             Divider()
                             
-                            HStack {
-                                Button(action: chooseDocFile) {
-                                    HStack {
-                                        Image(systemName: "doc.fill")
-                                        Text(docFileURL != nil ? docFileURL!.lastPathComponent : "Chọn Tệp Tài liệu (PDF / DOCX / TXT)")
-                                    }
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 8)
-                                    .background(Color.purple.opacity(0.12))
-                                    .foregroundColor(.purple)
-                                    .cornerRadius(8)
-                                }
-                                .buttonStyle(.plain)
+                            // File Selection
+                            VStack(alignment: .leading, spacing: 6 * fontScale) {
+                                Text("Chọn tệp tài liệu (Word .docx / PDF / TXT):")
+                                    .font(.system(size: 13 * fontScale, weight: .semibold))
                                 
-                                if docFileURL != nil {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(.green)
-                                }
-                            }
-                            
-                            TextField("Tên bộ đề mới...", text: $geminiTitle)
-                                .textFieldStyle(.roundedBorder)
-                            
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text("Độ phủ & Mức độ chi tiết của câu hỏi (Depth Mode):")
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
-                                
-                                Picker("", selection: $depthMode) {
-                                    ForEach(QuestionDepthMode.allCases) { mode in
-                                        Text(mode.displayName).tag(mode)
+                                HStack {
+                                    Text(docFileURL?.lastPathComponent ?? "Chưa chọn tệp...")
+                                        .font(.system(size: 13 * fontScale))
+                                        .foregroundColor(docFileURL != nil ? .primary : .secondary)
+                                        .lineLimit(1)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding(8 * fontScale)
+                                        .background(Color(NSColor.controlBackgroundColor))
+                                        .cornerRadius(6)
+                                    
+                                    PrimaryButton(title: "Chọn tệp...", icon: "doc.badge.plus", color: .purple) {
+                                        selectDocumentFile()
                                     }
                                 }
-                                .pickerStyle(.segmented)
+                            }
+                            
+                            // Title & Toggles
+                            VStack(alignment: .leading, spacing: 10 * fontScale) {
+                                TextField("Tên bộ đề mới (Tùy chọn)...", text: $geminiTitle)
+                                    .textFieldStyle(.roundedBorder)
                                 
-                                Text(depthMode.description)
-                                    .font(.caption2)
-                                    .foregroundColor(.purple)
-                                    .italic()
-                            }
-                            
-                            Toggle(isOn: $isCreateMultipleChoice) {
-                                Text("Bật \"Tạo câu hỏi trắc nghiệm tự động\" từ nội dung văn bản")
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-                            }
-                            .toggleStyle(.checkbox)
-                            
-                            if isProcessingGemini {
-                                HStack(spacing: 10) {
-                                    ProgressView()
-                                    Text("Đang gửi tới Gemini 3.5 Flash Lite để quét OCR & tạo trắc nghiệm...")
-                                        .font(.caption)
-                                        .foregroundColor(.purple)
+                                Toggle(isOn: $isCreateMultipleChoice) {
+                                    Text("Bật \"Tạo câu hỏi trắc nghiệm tự động\" từ tài liệu văn bản thường")
+                                        .font(.system(size: 13 * fontScale, weight: .semibold))
+                                }
+                                .toggleStyle(.checkbox)
+                                
+                                // Show Depth Control ONLY when "Create Multiple-Choice" is ON!
+                                if isCreateMultipleChoice {
+                                    VStack(alignment: .leading, spacing: 6 * fontScale) {
+                                        Text("Độ phủ & Mức độ chi tiết của câu hỏi (Depth Mode):")
+                                            .font(.system(size: 13 * fontScale, weight: .semibold))
+                                        
+                                        Picker("", selection: $depthMode) {
+                                            ForEach(QuestionDepthMode.allCases) { mode in
+                                                Text(mode.displayName).tag(mode)
+                                            }
+                                        }
+                                        .pickerStyle(.segmented)
+                                        
+                                        Text(depthMode.description)
+                                            .font(.system(size: 11 * fontScale))
+                                            .foregroundColor(.purple)
+                                            .italic()
+                                    }
+                                    .padding(.top, 4 * fontScale)
+                                    .transition(.opacity.combined(with: .move(edge: .top)))
                                 }
                             }
                             
                             if let err = geminiError {
                                 Text("✕ Lỗi: \(err)")
-                                    .font(.caption)
+                                    .font(.system(size: 12 * fontScale))
                                     .foregroundColor(.red)
                             }
                             
-                            if let quiz = geminiSuccessQuiz {
-                                VStack(alignment: .leading, spacing: 10) {
-                                    HStack {
-                                        Image(systemName: "checkmark.circle.fill")
-                                            .foregroundColor(.green)
-                                        Text("Đã quét và tạo thành công \(quiz.questions.count) câu hỏi!")
-                                            .font(.subheadline)
-                                            .fontWeight(.bold)
-                                            .foregroundColor(.green)
-                                    }
-                                    
-                                    // Direct Export Options
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        Text("Xuất kết quả bộ đề vừa quét:")
-                                            .font(.caption)
-                                            .fontWeight(.bold)
-                                        
-                                        HStack(spacing: 12) {
-                                            PrimaryButton(
-                                                title: "Xuất Gói Zip RTF (Mặc định - Có thể Nhập lại)",
-                                                icon: "archivebox.fill",
-                                                color: .green
-                                            ) {
-                                                exportGeminiQuizToZip(quiz: quiz)
-                                            }
-                                            
-                                            SecondaryButton(
-                                                title: "Xuất Tệp Word (Chỉ xem/in - Không nhập lại)",
-                                                icon: "doc.text.fill"
-                                            ) {
-                                                exportGeminiQuizToWordOnly(quiz: quiz)
-                                            }
-                                        }
-                                        
-                                        if let path = exportedZipPath {
-                                            HStack {
-                                                Image(systemName: "checkmark.seal.fill")
-                                                    .foregroundColor(.green)
-                                                Text("Đã xuất: \(URL(fileURLWithPath: path).lastPathComponent)")
-                                                    .font(.caption2)
-                                                    .foregroundColor(.secondary)
-                                            }
-                                        }
-                                    }
+                            if isProcessingGemini {
+                                HStack(spacing: 10 * fontScale) {
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                    Text("Gemini 3.5 Flash Lite đang phân tích và quét tài liệu...")
+                                        .font(.system(size: 13 * fontScale))
+                                        .foregroundColor(.purple)
                                 }
-                                .padding(12)
-                                .background(Color.green.opacity(0.1))
-                                .cornerRadius(10)
                             } else {
                                 HStack {
                                     Spacer()
-                                    PrimaryButton(
-                                        title: "Bắt đầu Quét với Gemini AI",
-                                        icon: "sparkles",
-                                        color: .purple
-                                    ) {
-                                        processGeminiDoc()
+                                    PrimaryButton(title: "Bắt đầu Quét với Gemini AI", icon: "sparkles", color: .purple) {
+                                        showScanConfirmation = true
                                     }
-                                    .disabled(docFileURL == nil || isProcessingGemini)
+                                    .disabled(docFileURL == nil)
                                 }
+                            }
+                            
+                            // Success & Immediate Export triggers
+                            if let createdQuiz = geminiSuccessQuiz {
+                                VStack(alignment: .leading, spacing: 10 * fontScale) {
+                                    HStack {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundColor(.green)
+                                        Text("Đã quét thành công! Bộ đề \"\(createdQuiz.title)\" (\(createdQuiz.questions.count) câu) đã thêm vào dự án.")
+                                            .font(.system(size: 13 * fontScale, weight: .bold))
+                                            .foregroundColor(.green)
+                                    }
+                                    
+                                    HStack(spacing: 12 * fontScale) {
+                                        PrimaryButton(title: "Xuất ngay file Zip (RTF Bundle)", icon: "archivebox.fill", color: .blue) {
+                                            exportImmediately(quiz: createdQuiz, isWord: false)
+                                        }
+                                        
+                                        PrimaryButton(title: "Xuất ngay file Word (.docx)", icon: "doc.text.fill", color: .indigo) {
+                                            exportImmediately(quiz: createdQuiz, isWord: true)
+                                        }
+                                    }
+                                    
+                                    if let path = exportedZipPath {
+                                        Text("✓ Đã xuất tại: \(path)")
+                                            .font(.system(size: 11 * fontScale))
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                                .padding(12 * fontScale)
+                                .background(Color.green.opacity(0.1))
+                                .cornerRadius(10)
                             }
                         }
                     }
                     
-                    // ==========================================
-                    // SECTION 2: PRE-MADE QUIZ FILE / ZIP IMPORT
-                    // ==========================================
+                    // SECTION 2: PRE-MADE QUIZ FILE IMPORT
                     GlassCard {
-                        VStack(alignment: .leading, spacing: 14) {
+                        VStack(alignment: .leading, spacing: 14 * fontScale) {
                             HStack {
-                                Image(systemName: "archivebox.fill")
+                                Image(systemName: "arrow.down.doc.fill")
+                                    .font(.system(size: 20 * fontScale))
                                     .foregroundColor(.blue)
-                                Text("PHẦN 2: NHẬP BỘ ĐỀ CÓ SẴN (FILE / ZIP BUNDLE)")
-                                    .font(.headline)
-                                    .fontWeight(.bold)
+                                Text("PHẦN 2: NHẬP BỘ ĐỀ CÓ SẴN (ZIP BUNDLE / JSON)")
+                                    .font(.system(size: 16 * fontScale, weight: .bold))
                                     .foregroundColor(.blue)
                             }
                             
-                            Text("Dành cho các bộ đề đã soạn sẵn (file .zip bundle hoặc file .json quiz). Nhập nhanh tức thì không cần qua AI.")
-                                .font(.caption)
+                            Text("Dành cho người dùng nạp bài thi có sẵn dưới dạng tệp Zip Bundle (.zip) hoặc tệp JSON được xuất từ ứng dụng trước đây.")
+                                .font(.system(size: 12 * fontScale))
                                 .foregroundColor(.secondary)
                             
                             Divider()
                             
-                            HStack {
-                                Button(action: choosePremadeFile) {
-                                    HStack {
-                                        Image(systemName: "folder.badge.gearshape")
-                                        Text(premadeFileURL != nil ? premadeFileURL!.lastPathComponent : "Chọn Tệp Bộ đề (.zip bundle hoặc .json)")
-                                    }
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 8)
-                                    .background(Color.blue.opacity(0.12))
-                                    .foregroundColor(.blue)
-                                    .cornerRadius(8)
-                                }
-                                .buttonStyle(.plain)
+                            VStack(alignment: .leading, spacing: 6 * fontScale) {
+                                Text("Chọn tệp bộ đề (.zip hoặc .json):")
+                                    .font(.system(size: 13 * fontScale, weight: .semibold))
                                 
-                                if premadeFileURL != nil {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(.green)
-                                }
-                            }
-                            
-                            TextField("Tên bộ đề (Để trống sẽ lấy theo tên tệp)...", text: $premadeTitle)
-                                .textFieldStyle(.roundedBorder)
-                            
-                            if isProcessingPremade {
-                                HStack(spacing: 10) {
-                                    ProgressView()
-                                    Text("Đang nhập bộ đề...")
-                                        .font(.caption)
-                                }
-                            }
-                            
-                            if let err = premadeError {
-                                Text("✕ Lỗi: \(err)")
-                                    .font(.caption)
-                                    .foregroundColor(.red)
-                            }
-                            
-                            if let msg = premadeSuccessMsg {
                                 HStack {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(.green)
-                                    Text(msg)
-                                        .font(.subheadline)
-                                        .foregroundColor(.green)
+                                    Text(quizFileURL?.lastPathComponent ?? "Chưa chọn tệp bộ đề...")
+                                        .font(.system(size: 13 * fontScale))
+                                        .foregroundColor(quizFileURL != nil ? .primary : .secondary)
+                                        .lineLimit(1)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding(8 * fontScale)
+                                        .background(Color(NSColor.controlBackgroundColor))
+                                        .cornerRadius(6)
+                                    
+                                    SecondaryButton(title: "Chọn tệp đề...", icon: "folder.badge.plus") {
+                                        selectQuizFile()
+                                    }
                                 }
+                            }
+                            
+                            if let err = quizFileError {
+                                Text("✕ Lỗi: \(err)")
+                                    .font(.system(size: 12 * fontScale))
+                                    .foregroundColor(.red)
                             }
                             
                             HStack {
                                 Spacer()
-                                PrimaryButton(
-                                    title: "Nhập Bộ Đề Có Sẵn",
-                                    icon: "arrow.down.doc.fill",
-                                    color: .blue
-                                ) {
-                                    processPremadeImport()
+                                PrimaryButton(title: "Nhập Bộ Đề Có Sẵn vào Dự án", icon: "square.and.arrow.down.fill", color: .blue) {
+                                    processQuizFileImport()
                                 }
-                                .disabled(premadeFileURL == nil || isProcessingPremade)
+                                .disabled(quizFileURL == nil || isProcessingQuizFile)
                             }
                         }
                     }
@@ -306,7 +238,7 @@ public struct DocumentImportView: View {
             
             Divider()
             
-            // Footer Close
+            // Footer Bar
             HStack {
                 Spacer()
                 SecondaryButton(title: "Đóng", icon: "xmark") {
@@ -316,27 +248,44 @@ public struct DocumentImportView: View {
             .padding()
             .background(Color(NSColor.controlBackgroundColor))
         }
-        .frame(width: 640, height: 650)
-        .onAppear {
-            if storage.settings.apiKey.isEmpty {
-                geminiError = "Vui lòng nhập Gemini API Key trong Cài đặt trước khi dùng tính năng quét AI."
+        .frame(width: 680 * fontScale, height: 720 * fontScale)
+        .confirmationDialog(
+            loc.text("confirmScanTitle"),
+            isPresented: $showScanConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Bắt đầu Quét với Gemini AI", role: .none) {
+                processGeminiDoc()
+            }
+            Button("Hủy bỏ", role: .cancel) {}
+        } message: {
+            Text(isCreateMultipleChoice ? loc.text("confirmScanMsgToggleOn") : loc.text("confirmScanMsgToggleOff"))
+        }
+    }
+    
+    // MARK: - Actions & Helpers
+    private func selectDocumentFile() {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = false
+        
+        if panel.runModal() == .OK, let url = panel.url {
+            docFileURL = url
+            if geminiTitle.isEmpty {
+                geminiTitle = url.deletingPathExtension().lastPathComponent
             }
         }
     }
     
-    // MARK: - Handlers for Section 1 (Gemini)
-    private func chooseDocFile() {
+    private func selectQuizFile() {
         let panel = NSOpenPanel()
         panel.canChooseFiles = true
         panel.canChooseDirectories = false
-        panel.allowedContentTypes = [.pdf, .plainText, .rtf]
-        panel.begin { response in
-            if response == .OK, let url = panel.url {
-                docFileURL = url
-                if geminiTitle.isEmpty {
-                    geminiTitle = url.deletingPathExtension().lastPathComponent
-                }
-            }
+        panel.allowsMultipleSelection = false
+        
+        if panel.runModal() == .OK, let url = panel.url {
+            quizFileURL = url
         }
     }
     
@@ -345,12 +294,17 @@ public struct DocumentImportView: View {
         isProcessingGemini = true
         geminiError = nil
         geminiSuccessQuiz = nil
-        
-        let title = geminiTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? url.deletingPathExtension().lastPathComponent : geminiTitle
+        exportedZipPath = nil
         
         Task {
             do {
                 let extractedText = try await DocumentProcessor.shared.extractText(from: url)
+                guard !extractedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                    throw NSError(domain: "DocumentImport", code: 1, userInfo: [NSLocalizedDescriptionKey: "Tài liệu rỗng hoặc không thể trích xuất văn bản."])
+                }
+                
+                let title = geminiTitle.isEmpty ? url.deletingPathExtension().lastPathComponent : geminiTitle
+                
                 let questions = try await GeminiAPIService.shared.generateQuiz(
                     from: extractedText,
                     isCreateMultipleChoice: isCreateMultipleChoice,
@@ -375,76 +329,40 @@ public struct DocumentImportView: View {
         }
     }
     
-    private func exportGeminiQuizToZip(quiz: Quiz) {
-        do {
-            let zipPath = try WordExporter.shared.exportQuizToZipBundle(quiz: quiz, outputDirectory: storage.settings.defaultOutputDirectory)
-            exportedZipPath = zipPath
-        } catch {
-            geminiError = "Lỗi xuất Zip: \(error.localizedDescription)"
-        }
-    }
-    
-    private func exportGeminiQuizToWordOnly(quiz: Quiz) {
-        do {
-            let zipPath = try WordExporter.shared.exportQuizToWordDocxZip(quiz: quiz, outputDirectory: storage.settings.defaultOutputDirectory)
-            exportedZipPath = zipPath
-        } catch {
-            geminiError = "Lỗi xuất Word Docx Zip: \(error.localizedDescription)"
-        }
-    }
-    
-    // MARK: - Handlers for Section 2 (Pre-made Import)
-    private func choosePremadeFile() {
-        let panel = NSOpenPanel()
-        panel.canChooseFiles = true
-        panel.canChooseDirectories = false
-        panel.begin { response in
-            if response == .OK, let url = panel.url {
-                premadeFileURL = url
-                if premadeTitle.isEmpty {
-                    premadeTitle = url.deletingPathExtension().lastPathComponent
-                }
-            }
-        }
-    }
-    
-    private func processPremadeImport() {
-        guard let url = premadeFileURL else { return }
-        isProcessingPremade = true
-        premadeError = nil
-        premadeSuccessMsg = nil
-        
-        let title = premadeTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? url.deletingPathExtension().lastPathComponent : premadeTitle
+    private func processQuizFileImport() {
+        guard let url = quizFileURL else { return }
+        isProcessingQuizFile = true
+        quizFileError = nil
         
         Task {
             do {
-                var questions: [Question]? = nil
-                let ext = url.pathExtension.lowercased()
-                
-                if ext == "zip" {
-                    questions = try DocumentProcessor.shared.extractQuizFromZip(url: url)
-                } else if ext == "json" {
-                    let data = try Data(contentsOf: url)
-                    questions = try? JSONDecoder().decode([Question].self, from: data)
-                }
-                
-                guard let validQuestions = questions, !validQuestions.isEmpty else {
-                    throw NSError(domain: "Import", code: 20, userInfo: [NSLocalizedDescriptionKey: "Tệp không chứa bộ đề hợp lệ hoặc bị lỗi định dạng."])
-                }
-                
-                let quiz = Quiz(title: title, questions: validQuestions, isPreMade: true)
-                
+                let quiz = try DocumentProcessor.shared.extractQuizFromFile(at: url)
                 await MainActor.run {
                     storage.addQuiz(to: project.id, quiz: quiz)
-                    premadeSuccessMsg = "Đã nhập thành công bộ đề với \(validQuestions.count) câu hỏi!"
-                    isProcessingPremade = false
+                    isProcessingQuizFile = false
+                    dismiss()
                 }
             } catch {
                 await MainActor.run {
-                    premadeError = error.localizedDescription
-                    isProcessingPremade = false
+                    quizFileError = error.localizedDescription
+                    isProcessingQuizFile = false
                 }
             }
+        }
+    }
+    
+    private func exportImmediately(quiz: Quiz, isWord: Bool) {
+        let outputDir = storage.settings.defaultOutputDirectory
+        do {
+            let zipPath: String
+            if isWord {
+                zipPath = try WordExporter.shared.exportQuizToWordDocxZip(quiz: quiz, outputDirectory: outputDir)
+            } else {
+                zipPath = try WordExporter.shared.exportQuizToZipBundle(quiz: quiz, outputDirectory: outputDir)
+            }
+            exportedZipPath = zipPath
+        } catch {
+            geminiError = "Lỗi xuất Zip: \(error.localizedDescription)"
         }
     }
 }

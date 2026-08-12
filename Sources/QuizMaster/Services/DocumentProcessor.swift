@@ -21,9 +21,29 @@ public class DocumentProcessor {
         case "txt", "json", "rtf", "csv", "md":
             return try String(contentsOf: url, encoding: .utf8)
         default:
-            // Fallback try reading as string
             return try String(contentsOf: url, encoding: .utf8)
         }
+    }
+    
+    // MARK: - Pre-made Quiz File Importer
+    public func extractQuizFromFile(at url: URL) throws -> Quiz {
+        let title = url.deletingPathExtension().lastPathComponent
+        let ext = url.pathExtension.lowercased()
+        
+        if ext == "zip" {
+            if let questions = try extractQuizFromZip(url: url) {
+                return Quiz(title: title, questions: questions, isPreMade: true)
+            }
+        } else if ext == "json" {
+            let data = try Data(contentsOf: url)
+            if let questions = try? JSONDecoder().decode([Question].self, from: data) {
+                return Quiz(title: title, questions: questions, isPreMade: true)
+            } else if let quiz = try? JSONDecoder().decode(Quiz.self, from: data) {
+                return quiz
+            }
+        }
+        
+        throw NSError(domain: "DocumentProcessor", code: 404, userInfo: [NSLocalizedDescriptionKey: "Không thể đọc bộ đề thi từ tệp này. Vui lòng chọn tệp Zip Bundle (.zip) hoặc JSON được xuất từ ứng dụng."])
     }
     
     // MARK: - PDF Extraction (PDFKit + Vision OCR fallback)
@@ -40,7 +60,6 @@ public class DocumentProcessor {
             if let pageText = page.string, !pageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 fullText += pageText + "\n\n"
             } else {
-                // Perform OCR using Vision framework for scanned pages
                 if let pageImage = renderPDFPageToImage(page: page) {
                     let ocrText = try await performOCROnImage(image: pageImage)
                     fullText += ocrText + "\n\n"
@@ -132,7 +151,6 @@ public class DocumentProcessor {
     
     // MARK: - DOCX Extraction via unzip & XML stripping
     private func extractTextFromDocx(url: URL) throws -> String {
-        // Run unzip command in temporary location to read word/document.xml
         let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer {
             try? FileManager.default.removeItem(at: tempDir)

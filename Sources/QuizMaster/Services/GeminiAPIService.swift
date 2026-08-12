@@ -67,7 +67,7 @@ public class GeminiAPIService {
         case .core:
             depthInstruction = "DEPTH MODE - CORE: Focus strictly on the CORE ideas, main takeaways, key theorems, and essential concepts of the document (aim for 8 to 15 high-level questions)."
         case .thorough:
-            depthInstruction = "DEPTH MODE - THOROUGH: Exhaustively analyze every paragraph and create extremely DETAILED questions covering EVERY fact, date, definition, rule, and piece of information mentioned (aim for 20 to 35 comprehensive questions)."
+            depthInstruction = "DEPTH MODE - THOROUGH: Exhaustively analyze every single paragraph, sentence, and sub-clause of the document. Create a DENSE, EXTREMELY DETAILED, and COMPREHENSIVE multiple-choice test containing 35 to 60+ questions, covering EVERY fact, rule, date, definition, example, and detail mentioned in the document. Do not skip any section."
         }
         
         let promptText: String

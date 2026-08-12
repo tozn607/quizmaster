@@ -111,6 +111,14 @@ public struct SidebarView: View {
         }
         .padding(.vertical, 4)
         .contextMenu {
+            Button {
+                showInFinder(project: project)
+            } label: {
+                Label(loc.text("showInFinder"), systemImage: "folder")
+            }
+            
+            Divider()
+            
             Button(role: .destructive) {
                 storage.deleteProject(id: project.id)
                 if selectedProject?.id == project.id {
@@ -166,6 +174,12 @@ public struct SidebarView: View {
         }
         .padding(20)
         .frame(width: 380)
+    }
+    
+    private func showInFinder(project: StudyProject) {
+        let outputDir = storage.settings.defaultOutputDirectory
+        let url = URL(fileURLWithPath: outputDir)
+        NSWorkspace.shared.open(url)
     }
     
     private func deleteProjects(at offsets: IndexSet) {

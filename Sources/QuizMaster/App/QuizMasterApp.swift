@@ -4,7 +4,7 @@ import AppKit
 @main
 struct QuizMasterApp: App {
     @StateObject private var storage = StorageManager.shared
-    @StateObject private var loc = LocalizationManager.shared
+    @StateObject private var loc = LocalizationManager()
     
     var body: some Scene {
         WindowGroup {

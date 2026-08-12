@@ -4,6 +4,7 @@ import AppKit
 public struct SettingsView: View {
     @EnvironmentObject var storage: StorageManager
     @EnvironmentObject var loc: LocalizationManager
+    @Environment(\.appFontScale) var fontScale
     @Environment(\.dismiss) var dismiss
     
     @State private var apiKey: String = ""
@@ -17,12 +18,11 @@ public struct SettingsView: View {
             // Header Bar
             HStack {
                 Text(loc.text("settingsTitle"))
-                    .font(.title2)
-                    .fontWeight(.bold)
+                    .font(.system(size: 20 * fontScale, weight: .bold))
                 Spacer()
                 Button(action: { dismiss() }) {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.title2)
+                        .font(.system(size: 20 * fontScale))
                         .foregroundColor(.gray)
                 }
                 .buttonStyle(.plain)
@@ -33,14 +33,14 @@ public struct SettingsView: View {
             Divider()
             
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 20 * fontScale) {
                     
                     // API Key Section
                     GlassCard {
-                        VStack(alignment: .leading, spacing: 12) {
+                        VStack(alignment: .leading, spacing: 12 * fontScale) {
                             HStack {
                                 Text(loc.text("apiKeyLabel"))
-                                    .fontWeight(.semibold)
+                                    .font(.system(size: 14 * fontScale, weight: .semibold))
                                 
                                 Spacer()
                                 
@@ -49,12 +49,11 @@ public struct SettingsView: View {
                                         Image(systemName: "key.fill")
                                             .foregroundColor(.purple)
                                         Text("Lấy API Key từ Google AI Studio ↗")
-                                            .font(.caption)
-                                            .fontWeight(.semibold)
+                                            .font(.system(size: 12 * fontScale, weight: .semibold))
                                             .foregroundColor(.purple)
                                     }
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 5)
+                                    .padding(.horizontal, 10 * fontScale)
+                                    .padding(.vertical, 5 * fontScale)
                                     .background(Color.purple.opacity(0.12))
                                     .cornerRadius(8)
                                     .overlay(
@@ -77,6 +76,7 @@ public struct SettingsView: View {
                                                 .scaleEffect(0.6)
                                         }
                                         Text(loc.text("testApiKey"))
+                                            .font(.system(size: 13 * fontScale))
                                     }
                                 }
                                 .disabled(isTestingKey || apiKey.isEmpty)
@@ -87,7 +87,7 @@ public struct SettingsView: View {
                                     Image(systemName: isValid ? "checkmark.circle.fill" : "xmark.circle.fill")
                                     Text(isValid ? loc.text("apiKeyValid") : loc.text("apiKeyInvalid"))
                                 }
-                                .font(.caption)
+                                .font(.system(size: 12 * fontScale))
                                 .foregroundColor(isValid ? .green : .red)
                             }
                         }
@@ -95,15 +95,15 @@ public struct SettingsView: View {
                     
                     // Model Locked Section
                     GlassCard {
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(alignment: .leading, spacing: 8 * fontScale) {
                             Text(loc.text("modelLabel"))
-                                .fontWeight(.semibold)
+                                .font(.system(size: 14 * fontScale, weight: .semibold))
                             
                             HStack {
                                 BadgeView(text: "gemini-3.5-flash-lite", color: .purple)
                                 Spacer()
                                 Text(loc.text("modelFixedNote"))
-                                    .font(.caption)
+                                    .font(.system(size: 12 * fontScale))
                                     .foregroundColor(.secondary)
                             }
                         }
@@ -111,32 +111,33 @@ public struct SettingsView: View {
                     
                     // Directories Section
                     GlassCard {
-                        VStack(alignment: .leading, spacing: 14) {
+                        VStack(alignment: .leading, spacing: 14 * fontScale) {
                             Text(loc.text("directoriesHeader"))
-                                .font(.headline)
-                                .fontWeight(.bold)
+                                .font(.system(size: 16 * fontScale, weight: .bold))
                             
-                            VStack(alignment: .leading, spacing: 6) {
+                            VStack(alignment: .leading, spacing: 6 * fontScale) {
                                 Text(loc.text("inputDirLabel"))
-                                    .font(.subheadline)
+                                    .font(.system(size: 13 * fontScale))
                                 HStack {
                                     TextField("", text: $inputDir)
                                         .textFieldStyle(.roundedBorder)
                                     Button(loc.text("selectFolder")) {
                                         selectFolder { inputDir = $0 }
                                     }
+                                    .font(.system(size: 13 * fontScale))
                                 }
                             }
                             
-                            VStack(alignment: .leading, spacing: 6) {
+                            VStack(alignment: .leading, spacing: 6 * fontScale) {
                                 Text(loc.text("outputDirLabel"))
-                                    .font(.subheadline)
+                                    .font(.system(size: 13 * fontScale))
                                 HStack {
                                     TextField("", text: $outputDir)
                                         .textFieldStyle(.roundedBorder)
                                     Button(loc.text("selectFolder")) {
                                         selectFolder { outputDir = $0 }
                                     }
+                                    .font(.system(size: 13 * fontScale))
                                 }
                             }
                         }
@@ -144,14 +145,13 @@ public struct SettingsView: View {
                     
                     // Display & Font Size Section
                     GlassCard {
-                        VStack(alignment: .leading, spacing: 14) {
+                        VStack(alignment: .leading, spacing: 14 * fontScale) {
                             Text("Giao diện & Cỡ chữ (Display & Font Size)")
-                                .font(.headline)
-                                .fontWeight(.bold)
+                                .font(.system(size: 16 * fontScale, weight: .bold))
                             
-                            VStack(alignment: .leading, spacing: 6) {
+                            VStack(alignment: .leading, spacing: 6 * fontScale) {
                                 Text("Cỡ chữ hiển thị ứng dụng:")
-                                    .font(.subheadline)
+                                    .font(.system(size: 13 * fontScale))
                                 
                                 Picker("", selection: $storage.settings.fontSize) {
                                     ForEach(AppFontSize.allCases) { size in
@@ -161,9 +161,9 @@ public struct SettingsView: View {
                                 .pickerStyle(.segmented)
                             }
                             
-                            VStack(alignment: .leading, spacing: 6) {
+                            VStack(alignment: .leading, spacing: 6 * fontScale) {
                                 Text(loc.text("languageLabel"))
-                                    .font(.subheadline)
+                                    .font(.system(size: 13 * fontScale))
                                 
                                 Picker("", selection: $loc.currentLanguage) {
                                     Text("Tiếng Việt").tag(AppLanguage.vietnamese)
@@ -176,36 +176,33 @@ public struct SettingsView: View {
                     
                     // About & App Info Footer Section
                     GlassCard {
-                        VStack(alignment: .leading, spacing: 12) {
+                        VStack(alignment: .leading, spacing: 12 * fontScale) {
                             Text("Thông tin Ứng dụng / About QuizMaster")
-                                .font(.headline)
-                                .fontWeight(.bold)
+                                .font(.system(size: 16 * fontScale, weight: .bold))
                             
                             Divider()
                             
-                            HStack(spacing: 16) {
+                            HStack(spacing: 16 * fontScale) {
                                 Image(systemName: "graduationcap.circle.fill")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(width: 52, height: 52)
+                                    .frame(width: 52 * fontScale, height: 52 * fontScale)
                                     .foregroundColor(.purple)
                                 
-                                VStack(alignment: .leading, spacing: 4) {
+                                VStack(alignment: .leading, spacing: 4 * fontScale) {
                                     HStack {
                                         Text("QuizMaster")
-                                            .font(.title3)
-                                            .fontWeight(.bold)
+                                            .font(.system(size: 18 * fontScale, weight: .bold))
                                         
                                         BadgeView(text: "\(AppVersionInfo.currentVersion) (Build \(AppVersionInfo.buildNumber))", color: .purple)
                                     }
                                     
                                     Text("Tác giả / Creator: @tozn607 (Anh Vinh)")
-                                        .font(.caption)
-                                        .fontWeight(.semibold)
+                                        .font(.system(size: 12 * fontScale, weight: .semibold))
                                         .foregroundColor(.blue)
                                     
                                     Text("Ứng dụng tự học & tạo đề thi trắc nghiệm bằng Gemini 3.5 Flash Lite trên macOS.")
-                                        .font(.caption2)
+                                        .font(.system(size: 11 * fontScale))
                                         .foregroundColor(.secondary)
                                 }
                                 
@@ -220,8 +217,7 @@ public struct SettingsView: View {
                                         Image(systemName: "arrow.triangle.2.circlepath")
                                         Text("Kiểm tra Cập nhật")
                                     }
-                                    .font(.caption)
-                                    .fontWeight(.medium)
+                                    .font(.system(size: 12 * fontScale, weight: .medium))
                                 }
                                 .buttonStyle(.plain)
                                 .foregroundColor(.purple)
@@ -244,7 +240,7 @@ public struct SettingsView: View {
             .padding()
             .background(Color(NSColor.controlBackgroundColor))
         }
-        .frame(width: 580, height: 680)
+        .frame(width: 620 * fontScale, height: 720 * fontScale)
         .onAppear {
             apiKey = storage.settings.apiKey
             inputDir = storage.settings.defaultInputDirectory
