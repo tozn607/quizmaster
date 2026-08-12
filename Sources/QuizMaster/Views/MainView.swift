@@ -78,7 +78,12 @@ public struct MainView: View {
                 }
             }
         }
+        .task {
+            // Automatically check for updates on launch
+            await updateChecker.checkForUpdates()
+        }
         .environment(\.appFontScale, storage.settings.fontSize.scaleFactor)
+
         .sheet(isPresented: $showSettingsSheet) {
             SettingsView()
         }

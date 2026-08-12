@@ -38,8 +38,9 @@ public struct ExamView: View {
                 Spacer()
                 
                 VStack(spacing: 2) {
-                    Text("\(quiz.title) (Thi thử - Exam Mode)")
+                    Text("\(quiz.title) • Thi thử")
                         .font(.system(size: 16 * fontScale, weight: .bold))
+
                     
                     if !activeQuestions.isEmpty {
                         Text(String(format: loc.text("progressFormat"), "\(currentIndex + 1)", "\(activeQuestions.count)"))

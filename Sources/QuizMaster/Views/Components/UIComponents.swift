@@ -131,13 +131,20 @@ public struct BadgeView: View {
     let text: String
     var color: Color = .blue
     
+    public init(text: String, color: Color = .blue) {
+        self.text = text
+        self.color = color
+    }
+
     public var body: some View {
         Text(text)
-            .font(.system(size: 11 * fontScale, weight: .semibold))
+            .font(.system(size: 11 * fontScale, weight: .bold))
             .padding(.horizontal, 10 * fontScale)
-            .padding(.vertical, 4 * fontScale)
-            .background(color.opacity(0.15))
-            .foregroundColor(color)
+            .padding(.vertical, 5 * fontScale)
+            .foregroundColor(.white)
+            .background(color.opacity(0.88))
             .cornerRadius(12)
+            .shadow(color: color.opacity(0.25), radius: 2, x: 0, y: 1)
     }
 }
+

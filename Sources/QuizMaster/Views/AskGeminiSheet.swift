@@ -181,6 +181,11 @@ public struct AskGeminiSheet: View {
             .background(Color(NSColor.controlBackgroundColor))
         }
         .frame(width: 680 * fontScale, height: 680 * fontScale)
+        .onAppear {
+            if !question.explanation.isEmpty && aiResponseText == nil {
+                aiResponseText = question.explanation
+            }
+        }
     }
     
     @ViewBuilder
@@ -221,6 +226,7 @@ public struct AskGeminiSheet: View {
                 await MainActor.run {
                     aiResponseText = response
                     isQuerying = false
+                    storage.updateQuestionExplanation(questionId: question.id, explanation: response)
                 }
             } catch {
                 await MainActor.run {
@@ -230,6 +236,7 @@ public struct AskGeminiSheet: View {
             }
         }
     }
+
     
     private func cleanMarkdownForSwiftUI(_ rawText: String) -> String {
         var str = rawText.trimmingCharacters(in: .whitespacesAndNewlines)

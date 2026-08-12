@@ -144,6 +144,19 @@ public class StorageManager: ObservableObject {
         saveProjects()
     }
     
+    public func updateQuestionExplanation(questionId: String, explanation: String) {
+        for pIdx in 0..<projects.count {
+            for qIdx in 0..<projects[pIdx].quizzes.count {
+                if let questIdx = projects[pIdx].quizzes[qIdx].questions.firstIndex(where: { $0.id == questionId }) {
+                    projects[pIdx].quizzes[qIdx].questions[questIdx].explanation = explanation
+                    saveProjects()
+                    return
+                }
+            }
+        }
+    }
+
+    
     public func moveQuizzes(quizIds: Set<String>, fromProjectId: String, toProjectId: String) {
         for qId in quizIds {
             moveQuiz(quizId: qId, fromProjectId: fromProjectId, toProjectId: toProjectId)

@@ -41,12 +41,12 @@ public struct FlashcardView: View {
                 Spacer()
                 
                 VStack(spacing: 2) {
-                    Text("\(quiz.title) (Thẻ ghi nhớ 3D)")
+                    Text("\(quiz.title) • Thẻ ghi nhớ")
                         .font(.system(size: 16 * fontScale, weight: .bold))
                     
                     Text("Vòng học thứ \(studyRound) • Còn lại \(cardQueue.count + (currentCard != nil ? 1 : 0)) thẻ")
                         .font(.system(size: 12 * fontScale, weight: .bold))
-                        .foregroundColor(.purple)
+                        .foregroundColor(.blue)
                 }
                 
                 Spacer()
@@ -58,11 +58,11 @@ public struct FlashcardView: View {
                         Text(loc.text("questionNavPane"))
                     }
                     .font(.system(size: 12 * fontScale, weight: .medium))
-                    .foregroundColor(showNavPane ? .purple : .secondary)
-                    .padding(.horizontal, 8 * fontScale)
-                    .padding(.vertical, 4 * fontScale)
-                    .background(showNavPane ? Color.purple.opacity(0.12) : Color.clear)
-                    .cornerRadius(6)
+                    .foregroundColor(showNavPane ? .blue : .secondary)
+                    .padding(.horizontal, 10 * fontScale)
+                    .padding(.vertical, 5 * fontScale)
+                    .background(showNavPane ? Color.blue.opacity(0.1) : Color(NSColor.controlBackgroundColor))
+                    .cornerRadius(8)
                 }
                 .buttonStyle(.plain)
             }
@@ -135,7 +135,7 @@ public struct FlashcardView: View {
                                         
                                         Spacer()
                                         
-                                        Text("💡 Chọn V (Thuộc) hoặc X (Chưa thuộc)")
+                                        Text("💡 Chọn Đã thuộc hoặc Chưa thuộc")
                                             .font(.system(size: 12 * fontScale))
                                             .foregroundColor(.secondary)
                                     }
@@ -162,11 +162,11 @@ public struct FlashcardView: View {
                             }
                             .disabled(historyStack.isEmpty)
                             
-                            PrimaryButton(title: "X - Chưa thuộc (Cần học lại)", icon: "xmark", color: .red) {
+                            PrimaryButton(title: "Chưa thuộc", icon: "xmark", color: .red) {
                                 markCard(mastered: false)
                             }
                             
-                            PrimaryButton(title: "V - Đã thuộc bài", icon: "checkmark", color: .green) {
+                            PrimaryButton(title: "Đã thuộc bài", icon: "checkmark", color: .green) {
                                 markCard(mastered: true)
                             }
                         }

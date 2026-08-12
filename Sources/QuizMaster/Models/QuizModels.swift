@@ -19,10 +19,10 @@ public enum AppFontSize: String, CaseIterable, Identifiable, Codable {
     
     public var displayName: String {
         switch self {
-        case .small: return "Nhỏ (Small)"
-        case .medium: return "Vừa (Medium)"
-        case .large: return "Lớn (Large)"
-        case .xLarge: return "Rất lớn (X-Large)"
+        case .small: return "Nhỏ"
+        case .medium: return "Vừa"
+        case .large: return "Lớn"
+        case .xLarge: return "Rất lớn"
         }
     }
     
@@ -45,11 +45,12 @@ public enum QuestionDepthMode: String, CaseIterable, Identifiable, Codable {
     
     public var displayName: String {
         switch self {
-        case .normal: return "Mặc định (Normal)"
-        case .core: return "Ý chính / Trọng tâm (Core)"
-        case .thorough: return "Chi tiết toàn bộ (Thorough)"
+        case .normal: return "Mặc định"
+        case .core: return "Ý chính & Trọng tâm"
+        case .thorough: return "Chi tiết toàn bộ"
         }
     }
+
     
     public var description: String {
         switch self {
