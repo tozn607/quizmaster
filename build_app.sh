@@ -11,7 +11,7 @@ if [ -f "$BUILD_FILE" ]; then
     BUILD_NUMBER=$(cat "$BUILD_FILE")
     BUILD_NUMBER=$((BUILD_NUMBER + 1))
 else
-    BUILD_NUMBER=134
+    BUILD_NUMBER=135
 fi
 echo "$BUILD_NUMBER" > "$BUILD_FILE"
 
@@ -24,19 +24,19 @@ echo "🔢 Building QuizMaster v${VERSION} (Build ${BUILD_NUMBER})..."
 cat <<'EOF' > "build_info.json"
 {
   "version": "1.0.3",
-  "buildNumber": 135,
-  "releaseTag": "v1.0.3-b135",
-  "buildDate": "2026-08-12T12:50:00Z",
-  "releaseNotes": "QuizMaster v1.0.3 (Build 135):\n- Adopted official SwiftUI Liquid Glass API design\n- AppIcon added to top of README\n- macOS native System Accent Color integration\n- Strict single release enforcement per version number on GitHub\n- Saved Ask Gemini AI answers persistent storage\n- Codesign & Gatekeeper quarantine launch error fix\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
+  "buildNumber": 136,
+  "releaseTag": "v1.0.3-b136",
+  "buildDate": "2026-08-12T12:55:00Z",
+  "releaseNotes": "QuizMaster v1.0.3 (Build 136):\n- Refined interface adopting Apple official Liquid Glass Developer Guide guidelines\n- Concentric rounded forms, glass control layers, and dynamic system accent colors\n- AppIcon added to top of README\n- Strict single release enforcement per version number on GitHub\n- Saved Ask Gemini AI answers persistent storage\n- Codesign & Gatekeeper quarantine launch error fix\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
 }
 EOF
 
 # Create release_notes.txt
 cat <<'EOF' > "release_notes.txt"
-# 🚀 QuizMaster v1.0.3 (Build 135) Release Notes
+# 🚀 QuizMaster v1.0.3 (Build 136) Release Notes
 
 ### 🌟 New Features & Enhancements:
-- **🧊 Official SwiftUI Liquid Glass Design**: Adopted Apple's official Liquid Glass API design (`glassEffect()`, `GlassConfiguration`, `GlassShape`).
+- **🧊 Refined Apple Liquid Glass Design**: Full adoption of Apple Developer's official *Adopting Liquid Glass* guidelines with concentric rounded cards, translucent control layers, and dynamic material reflections.
 - **🖼️ README App Icon**: Added full-resolution App Icon at the top of README.
 - **🎨 macOS Native System Accent Color**: Seamless integration with user's system accent color settings.
 - **🧹 Single Release Enforcement**: Automatically removes ALL previous builds of the same version number on GitHub, keeping only 1 release per version.
