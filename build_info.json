@@ -1,7 +1,7 @@
 {
   "version": "1.0.3",
-  "buildNumber": 118,
-  "releaseTag": "v1.0.3-b118",
-  "buildDate": "2026-08-12T11:54:03Z",
-  "releaseNotes": "QuizMaster v1.0.3 (Build 118):\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
+  "buildNumber": 125,
+  "releaseTag": "v1.0.3-b125",
+  "buildDate": "2026-08-12T12:31:00Z",
+  "releaseNotes": "QuizMaster v1.0.3 (Build 125):\n- Ocean Blue, Cyan Teal & Emerald Mint color palette styling\n- Saved Ask Gemini AI answers persistent storage\n- Smart GitHub Release cleanup for same-version builds\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
 }

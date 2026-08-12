@@ -1,13 +1,20 @@
 import SwiftUI
 
+public struct LiquidGlassPalette {
+    public static let oceanBlue = Color(red: 0.0, green: 0.48, blue: 1.0)
+    public static let cyanTeal = Color(red: 0.0, green: 0.78, blue: 0.75)
+    public static let emeraldMint = Color(red: 0.06, green: 0.73, blue: 0.51)
+    public static let crimsonRed = Color(red: 0.95, green: 0.26, blue: 0.35)
+}
+
 public struct PrimaryButton: View {
     @Environment(\.appFontScale) var fontScale
     let title: String
     let icon: String?
     let action: () -> Void
-    var color: Color = .blue
+    var color: Color = LiquidGlassPalette.oceanBlue
     
-    public init(title: String, icon: String? = nil, color: Color = .blue, action: @escaping () -> Void) {
+    public init(title: String, icon: String? = nil, color: Color = LiquidGlassPalette.oceanBlue, action: @escaping () -> Void) {
         self.title = title
         self.icon = icon
         self.color = color
@@ -79,7 +86,7 @@ public struct SecondaryButton: View {
 public struct ProgressBar: View {
     let value: Double // 0.0 to 1.0
     var height: CGFloat = 8
-    var color: Color = .blue
+    var color: Color = LiquidGlassPalette.oceanBlue
     
     public var body: some View {
         GeometryReader { geometry in
@@ -129,9 +136,9 @@ public struct GlassCard<Content: View>: View {
 public struct BadgeView: View {
     @Environment(\.appFontScale) var fontScale
     let text: String
-    var color: Color = .blue
+    var color: Color = LiquidGlassPalette.oceanBlue
     
-    public init(text: String, color: Color = .blue) {
+    public init(text: String, color: Color = LiquidGlassPalette.oceanBlue) {
         self.text = text
         self.color = color
     }
@@ -147,4 +154,3 @@ public struct BadgeView: View {
             .shadow(color: color.opacity(0.25), radius: 2, x: 0, y: 1)
     }
 }
-

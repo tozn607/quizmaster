@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Delete old release zip archives
+# Delete old release zip archives from local directory
 echo "🧹 Cleaning up old build archives..."
 rm -f QuizMaster-*.zip
 
@@ -11,7 +11,7 @@ if [ -f "$BUILD_FILE" ]; then
     BUILD_NUMBER=$(cat "$BUILD_FILE")
     BUILD_NUMBER=$((BUILD_NUMBER + 1))
 else
-    BUILD_NUMBER=116
+    BUILD_NUMBER=118
 fi
 echo "$BUILD_NUMBER" > "$BUILD_FILE"
 
@@ -27,7 +27,7 @@ cat <<EOF > "build_info.json"
   "buildNumber": ${BUILD_NUMBER},
   "releaseTag": "${RELEASE_TAG}",
   "buildDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "releaseNotes": "QuizMaster v${VERSION} (Build ${BUILD_NUMBER}):\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
+  "releaseNotes": "QuizMaster v${VERSION} (Build ${BUILD_NUMBER}):\n- Ocean Blue, Cyan Teal & Emerald Mint color palette styling\n- Saved Ask Gemini AI answers persistent storage\n- Smart GitHub Release cleanup for same-version builds\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
 }
 EOF
 
@@ -35,12 +35,15 @@ EOF
 cat <<EOF > "release_notes.txt"
 # 🚀 QuizMaster v${VERSION} (Build ${BUILD_NUMBER}) Release Notes
 
-### 🌟 New Features & Enhancements in v${VERSION}:
-- **🔀 Question & Option Shuffling Toggle**: Added a dedicated shuffle checkbox on the dashboard top bar.
-- **🎛️ Resizable & Spacious Windows**: Flexible frame dimensions for Practice, Exam, and Flashcard study views.
-- **🃏 Restored 3D Flashcard Flip**: True 3D card rotation effect with upright text rendering.
+### 🌟 New Features & Enhancements in Build ${BUILD_NUMBER}:
+- **🎨 Ocean Blue, Cyan Teal & Emerald Mint Theme**: Refined application color palette omitting purple for maximum legibility.
+- **💾 Persistent Ask Gemini Answers**: AI explanations are saved to persistent storage and restored whenever returning to that question.
+- **🧹 Automated GitHub Release Cleanup**: Script automatically removes older builds of the same version on GitHub while preserving prior major version releases.
+- **🔀 Question & Option Shuffling Toggle**: Toggle question and option randomization on or off.
+- **🎛️ Resizable & Spacious Windows**: Flexible frame dimensions for Practice, Exam, and Flashcard views.
+- **🃏 3D Flashcard Flipping**: True 3D card rotation effect with upright text rendering.
 - **📊 Fixed Practice Mode Progress Bar**: Progress bar now advances strictly based on completed questions count.
-- **🚫 Exam Mode Anti-Cheating**: Removed Ask Gemini from Exam Mode to maintain test integrity.
+- **🚫 Exam Mode Anti-Cheating**: Removed Ask Gemini from Exam Mode to maintain test simulation integrity.
 - **📝 Cleaned Ask Gemini Markdown Output**: Formatted markdown headers, blockquotes, and rules cleanly in response text views.
 - **📍 Question Navigator Pane**: Collapsible right-side sidebar for instant question jumping and status visualization.
 - **💾 Practice Checkpoint Resume**: Automatically save and resume at your exact question index.
@@ -111,8 +114,29 @@ zip -r -q "${ZIP_NAME}" "${BUNDLE_DIR}"
 echo "✅ App bundle created successfully: '${BUNDLE_DIR}' v${VERSION} (Build ${BUILD_NUMBER})!"
 echo "📦 Packaged Release Zip: '${ZIP_NAME}'"
 
-# If GitHub CLI (gh) is available, create GitHub release and upload zip asset
+# GitHub Release & Same-Version Cleanup Logic
 if command -v gh &> /dev/null; then
+    echo "🔍 Checking existing GitHub releases for v${VERSION} cleanup..."
+    
+    # List tags starting with current version prefix e.g. v1.0.3-b
+    SAME_VERSION_RELEASES=$(gh release list --limit 50 | grep "^v${VERSION}-b" | awk '{print $1}' || true)
+    
+    SAME_VERSION_COUNT=0
+    if [ -n "$SAME_VERSION_RELEASES" ]; then
+        SAME_VERSION_COUNT=$(echo "$SAME_VERSION_RELEASES" | wc -l | xargs)
+    fi
+    
+    # If 2 or more releases exist for the same version number, delete older builds of the same version
+    if [ "$SAME_VERSION_COUNT" -ge 2 ]; then
+        echo "🧹 Found ${SAME_VERSION_COUNT} existing releases for v${VERSION}. Cleaning up older builds of the same version..."
+        for old_tag in $SAME_VERSION_RELEASES; do
+            if [ "$old_tag" != "${RELEASE_TAG}" ]; then
+                echo "🗑️ Deleting older build release ${old_tag} from GitHub..."
+                gh release delete "${old_tag}" -y --cleanup-tag || true
+            fi
+        done
+    fi
+
     echo "🚀 Publishing GitHub Release ${RELEASE_TAG}..."
     gh release create "${RELEASE_TAG}" "${ZIP_NAME}" --title "QuizMaster v${VERSION} (Build ${BUILD_NUMBER})" --notes-file "release_notes.txt" || true
 fi

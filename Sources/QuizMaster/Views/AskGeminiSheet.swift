@@ -19,7 +19,7 @@ public struct AskGeminiSheet: View {
             HStack {
                 Image(systemName: "sparkles")
                     .font(.system(size: 20 * fontScale))
-                    .foregroundColor(.purple)
+                    .foregroundColor(LiquidGlassPalette.cyanTeal)
                 Text("Hỏi Gemini AI về Câu hỏi này")
                     .font(.system(size: 18 * fontScale, weight: .bold))
                 Spacer()
@@ -63,7 +63,7 @@ public struct AskGeminiSheet: View {
                     // Question Preview Card
                     GlassCard {
                         VStack(alignment: .leading, spacing: 10 * fontScale) {
-                            BadgeView(text: "Câu hỏi đang xem", color: .blue)
+                            BadgeView(text: "Câu hỏi đang xem", color: LiquidGlassPalette.oceanBlue)
                             Text(question.text)
                                 .font(.system(size: 16 * fontScale, weight: .bold))
                             
@@ -71,7 +71,7 @@ public struct AskGeminiSheet: View {
                                 ForEach(question.options) { opt in
                                     Text("\(opt.label). \(opt.text)")
                                         .font(.system(size: 13 * fontScale, weight: opt.label == question.correctAnswerLabel ? .bold : .regular))
-                                        .foregroundColor(opt.label == question.correctAnswerLabel ? .green : .secondary)
+                                        .foregroundColor(opt.label == question.correctAnswerLabel ? LiquidGlassPalette.emeraldMint : .secondary)
                                 }
                             }
                             .padding(.top, 4 * fontScale)
@@ -106,9 +106,9 @@ public struct AskGeminiSheet: View {
                             HStack {
                                 Spacer()
                                 PrimaryButton(
-                                    title: "Gửi câu hỏi tới Gemini 3.5 Flash Lite",
+                                    title: "Gửi câu hỏi tới Gemini AI",
                                     icon: "paperplane.fill",
-                                    color: .purple
+                                    color: LiquidGlassPalette.cyanTeal
                                 ) {
                                     sendQueryToGemini()
                                 }
@@ -121,9 +121,9 @@ public struct AskGeminiSheet: View {
                     if isQuerying {
                         HStack(spacing: 12 * fontScale) {
                             ProgressView()
-                            Text("Gemini 3.5 Flash Lite đang phân tích và soạn câu trả lời chi tiết...")
+                            Text("Gemini AI đang phân tích và soạn câu trả lời chi tiết...")
                                 .font(.system(size: 13 * fontScale))
-                                .foregroundColor(.purple)
+                                .foregroundColor(LiquidGlassPalette.cyanTeal)
                         }
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -134,10 +134,10 @@ public struct AskGeminiSheet: View {
                             Image(systemName: "exclamationmark.triangle.fill")
                             Text("✕ Lỗi: \(err)")
                         }
-                        .foregroundColor(.red)
+                        .foregroundColor(LiquidGlassPalette.crimsonRed)
                         .font(.system(size: 12 * fontScale))
                         .padding()
-                        .background(Color.red.opacity(0.1))
+                        .background(LiquidGlassPalette.crimsonRed.opacity(0.1))
                         .cornerRadius(8)
                     }
                     
@@ -147,10 +147,10 @@ public struct AskGeminiSheet: View {
                             VStack(alignment: .leading, spacing: 12 * fontScale) {
                                 HStack {
                                     Image(systemName: "sparkles")
-                                        .foregroundColor(.purple)
-                                    Text("Giải thích Chi tiết từ Gemini 3.5 Flash Lite:")
+                                        .foregroundColor(LiquidGlassPalette.cyanTeal)
+                                    Text("Giải thích Chi tiết từ Gemini AI:")
                                         .font(.system(size: 16 * fontScale, weight: .bold))
-                                        .foregroundColor(.purple)
+                                        .foregroundColor(LiquidGlassPalette.cyanTeal)
                                 }
                                 
                                 Divider()
@@ -198,12 +198,12 @@ public struct AskGeminiSheet: View {
                 .font(.system(size: 12 * fontScale))
                 .padding(.horizontal, 12 * fontScale)
                 .padding(.vertical, 6 * fontScale)
-                .background(Color.purple.opacity(0.12))
-                .foregroundColor(.purple)
+                .background(LiquidGlassPalette.cyanTeal.opacity(0.12))
+                .foregroundColor(LiquidGlassPalette.cyanTeal)
                 .cornerRadius(12)
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.purple.opacity(0.3), lineWidth: 1)
+                        .stroke(LiquidGlassPalette.cyanTeal.opacity(0.3), lineWidth: 1)
                 )
         }
         .buttonStyle(.plain)
