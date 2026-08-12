@@ -28,36 +28,37 @@ public struct DocumentImportView: View {
     @State private var quizFileError: String? = nil
     
     public var body: some View {
-        VStack(spacing: 0) {
-            // Header Bar
-            HStack {
-                Text(loc.text("importDoc"))
-                    .font(.system(size: 20 * fontScale, weight: .bold))
-                Spacer()
-                Button(action: { dismiss() }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 20 * fontScale))
-                        .foregroundColor(.gray)
+        LiquidGlassWindowBackdrop {
+            VStack(spacing: 0) {
+                // Header Bar
+                HStack {
+                    Text(loc.text("importDoc"))
+                        .font(.system(size: 20 * fontScale, weight: .bold))
+                    Spacer()
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 20 * fontScale))
+                            .foregroundColor(.gray)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
-            }
-            .padding()
-            .background(Color(NSColor.controlBackgroundColor))
-            
-            Divider()
-            
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20 * fontScale) {
-                    
-                    // DEFAULT MAIN SECTION: GEMINI AI DOCUMENT SCANNER
-                    GlassCard {
-                        VStack(alignment: .leading, spacing: 14 * fontScale) {
-                            HStack {
-                                Image(systemName: "sparkles")
-                                    .font(.system(size: 20 * fontScale))
-                                    .foregroundColor(.purple)
-                                Text("Quét & Nhận diện Tài liệu với Gemini 3.5 Flash Lite")
-                                    .font(.system(size: 16 * fontScale, weight: .bold))
+                .padding()
+                .background(.thinMaterial)
+                
+                Divider()
+                
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20 * fontScale) {
+                        
+                        // DEFAULT MAIN SECTION: GEMINI AI DOCUMENT SCANNER
+                        GlassCard {
+                            VStack(alignment: .leading, spacing: 14 * fontScale) {
+                                HStack {
+                                    Image(systemName: "sparkles")
+                                        .font(.system(size: 20 * fontScale))
+                                        .foregroundColor(.accentColor)
+                                    Text("Quét & Nhận diện Tài liệu với Gemini 3.5 Flash Lite")
+                                        .font(.system(size: 16 * fontScale, weight: .bold))
                                     .foregroundColor(.purple)
                             }
                             
@@ -250,7 +251,8 @@ public struct DocumentImportView: View {
                 }
             }
             .padding()
-            .background(Color(NSColor.controlBackgroundColor))
+            .background(.thinMaterial)
+        }
         }
         .frame(width: 680 * fontScale, height: 720 * fontScale)
         .confirmationDialog(

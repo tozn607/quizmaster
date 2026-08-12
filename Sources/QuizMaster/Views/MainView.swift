@@ -33,48 +33,50 @@ public struct MainView: View {
     }
     
     public var body: some View {
-        NavigationSplitView {
-            SidebarView(selectedProject: $selectedProject, showSettingsSheet: $showSettingsSheet)
-                .navigationSplitViewColumnWidth(min: 240, ideal: 280, max: 340)
-        } detail: {
-            VStack(spacing: 0) {
-                // GitHub Update Banner
-                if updateChecker.hasUpdateAvailable {
-                    HStack(spacing: 12) {
-                        Image(systemName: "arrow.triangle.2.circlepath.circle.fill")
-                            .font(.title3)
-                            .foregroundColor(.accentColor)
-                        
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Phiên bản mới \(updateChecker.latestVersionTag) đã có sẵn trên GitHub!")
-                                .font(.subheadline)
-                                .fontWeight(.bold)
+        LiquidGlassWindowBackdrop {
+            NavigationSplitView {
+                SidebarView(selectedProject: $selectedProject, showSettingsSheet: $showSettingsSheet)
+                    .navigationSplitViewColumnWidth(min: 240, ideal: 280, max: 340)
+            } detail: {
+                VStack(spacing: 0) {
+                    // GitHub Update Banner
+                    if updateChecker.hasUpdateAvailable {
+                        HStack(spacing: 12) {
+                            Image(systemName: "arrow.triangle.2.circlepath.circle.fill")
+                                .font(.title3)
                                 .foregroundColor(.accentColor)
-                            Text("Hãy cập nhật ứng dụng để trải nghiệm các tính năng và sửa lỗi mới nhất.")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Phiên bản mới \(updateChecker.latestVersionTag) đã có sẵn trên GitHub!")
+                                    .font(.subheadline)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.accentColor)
+                                Text("Hãy cập nhật ứng dụng để trải nghiệm các tính năng và sửa lỗi mới nhất.")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            PrimaryButton(title: "Cập nhật ngay ↗", icon: "square.and.arrow.up", color: .accentColor) {
+                                updateChecker.openReleasePage()
+                            }
                         }
-                        
-                        Spacer()
-                        
-                        PrimaryButton(title: "Cập nhật ngay ↗", icon: "square.and.arrow.up", color: .accentColor) {
-                            updateChecker.openReleasePage()
-                        }
+                        .padding()
+                        .background(Color.accentColor.opacity(0.12))
+                        .overlay(
+                            Rectangle()
+                                .frame(height: 1)
+                                .foregroundColor(Color.accentColor.opacity(0.3)),
+                            alignment: .bottom
+                        )
                     }
-                    .padding()
-                    .background(Color.accentColor.opacity(0.12))
-                    .overlay(
-                        Rectangle()
-                            .frame(height: 1)
-                            .foregroundColor(Color.accentColor.opacity(0.3)),
-                        alignment: .bottom
-                    )
-                }
-                
-                if let project = currentSelectedProject {
-                    projectDetailView(project: project)
-                } else {
-                    emptyDetailView
+                    
+                    if let project = currentSelectedProject {
+                        projectDetailView(project: project)
+                    } else {
+                        emptyDetailView
+                    }
                 }
             }
         }
@@ -170,7 +172,7 @@ public struct MainView: View {
                     }
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
-                    .background(storage.settings.isShuffleEnabled ? Color.accentColor.opacity(0.12) : Color(NSColor.controlBackgroundColor))
+                    .background(storage.settings.isShuffleEnabled ? Color.accentColor.opacity(0.12) : Color.clear)
                     .cornerRadius(8)
                 }
                 .buttonStyle(.plain)
@@ -192,7 +194,7 @@ public struct MainView: View {
                     .foregroundColor(isMultiSelectMode ? .accentColor : .primary)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
-                    .background(isMultiSelectMode ? Color.accentColor.opacity(0.15) : Color(NSColor.controlBackgroundColor))
+                    .background(isMultiSelectMode ? Color.accentColor.opacity(0.15) : Color.clear)
                     .cornerRadius(8)
                 }
                 .buttonStyle(.plain)
@@ -202,7 +204,7 @@ public struct MainView: View {
                 }
             }
             .padding()
-            .background(Color(NSColor.controlBackgroundColor))
+            .background(.thinMaterial)
             
             // Multi-select Action Toolbar (Delete Selected / Move Selected)
             if isMultiSelectMode && !selectedQuizIds.isEmpty {

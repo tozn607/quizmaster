@@ -29,190 +29,192 @@ public struct PracticeView: View {
     @Environment(\.dismiss) var dismiss
     
     public var body: some View {
-        VStack(spacing: 0) {
-            // Header Bar
-            HStack {
-                Button(action: { dismiss() }) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                        Text(loc.text("quitQuiz"))
-                    }
-                    .font(.system(size: 13 * fontScale))
-                    .foregroundColor(.secondary)
-                }
-                .buttonStyle(.plain)
-                
-                Spacer()
-                
-                VStack(spacing: 2) {
-                    Text(quiz.title)
-                        .font(.system(size: 16 * fontScale, weight: .bold))
-                        .lineLimit(1)
-                    
-                    if !activeQuestions.isEmpty {
-                        Text(String(format: loc.text("progressFormat"), "\(currentIndex + 1)", "\(activeQuestions.count)"))
-                            .font(.system(size: 12 * fontScale, weight: .bold))
-                            .foregroundColor(.accentColor)
-                    }
-                }
-                
-                Spacer()
-                
-                // Toggle Question Navigator Sidebar
-                Button(action: { withAnimation { showNavPane.toggle() } }) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "sidebar.right")
-                        Text(loc.text("questionNavPane"))
-                    }
-                    .font(.system(size: 12 * fontScale, weight: .medium))
-                    .foregroundColor(showNavPane ? .accentColor : .secondary)
-                    .padding(.horizontal, 8 * fontScale)
-                    .padding(.vertical, 4 * fontScale)
-                    .background(showNavPane ? Color.accentColor.opacity(0.12) : Color.clear)
-                    .cornerRadius(6)
-                }
-                .buttonStyle(.plain)
-            }
-            .padding()
-            .background(Color(NSColor.controlBackgroundColor))
-            
-            // Progress Bar (Progresses based on completed questions count)
-            if !activeQuestions.isEmpty {
-                ProgressBar(
-                    value: Double(userAnswers.count) / Double(activeQuestions.count),
-                    height: 6,
-                    color: .accentColor
-                )
-            }
-            
-            Divider()
-            
-            // Main Question & Right Navigation Split View
-            HStack(spacing: 0) {
-                // Left Question & Options Area
-                if !activeQuestions.isEmpty && currentIndex < activeQuestions.count {
-                    let currentQuestion = activeQuestions[currentIndex]
-                    
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 20 * fontScale) {
-                            // Question Card
-                            GlassCard {
-                                VStack(alignment: .leading, spacing: 10 * fontScale) {
-                                    HStack {
-                                        BadgeView(text: "\(loc.text("questionHeader")) \(currentIndex + 1)", color: .accentColor)
-                                        Spacer()
-                                        
-                                        Button(action: { askingGeminiQuestion = currentQuestion }) {
-                                            HStack(spacing: 6) {
-                                                Image(systemName: "sparkles")
-                                                Text("Hỏi Gemini AI về câu này")
-                                            }
-                                            .font(.system(size: 12 * fontScale, weight: .semibold))
-                                            .foregroundColor(.accentColor)
-                                            .padding(.horizontal, 10 * fontScale)
-                                            .padding(.vertical, 5 * fontScale)
-                                            .background(Color.accentColor.opacity(0.12))
-                                            .cornerRadius(8)
-                                        }
-                                        .buttonStyle(.plain)
-                                    }
-                                    
-                                    Text(currentQuestion.text)
-                                        .font(.system(size: 19 * fontScale, weight: .bold))
-                                        .lineSpacing(4)
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                            
-                            // Option Buttons
-                            VStack(spacing: 12 * fontScale) {
-                                ForEach(Array(currentQuestion.options.enumerated()), id: \.offset) { idx, option in
-                                    optionButton(for: option, index: idx, question: currentQuestion)
-                                }
-                            }
-                            
-                            // Explanation Banner (when answered)
-                            if isAnswered {
-                                VStack(alignment: .leading, spacing: 8 * fontScale) {
-                                    HStack {
-                                        Image(systemName: selectedOptionIndex == currentQuestion.correctAnswerIndex ? "checkmark.circle.fill" : "xmark.circle.fill")
-                                            .font(.system(size: 18 * fontScale))
-                                        Text(selectedOptionIndex == currentQuestion.correctAnswerIndex ? loc.text("correctAnswer") : loc.text("wrongAnswer"))
-                                            .font(.system(size: 16 * fontScale, weight: .bold))
-                                    }
-                                    .foregroundColor(selectedOptionIndex == currentQuestion.correctAnswerIndex ? .green : .red)
-                                    
-                                    if !currentQuestion.explanation.isEmpty {
-                                        Text(currentQuestion.explanation)
-                                            .font(.system(size: 14 * fontScale))
-                                            .foregroundColor(.secondary)
-                                            .padding(.top, 2)
-                                    }
-                                }
-                                .padding(14 * fontScale)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(
-                                    (selectedOptionIndex == currentQuestion.correctAnswerIndex ? Color.green : Color.red).opacity(0.12)
-                                )
-                                .cornerRadius(12)
-                                .transition(.opacity.combined(with: .move(edge: .bottom)))
-                            }
+        LiquidGlassWindowBackdrop {
+            VStack(spacing: 0) {
+                // Header Bar
+                HStack {
+                    Button(action: { dismiss() }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left")
+                            Text(loc.text("quitQuiz"))
                         }
-                        .padding()
+                        .font(.system(size: 13 * fontScale))
+                        .foregroundColor(.secondary)
                     }
-                } else {
+                    .buttonStyle(.plain)
+                    
                     Spacer()
-                    ProgressView()
+                    
+                    VStack(spacing: 2) {
+                        Text(quiz.title)
+                            .font(.system(size: 16 * fontScale, weight: .bold))
+                            .lineLimit(1)
+                        
+                        if !activeQuestions.isEmpty {
+                            Text(String(format: loc.text("progressFormat"), "\(currentIndex + 1)", "\(activeQuestions.count)"))
+                                .font(.system(size: 12 * fontScale, weight: .bold))
+                                .foregroundColor(.accentColor)
+                        }
+                    }
+                    
                     Spacer()
+                    
+                    // Toggle Question Navigator Sidebar
+                    Button(action: { withAnimation { showNavPane.toggle() } }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "sidebar.right")
+                            Text(loc.text("questionNavPane"))
+                        }
+                        .font(.system(size: 12 * fontScale, weight: .medium))
+                        .foregroundColor(showNavPane ? .accentColor : .secondary)
+                        .padding(.horizontal, 8 * fontScale)
+                        .padding(.vertical, 4 * fontScale)
+                        .background(showNavPane ? Color.accentColor.opacity(0.12) : Color.clear)
+                        .cornerRadius(6)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding()
+                .background(.thinMaterial)
+                
+                // Progress Bar (Progresses based on completed questions count)
+                if !activeQuestions.isEmpty {
+                    ProgressBar(
+                        value: Double(userAnswers.count) / Double(activeQuestions.count),
+                        height: 6,
+                        color: .accentColor
+                    )
                 }
                 
-                // Right Navigation Pane Sidebar
-                if showNavPane && !activeQuestions.isEmpty {
-                    Divider()
-                    
-                    VStack(alignment: .leading, spacing: 12 * fontScale) {
-                        Text(loc.text("questionNavPane"))
-                            .font(.system(size: 13 * fontScale, weight: .bold))
-                            .foregroundColor(.secondary)
-                            .padding(.top, 12 * fontScale)
-                            .padding(.horizontal, 12 * fontScale)
+                Divider()
+                
+                // Main Question & Right Navigation Split View
+                HStack(spacing: 0) {
+                    // Left Question & Options Area
+                    if !activeQuestions.isEmpty && currentIndex < activeQuestions.count {
+                        let currentQuestion = activeQuestions[currentIndex]
                         
                         ScrollView {
-                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 40 * fontScale), spacing: 8 * fontScale)], spacing: 8 * fontScale) {
-                                ForEach(0..<activeQuestions.count, id: \.self) { idx in
-                                    navButton(index: idx, question: activeQuestions[idx])
+                            VStack(alignment: .leading, spacing: 20 * fontScale) {
+                                // Question Card
+                                GlassCard {
+                                    VStack(alignment: .leading, spacing: 10 * fontScale) {
+                                        HStack {
+                                            BadgeView(text: "\(loc.text("questionHeader")) \(currentIndex + 1)", color: .accentColor)
+                                            Spacer()
+                                            
+                                            Button(action: { askingGeminiQuestion = currentQuestion }) {
+                                                HStack(spacing: 6) {
+                                                    Image(systemName: "sparkles")
+                                                    Text("Hỏi Gemini AI về câu này")
+                                                }
+                                                .font(.system(size: 12 * fontScale, weight: .semibold))
+                                                .foregroundColor(.accentColor)
+                                                .padding(.horizontal, 10 * fontScale)
+                                                .padding(.vertical, 5 * fontScale)
+                                                .background(Color.accentColor.opacity(0.12))
+                                                .cornerRadius(8)
+                                            }
+                                            .buttonStyle(.plain)
+                                        }
+                                        
+                                        Text(currentQuestion.text)
+                                            .font(.system(size: 19 * fontScale, weight: .bold))
+                                            .lineSpacing(4)
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                
+                                // Option Buttons
+                                VStack(spacing: 12 * fontScale) {
+                                    ForEach(Array(currentQuestion.options.enumerated()), id: \.offset) { idx, option in
+                                        optionButton(for: option, index: idx, question: currentQuestion)
+                                    }
+                                }
+                                
+                                // Explanation Banner (when answered)
+                                if isAnswered {
+                                    VStack(alignment: .leading, spacing: 8 * fontScale) {
+                                        HStack {
+                                            Image(systemName: selectedOptionIndex == currentQuestion.correctAnswerIndex ? "checkmark.circle.fill" : "xmark.circle.fill")
+                                                .font(.system(size: 18 * fontScale))
+                                            Text(selectedOptionIndex == currentQuestion.correctAnswerIndex ? loc.text("correctAnswer") : loc.text("wrongAnswer"))
+                                                .font(.system(size: 16 * fontScale, weight: .bold))
+                                        }
+                                        .foregroundColor(selectedOptionIndex == currentQuestion.correctAnswerIndex ? .green : .red)
+                                        
+                                        if !currentQuestion.explanation.isEmpty {
+                                            Text(currentQuestion.explanation)
+                                                .font(.system(size: 14 * fontScale))
+                                                .foregroundColor(.secondary)
+                                                .padding(.top, 2)
+                                        }
+                                    }
+                                    .padding(14 * fontScale)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .background(
+                                        (selectedOptionIndex == currentQuestion.correctAnswerIndex ? Color.green : Color.red).opacity(0.12)
+                                    )
+                                    .cornerRadius(12)
+                                    .transition(.opacity.combined(with: .move(edge: .bottom)))
                                 }
                             }
-                            .padding(.horizontal, 12 * fontScale)
+                            .padding()
+                        }
+                    } else {
+                        Spacer()
+                        ProgressView()
+                        Spacer()
+                    }
+                    
+                    // Right Navigation Pane Sidebar
+                    if showNavPane && !activeQuestions.isEmpty {
+                        Divider()
+                        
+                        VStack(alignment: .leading, spacing: 12 * fontScale) {
+                            Text(loc.text("questionNavPane"))
+                                .font(.system(size: 13 * fontScale, weight: .bold))
+                                .foregroundColor(.secondary)
+                                .padding(.top, 12 * fontScale)
+                                .padding(.horizontal, 12 * fontScale)
+                            
+                            ScrollView {
+                                LazyVGrid(columns: [GridItem(.adaptive(minimum: 40 * fontScale), spacing: 8 * fontScale)], spacing: 8 * fontScale) {
+                                    ForEach(0..<activeQuestions.count, id: \.self) { idx in
+                                        navButton(index: idx, question: activeQuestions[idx])
+                                    }
+                                }
+                                .padding(.horizontal, 12 * fontScale)
+                            }
+                        }
+                        .frame(width: 180 * fontScale)
+                        .background(.ultraThinMaterial)
+                    }
+                }
+                
+                Divider()
+                
+                // Footer Navigation
+                HStack {
+                    Text("Phím tắt: A/B/C/D chọn đáp án • Enter tiếp tục • Delete thoát")
+                        .font(.system(size: 11 * fontScale))
+                        .foregroundColor(.secondary)
+                    
+                    Spacer()
+                    
+                    if isAnswered {
+                        PrimaryButton(
+                            title: currentIndex + 1 < activeQuestions.count ? loc.text("nextQuestion") : loc.text("finishPractice"),
+                            icon: currentIndex + 1 < activeQuestions.count ? "arrow.right" : "checkmark.seal.fill",
+                            color: currentIndex + 1 < activeQuestions.count ? .accentColor : .green
+                        ) {
+                            advanceToNextQuestion()
                         }
                     }
-                    .frame(width: 180 * fontScale)
-                    .background(Color(NSColor.controlBackgroundColor).opacity(0.5))
                 }
+                .padding()
+                .background(.thinMaterial)
             }
-            
-            Divider()
-            
-            // Footer Navigation
-            HStack {
-                Text("Phím tắt: A/B/C/D chọn đáp án • Enter tiếp tục • Delete thoát")
-                    .font(.system(size: 11 * fontScale))
-                    .foregroundColor(.secondary)
-                
-                Spacer()
-                
-                if isAnswered {
-                    PrimaryButton(
-                        title: currentIndex + 1 < activeQuestions.count ? loc.text("nextQuestion") : loc.text("finishPractice"),
-                        icon: currentIndex + 1 < activeQuestions.count ? "arrow.right" : "checkmark.seal.fill",
-                        color: currentIndex + 1 < activeQuestions.count ? .accentColor : .green
-                    ) {
-                        advanceToNextQuestion()
-                    }
-                }
-            }
-            .padding()
-            .background(Color(NSColor.controlBackgroundColor))
         }
         .sheet(isPresented: $showFinishDialog) {
             quizFinishDialog

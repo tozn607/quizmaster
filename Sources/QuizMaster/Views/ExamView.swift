@@ -20,153 +20,155 @@ public struct ExamView: View {
     @State private var eventMonitor: Any? = nil
     
     public var body: some View {
-        VStack(spacing: 0) {
-            // Header Bar
-            HStack {
-                Button(action: { dismiss() }) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                        Text(loc.text("quitQuiz"))
-                    }
-                    .font(.system(size: 13 * fontScale))
-                    .foregroundColor(.secondary)
-                }
-                .buttonStyle(.plain)
-                
-                Spacer()
-                
-                VStack(spacing: 2) {
-                    Text("\(quiz.title) • Thi thử")
-                        .font(.system(size: 16 * fontScale, weight: .bold))
-
-                    
-                    if !activeQuestions.isEmpty {
-                        Text(String(format: loc.text("progressFormat"), "\(currentIndex + 1)", "\(activeQuestions.count)"))
-                            .font(.system(size: 12 * fontScale, weight: .bold))
-                            .foregroundColor(.accentColor)
-                    }
-                }
-                
-                Spacer()
-                
-                // Toggle Question Navigator Sidebar
-                Button(action: { withAnimation { showNavPane.toggle() } }) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "sidebar.right")
-                        Text(loc.text("questionNavPane"))
-                    }
-                    .font(.system(size: 12 * fontScale, weight: .medium))
-                    .foregroundColor(showNavPane ? .accentColor : .secondary)
-                    .padding(.horizontal, 8 * fontScale)
-                    .padding(.vertical, 4 * fontScale)
-                    .background(showNavPane ? Color.accentColor.opacity(0.12) : Color.clear)
-                    .cornerRadius(6)
-                }
-                .buttonStyle(.plain)
-            }
-            .padding()
-            .background(Color(NSColor.controlBackgroundColor))
-            
-            // Progress Bar
-            if !activeQuestions.isEmpty {
-                ProgressBar(
-                    value: Double(userAnswers.count) / Double(activeQuestions.count),
-                    height: 6,
-                    color: .accentColor
-                )
-            }
-            
-            Divider()
-            
-            // Main Question & Right Navigation Split View
-            HStack(spacing: 0) {
-                // Left Question Area
-                if !activeQuestions.isEmpty && currentIndex < activeQuestions.count {
-                    let currentQuestion = activeQuestions[currentIndex]
-                    
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 20 * fontScale) {
-                            GlassCard {
-                                VStack(alignment: .leading, spacing: 10 * fontScale) {
-                                    HStack {
-                                        BadgeView(text: "\(loc.text("questionHeader")) \(currentIndex + 1)", color: .accentColor)
-                                        Spacer()
-                                    }
-                                    
-                                    Text(currentQuestion.text)
-                                        .font(.system(size: 19 * fontScale, weight: .bold))
-                                        .lineSpacing(4)
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                            
-                            VStack(spacing: 12 * fontScale) {
-                                ForEach(Array(currentQuestion.options.enumerated()), id: \.offset) { idx, option in
-                                    optionButton(for: option, index: idx, question: currentQuestion)
-                                }
-                            }
+        LiquidGlassWindowBackdrop {
+            VStack(spacing: 0) {
+                // Header Bar
+                HStack {
+                    Button(action: { dismiss() }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left")
+                            Text(loc.text("quitQuiz"))
                         }
-                        .padding()
+                        .font(.system(size: 13 * fontScale))
+                        .foregroundColor(.secondary)
                     }
-                } else {
+                    .buttonStyle(.plain)
+                    
                     Spacer()
-                    ProgressView()
+                    
+                    VStack(spacing: 2) {
+                        Text("\(quiz.title) • Thi thử")
+                            .font(.system(size: 16 * fontScale, weight: .bold))
+
+                        
+                        if !activeQuestions.isEmpty {
+                            Text(String(format: loc.text("progressFormat"), "\(currentIndex + 1)", "\(activeQuestions.count)"))
+                                .font(.system(size: 12 * fontScale, weight: .bold))
+                                .foregroundColor(.accentColor)
+                        }
+                    }
+                    
                     Spacer()
+                    
+                    // Toggle Question Navigator Sidebar
+                    Button(action: { withAnimation { showNavPane.toggle() } }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "sidebar.right")
+                            Text(loc.text("questionNavPane"))
+                        }
+                        .font(.system(size: 12 * fontScale, weight: .medium))
+                        .foregroundColor(showNavPane ? .accentColor : .secondary)
+                        .padding(.horizontal, 8 * fontScale)
+                        .padding(.vertical, 4 * fontScale)
+                        .background(showNavPane ? Color.accentColor.opacity(0.12) : Color.clear)
+                        .cornerRadius(6)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding()
+                .background(.thinMaterial)
+                
+                // Progress Bar
+                if !activeQuestions.isEmpty {
+                    ProgressBar(
+                        value: Double(userAnswers.count) / Double(activeQuestions.count),
+                        height: 6,
+                        color: .accentColor
+                    )
                 }
                 
-                // Right Navigation Pane Sidebar
-                if showNavPane && !activeQuestions.isEmpty {
-                    Divider()
-                    
-                    VStack(alignment: .leading, spacing: 12 * fontScale) {
-                        Text(loc.text("questionNavPane"))
-                            .font(.system(size: 13 * fontScale, weight: .bold))
-                            .foregroundColor(.secondary)
-                            .padding(.top, 12 * fontScale)
-                            .padding(.horizontal, 12 * fontScale)
+                Divider()
+                
+                // Main Question & Right Navigation Split View
+                HStack(spacing: 0) {
+                    // Left Question Area
+                    if !activeQuestions.isEmpty && currentIndex < activeQuestions.count {
+                        let currentQuestion = activeQuestions[currentIndex]
                         
                         ScrollView {
-                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 40 * fontScale), spacing: 8 * fontScale)], spacing: 8 * fontScale) {
-                                ForEach(0..<activeQuestions.count, id: \.self) { idx in
-                                    navButton(index: idx, question: activeQuestions[idx])
+                            VStack(alignment: .leading, spacing: 20 * fontScale) {
+                                GlassCard {
+                                    VStack(alignment: .leading, spacing: 10 * fontScale) {
+                                        HStack {
+                                            BadgeView(text: "\(loc.text("questionHeader")) \(currentIndex + 1)", color: .accentColor)
+                                            Spacer()
+                                        }
+                                        
+                                        Text(currentQuestion.text)
+                                            .font(.system(size: 19 * fontScale, weight: .bold))
+                                            .lineSpacing(4)
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                
+                                VStack(spacing: 12 * fontScale) {
+                                    ForEach(Array(currentQuestion.options.enumerated()), id: \.offset) { idx, option in
+                                        optionButton(for: option, index: idx, question: currentQuestion)
+                                    }
                                 }
                             }
-                            .padding(.horizontal, 12 * fontScale)
+                            .padding()
                         }
+                    } else {
+                        Spacer()
+                        ProgressView()
+                        Spacer()
                     }
-                    .frame(width: 180 * fontScale)
-                    .background(Color(NSColor.controlBackgroundColor).opacity(0.5))
-                }
-            }
-            
-            Divider()
-            
-            // Footer Navigation
-            HStack {
-                HStack(spacing: 12 * fontScale) {
-                    SecondaryButton(title: "Câu trước (←)", icon: "arrow.left") {
-                        if currentIndex > 0 { currentIndex -= 1 }
-                    }
-                    .disabled(currentIndex == 0)
                     
-                    SecondaryButton(title: "Câu sau (→)", icon: "arrow.right") {
-                        if currentIndex + 1 < activeQuestions.count { currentIndex += 1 }
+                    // Right Navigation Pane Sidebar
+                    if showNavPane && !activeQuestions.isEmpty {
+                        Divider()
+                        
+                        VStack(alignment: .leading, spacing: 12 * fontScale) {
+                            Text(loc.text("questionNavPane"))
+                                .font(.system(size: 13 * fontScale, weight: .bold))
+                                .foregroundColor(.secondary)
+                                .padding(.top, 12 * fontScale)
+                                .padding(.horizontal, 12 * fontScale)
+                            
+                            ScrollView {
+                                LazyVGrid(columns: [GridItem(.adaptive(minimum: 40 * fontScale), spacing: 8 * fontScale)], spacing: 8 * fontScale) {
+                                    ForEach(0..<activeQuestions.count, id: \.self) { idx in
+                                        navButton(index: idx, question: activeQuestions[idx])
+                                    }
+                                }
+                                .padding(.horizontal, 12 * fontScale)
+                            }
+                        }
+                        .frame(width: 180 * fontScale)
+                        .background(.ultraThinMaterial)
                     }
-                    .disabled(currentIndex + 1 >= activeQuestions.count)
                 }
                 
-                Spacer()
+                Divider()
                 
-                PrimaryButton(
-                    title: "Nộp bài thi (\(userAnswers.count)/\(activeQuestions.count) câu)",
-                    icon: "checkmark.seal.fill",
-                    color: .accentColor
-                ) {
-                    submitExam()
+                // Footer Navigation
+                HStack {
+                    HStack(spacing: 12 * fontScale) {
+                        SecondaryButton(title: "Câu trước (←)", icon: "arrow.left") {
+                            if currentIndex > 0 { currentIndex -= 1 }
+                        }
+                        .disabled(currentIndex == 0)
+                        
+                        SecondaryButton(title: "Câu sau (→)", icon: "arrow.right") {
+                            if currentIndex + 1 < activeQuestions.count { currentIndex += 1 }
+                        }
+                        .disabled(currentIndex + 1 >= activeQuestions.count)
+                    }
+                    
+                    Spacer()
+                    
+                    PrimaryButton(
+                        title: "Nộp bài thi (\(userAnswers.count)/\(activeQuestions.count) câu)",
+                        icon: "checkmark.seal.fill",
+                        color: .accentColor
+                    ) {
+                        submitExam()
+                    }
                 }
+                .padding()
+                .background(.thinMaterial)
             }
-            .padding()
-            .background(Color(NSColor.controlBackgroundColor))
         }
         .sheet(isPresented: $showEndingView) {
             if let prog = project.progressMap[quiz.id] {

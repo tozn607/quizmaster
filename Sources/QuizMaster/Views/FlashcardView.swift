@@ -25,192 +25,194 @@ public struct FlashcardView: View {
     @State private var eventMonitor: Any? = nil
     
     public var body: some View {
-        VStack(spacing: 0) {
-            // Header Bar
-            HStack {
-                Button(action: { dismiss() }) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                        Text(loc.text("quitQuiz"))
+        LiquidGlassWindowBackdrop {
+            VStack(spacing: 0) {
+                // Header Bar
+                HStack {
+                    Button(action: { dismiss() }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left")
+                            Text(loc.text("quitQuiz"))
+                        }
+                        .font(.system(size: 13 * fontScale))
+                        .foregroundColor(.secondary)
                     }
-                    .font(.system(size: 13 * fontScale))
-                    .foregroundColor(.secondary)
-                }
-                .buttonStyle(.plain)
-                
-                Spacer()
-                
-                VStack(spacing: 2) {
-                    Text("\(quiz.title) • Thẻ ghi nhớ")
-                        .font(.system(size: 16 * fontScale, weight: .bold))
+                    .buttonStyle(.plain)
                     
-                    Text("Vòng học thứ \(studyRound) • Còn lại \(cardQueue.count + (currentCard != nil ? 1 : 0)) thẻ")
-                        .font(.system(size: 12 * fontScale, weight: .bold))
-                        .foregroundColor(.accentColor)
-                }
-                
-                Spacer()
-                
-                // Toggle Question Navigator Sidebar
-                Button(action: { withAnimation { showNavPane.toggle() } }) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "sidebar.right")
-                        Text(loc.text("questionNavPane"))
-                    }
-                    .font(.system(size: 12 * fontScale, weight: .medium))
-                    .foregroundColor(showNavPane ? .accentColor : .secondary)
-                    .padding(.horizontal, 10 * fontScale)
-                    .padding(.vertical, 5 * fontScale)
-                    .background(showNavPane ? Color.accentColor.opacity(0.1) : Color(NSColor.controlBackgroundColor))
-                    .cornerRadius(8)
-                }
-                .buttonStyle(.plain)
-            }
-            .padding()
-            .background(Color(NSColor.controlBackgroundColor))
-            
-            Divider()
-            
-            // Main Flashcard & Right Navigation Split View
-            HStack(spacing: 0) {
-                // Flashcard Interactive Center Area
-                VStack(spacing: 24 * fontScale) {
-                    if isCompleted {
-                        completionView
-                    } else if let card = currentCard {
-                        Spacer()
+                    Spacer()
+                    
+                    VStack(spacing: 2) {
+                        Text("\(quiz.title) • Thẻ ghi nhớ")
+                            .font(.system(size: 16 * fontScale, weight: .bold))
                         
-                        // 3D Flip Card Container
-                        ZStack {
-                            if !isFlipped {
-                                // Front: Question Side
-                                GlassCard {
-                                    VStack(spacing: 16 * fontScale) {
-                                        BadgeView(text: loc.text("questionSide"), color: .accentColor)
-                                        
-                                        Spacer()
-                                        
-                                        Text(card.text)
-                                            .font(.system(size: 22 * fontScale, weight: .bold))
-                                            .multilineTextAlignment(.center)
-                                            .lineSpacing(6)
-                                            .padding()
-                                        
-                                        Spacer()
-                                        
-                                        Text("💡 Nhấn phím Cách (Spacebar) hoặc chạm để lật đáp án")
-                                            .font(.system(size: 12 * fontScale))
-                                            .foregroundColor(.secondary)
-                                    }
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                }
-                            } else {
-                                // Back: Answer Side (Rotated 180 so text is upright during 3D flip)
-                                GlassCard {
-                                    VStack(spacing: 16 * fontScale) {
-                                        BadgeView(text: loc.text("answerSide"), color: .green)
-                                        
-                                        Spacer()
-                                        
-                                        let correctOpt = card.options.first(where: { $0.label == card.correctAnswerLabel }) ?? card.options.first
-                                        
-                                        VStack(spacing: 10 * fontScale) {
-                                            Text("Đáp án đúng: \(card.correctAnswerLabel)")
-                                                .font(.system(size: 16 * fontScale, weight: .bold))
-                                                .foregroundColor(.green)
+                        Text("Vòng học thứ \(studyRound) • Còn lại \(cardQueue.count + (currentCard != nil ? 1 : 0)) thẻ")
+                            .font(.system(size: 12 * fontScale, weight: .bold))
+                            .foregroundColor(.accentColor)
+                    }
+                    
+                    Spacer()
+                    
+                    // Toggle Question Navigator Sidebar
+                    Button(action: { withAnimation { showNavPane.toggle() } }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "sidebar.right")
+                            Text(loc.text("questionNavPane"))
+                        }
+                        .font(.system(size: 12 * fontScale, weight: .medium))
+                        .foregroundColor(showNavPane ? .accentColor : .secondary)
+                        .padding(.horizontal, 10 * fontScale)
+                        .padding(.vertical, 5 * fontScale)
+                        .background(showNavPane ? Color.accentColor.opacity(0.12) : Color.clear)
+                        .cornerRadius(8)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding()
+                .background(.thinMaterial)
+                
+                Divider()
+                
+                // Main Flashcard & Right Navigation Split View
+                HStack(spacing: 0) {
+                    // Flashcard Interactive Center Area
+                    VStack(spacing: 24 * fontScale) {
+                        if isCompleted {
+                            completionView
+                        } else if let card = currentCard {
+                            Spacer()
+                            
+                            // 3D Flip Card Container
+                            ZStack {
+                                if !isFlipped {
+                                    // Front: Question Side
+                                    GlassCard {
+                                        VStack(spacing: 16 * fontScale) {
+                                            BadgeView(text: loc.text("questionSide"), color: .accentColor)
                                             
-                                            Text(correctOpt?.text ?? "")
-                                                .font(.system(size: 20 * fontScale, weight: .bold))
+                                            Spacer()
+                                            
+                                            Text(card.text)
+                                                .font(.system(size: 22 * fontScale, weight: .bold))
                                                 .multilineTextAlignment(.center)
-                                                .foregroundColor(.primary)
-                                        }
-                                        
-                                        if !card.explanation.isEmpty {
-                                            Text(card.explanation)
-                                                .font(.system(size: 14 * fontScale))
+                                                .lineSpacing(6)
+                                                .padding()
+                                            
+                                            Spacer()
+                                            
+                                            Text("💡 Nhấn phím Cách (Spacebar) hoặc chạm để lật đáp án")
+                                                .font(.system(size: 12 * fontScale))
                                                 .foregroundColor(.secondary)
-                                                .multilineTextAlignment(.center)
-                                                .padding(.horizontal)
                                         }
-                                        
-                                        Spacer()
-                                        
-                                        Text("💡 Chọn Đã thuộc hoặc Chưa thuộc")
-                                            .font(.system(size: 12 * fontScale))
-                                            .foregroundColor(.secondary)
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                                     }
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                } else {
+                                    // Back: Answer Side
+                                    GlassCard {
+                                        VStack(spacing: 16 * fontScale) {
+                                            BadgeView(text: loc.text("answerSide"), color: .green)
+                                            
+                                            Spacer()
+                                            
+                                            let correctOpt = card.options.first(where: { $0.label == card.correctAnswerLabel }) ?? card.options.first
+                                            
+                                            VStack(spacing: 10 * fontScale) {
+                                                Text("Đáp án đúng: \(card.correctAnswerLabel)")
+                                                    .font(.system(size: 16 * fontScale, weight: .bold))
+                                                    .foregroundColor(.green)
+                                                
+                                                Text(correctOpt?.text ?? "")
+                                                    .font(.system(size: 20 * fontScale, weight: .bold))
+                                                    .multilineTextAlignment(.center)
+                                                    .foregroundColor(.primary)
+                                            }
+                                            
+                                            if !card.explanation.isEmpty {
+                                                Text(card.explanation)
+                                                    .font(.system(size: 14 * fontScale))
+                                                    .foregroundColor(.secondary)
+                                                    .multilineTextAlignment(.center)
+                                                    .padding(.horizontal)
+                                            }
+                                            
+                                            Spacer()
+                                            
+                                            Text("💡 Chọn Đã thuộc hoặc Chưa thuộc")
+                                                .font(.system(size: 12 * fontScale))
+                                                .foregroundColor(.secondary)
+                                        }
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    }
+                                    .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
                                 }
-                                .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
                             }
-                        }
-                        .frame(width: 560 * fontScale, height: 360 * fontScale)
-                        .rotation3DEffect(.degrees(isFlipped ? 180 : 0), axis: (x: 0, y: 1, z: 0))
-                        .animation(.spring(response: 0.5, dampingFraction: 0.7), value: isFlipped)
-                        .onTapGesture {
-                            withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
-                                isFlipped.toggle()
-                            }
-                        }
-                        
-                        Spacer()
-                        
-                        // Card Action Buttons (Previous Card, Flashcard V, Flashcard X)
-                        HStack(spacing: 18 * fontScale) {
-                            SecondaryButton(title: loc.text("prevCard"), icon: "arrow.left") {
-                                goPreviousCard()
-                            }
-                            .disabled(historyStack.isEmpty)
-                            
-                            PrimaryButton(title: "Chưa thuộc", icon: "xmark", color: .red) {
-                                markCard(mastered: false)
+                            .frame(width: 560 * fontScale, height: 360 * fontScale)
+                            .rotation3DEffect(.degrees(isFlipped ? 180 : 0), axis: (x: 0, y: 1, z: 0))
+                            .animation(.spring(response: 0.5, dampingFraction: 0.7), value: isFlipped)
+                            .onTapGesture {
+                                withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                                    isFlipped.toggle()
+                                }
                             }
                             
-                            PrimaryButton(title: "Đã thuộc bài", icon: "checkmark", color: .green) {
-                                markCard(mastered: true)
+                            Spacer()
+                            
+                            // Card Action Buttons (Previous Card, Flashcard V, Flashcard X)
+                            HStack(spacing: 18 * fontScale) {
+                                SecondaryButton(title: loc.text("prevCard"), icon: "arrow.left") {
+                                    goPreviousCard()
+                                }
+                                .disabled(historyStack.isEmpty)
+                                
+                                PrimaryButton(title: "Chưa thuộc", icon: "xmark", color: .red) {
+                                    markCard(mastered: false)
+                                }
+                                
+                                PrimaryButton(title: "Đã thuộc bài", icon: "checkmark", color: .green) {
+                                    markCard(mastered: true)
+                                }
                             }
+                            .padding(.bottom, 20 * fontScale)
                         }
-                        .padding(.bottom, 20 * fontScale)
                     }
-                }
-                .frame(maxWidth: .infinity)
-                
-                // Right Navigation Pane Sidebar
-                if showNavPane && !allQuestions.isEmpty {
-                    Divider()
+                    .frame(maxWidth: .infinity)
                     
-                    VStack(alignment: .leading, spacing: 12 * fontScale) {
-                        Text(loc.text("questionNavPane"))
-                            .font(.system(size: 13 * fontScale, weight: .bold))
-                            .foregroundColor(.secondary)
-                            .padding(.top, 12 * fontScale)
-                            .padding(.horizontal, 12 * fontScale)
+                    // Right Navigation Pane Sidebar
+                    if showNavPane && !allQuestions.isEmpty {
+                        Divider()
                         
-                        ScrollView {
-                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 40 * fontScale), spacing: 8 * fontScale)], spacing: 8 * fontScale) {
-                                ForEach(0..<allQuestions.count, id: \.self) { idx in
-                                    navButton(index: idx, question: allQuestions[idx])
+                        VStack(alignment: .leading, spacing: 12 * fontScale) {
+                            Text(loc.text("questionNavPane"))
+                                .font(.system(size: 13 * fontScale, weight: .bold))
+                                .foregroundColor(.secondary)
+                                .padding(.top, 12 * fontScale)
+                                .padding(.horizontal, 12 * fontScale)
+                            
+                            ScrollView {
+                                LazyVGrid(columns: [GridItem(.adaptive(minimum: 40 * fontScale), spacing: 8 * fontScale)], spacing: 8 * fontScale) {
+                                    ForEach(0..<allQuestions.count, id: \.self) { idx in
+                                        navButton(index: idx, question: allQuestions[idx])
+                                    }
                                 }
+                                .padding(.horizontal, 12 * fontScale)
                             }
-                            .padding(.horizontal, 12 * fontScale)
                         }
+                        .frame(width: 180 * fontScale)
+                        .background(.ultraThinMaterial)
                     }
-                    .frame(width: 180 * fontScale)
-                    .background(Color(NSColor.controlBackgroundColor).opacity(0.5))
                 }
+                
+                Divider()
+                
+                // Footer Navigation Bar
+                HStack {
+                    Text("Phím tắt: Spacebar (Lật thẻ) • V hoặc 1 (Thuộc) • X hoặc 2 (Chưa thuộc) • Mũi tên trái (Thẻ trước)")
+                        .font(.system(size: 11 * fontScale))
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+                .padding()
+                .background(.thinMaterial)
             }
-            
-            Divider()
-            
-            // Footer Navigation Bar
-            HStack {
-                Text("Phím tắt: Spacebar (Lật thẻ) • V hoặc 1 (Thuộc) • X hoặc 2 (Chưa thuộc) • Mũi tên trái (Thẻ trước)")
-                    .font(.system(size: 11 * fontScale))
-                    .foregroundColor(.secondary)
-                Spacer()
-            }
-            .padding()
-            .background(Color(NSColor.controlBackgroundColor))
         }
         .onAppear {
             setupFlashcards()
@@ -289,83 +291,66 @@ public struct FlashcardView: View {
             needReviewIds.remove(card.id)
         } else {
             needReviewIds.insert(card.id)
-            masteredIds.remove(card.id)
         }
+        
+        isFlipped = false
         
         if !cardQueue.isEmpty {
             currentCard = cardQueue.removeFirst()
-            isFlipped = false
         } else {
-            // Check if there are un-mastered cards to study in round 2
-            if !needReviewIds.isEmpty {
+            if needReviewIds.isEmpty {
+                isCompleted = true
+                currentCard = nil
+            } else {
                 studyRound += 1
                 cardQueue = allQuestions.filter { needReviewIds.contains($0.id) }
+                if storage.settings.isShuffleEnabled {
+                    cardQueue.shuffle()
+                }
                 currentCard = cardQueue.removeFirst()
-                isFlipped = false
-            } else {
-                currentCard = nil
-                isCompleted = true
             }
         }
     }
     
     private var completionView: some View {
-        VStack(spacing: 20 * fontScale) {
-            Image(systemName: "star.circle.fill")
-                .font(.system(size: 64 * fontScale))
-                .foregroundColor(.green)
-            
-            Text("Chúc mừng! Bạn đã thuộc 100% các thẻ ghi nhớ!")
-                .font(.system(size: 20 * fontScale, weight: .bold))
-            
-            Text("Đã vượt qua \(studyRound) vòng ôn tập thẻ ghi nhớ.")
-                .font(.system(size: 14 * fontScale))
-                .foregroundColor(.secondary)
-            
-            PrimaryButton(title: "Học lại từ đầu (Vòng 1)", icon: "arrow.clockwise", color: .accentColor) {
-                setupFlashcards()
+        GlassCard {
+            VStack(spacing: 20 * fontScale) {
+                Image(systemName: "checkmark.seal.fill")
+                    .font(.system(size: 64 * fontScale))
+                    .foregroundColor(.green)
+                
+                Text(loc.text("roundCompleted"))
+                    .font(.system(size: 24 * fontScale, weight: .bold))
+                
+                Text("Bạn đã ghi nhớ toàn bộ \(allQuestions.count) câu hỏi trong bộ đề!")
+                    .font(.system(size: 15 * fontScale))
+                    .foregroundColor(.secondary)
+                
+                PrimaryButton(title: loc.text("studyAgain"), icon: "arrow.clockwise", color: .accentColor) {
+                    setupFlashcards()
+                }
             }
+            .padding(32 * fontScale)
         }
-        .padding(40)
     }
     
-    // MARK: - Keyboard Monitor
     private func setupKeyboardMonitor() {
-        removeKeyboardMonitor()
         eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-            guard !isCompleted else { return event }
-            
-            let chars = event.charactersIgnoringModifiers?.lowercased() ?? ""
-            
-            if event.keyCode == 51 {
-                dismiss()
-                return nil
-            }
-            
-            // Left arrow key for Previous Card!
-            if event.keyCode == 123 {
-                goPreviousCard()
-                return nil
-            }
-            
-            // Spacebar flips card
-            if event.keyCode == 49 {
+            if event.keyCode == 49 { // Spacebar
                 withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
                     isFlipped.toggle()
                 }
                 return nil
-            }
-            
-            if chars == "v" || chars == "1" {
+            } else if event.keyCode == 123 { // Left arrow
+                goPreviousCard()
+                return nil
+            } else if event.charactersIgnoringModifiers == "1" || event.charactersIgnoringModifiers == "v" || event.charactersIgnoringModifiers == "V" {
                 markCard(mastered: true)
                 return nil
-            }
-            
-            if chars == "x" || chars == "2" {
+            } else if event.charactersIgnoringModifiers == "2" || event.charactersIgnoringModifiers == "x" || event.charactersIgnoringModifiers == "X" {
                 markCard(mastered: false)
                 return nil
             }
-            
             return event
         }
     }

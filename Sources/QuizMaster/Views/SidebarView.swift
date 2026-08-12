@@ -62,13 +62,13 @@ public struct SidebarView: View {
             Button(action: { showNewProjectSheet = true }) {
                 HStack {
                     Image(systemName: "plus.circle.fill")
-                        .foregroundColor(.blue)
+                        .foregroundColor(.accentColor)
                     Text(loc.text("addProject"))
                         .fontWeight(.semibold)
                     Spacer()
                 }
                 .padding(12)
-                .background(Color(NSColor.controlBackgroundColor))
+                .background(.thinMaterial)
             }
             .buttonStyle(.plain)
         }
@@ -82,10 +82,10 @@ public struct SidebarView: View {
         HStack(spacing: 12) {
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.blue.opacity(0.15))
+                    .fill(Color.accentColor.opacity(0.15))
                     .frame(width: 36, height: 36)
                 Image(systemName: "folder.fill")
-                    .foregroundColor(.blue)
+                    .foregroundColor(.accentColor)
             }
             
             VStack(alignment: .leading, spacing: 3) {

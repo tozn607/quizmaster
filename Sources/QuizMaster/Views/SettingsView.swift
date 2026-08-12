@@ -15,23 +15,24 @@ public struct SettingsView: View {
     @State private var showUpdateModal: Bool = false
     
     public var body: some View {
-        VStack(spacing: 0) {
-            // Header Bar
-            HStack {
-                Text(loc.text("settingsTitle"))
-                    .font(.system(size: 20 * fontScale, weight: .bold))
-                Spacer()
-                Button(action: { dismiss() }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 20 * fontScale))
-                        .foregroundColor(.gray)
+        LiquidGlassWindowBackdrop {
+            VStack(spacing: 0) {
+                // Header Bar
+                HStack {
+                    Text(loc.text("settingsTitle"))
+                        .font(.system(size: 20 * fontScale, weight: .bold))
+                    Spacer()
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 20 * fontScale))
+                            .foregroundColor(.gray)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
-            }
-            .padding()
-            .background(Color(NSColor.controlBackgroundColor))
-            
-            Divider()
+                .padding()
+                .background(.thinMaterial)
+                
+                Divider()
             
             ScrollView {
                 VStack(alignment: .leading, spacing: 20 * fontScale) {
@@ -254,7 +255,8 @@ public struct SettingsView: View {
                 }
             }
             .padding()
-            .background(Color(NSColor.controlBackgroundColor))
+            .background(.thinMaterial)
+        }
         }
         .frame(width: 620 * fontScale, height: 740 * fontScale)
         .sheet(isPresented: $showUpdateModal) {

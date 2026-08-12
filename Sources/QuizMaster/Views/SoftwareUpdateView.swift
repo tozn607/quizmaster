@@ -8,26 +8,27 @@ public struct SoftwareUpdateView: View {
     @Environment(\.dismiss) var dismiss
     
     public var body: some View {
-        VStack(spacing: 0) {
-            // Header Bar
-            HStack {
-                Image(systemName: "arrow.triangle.2.circlepath.circle.fill")
-                    .font(.system(size: 20 * fontScale))
-                    .foregroundColor(.accentColor)
-                Text(loc.text("checkUpdates"))
-                    .font(.system(size: 18 * fontScale, weight: .bold))
-                Spacer()
-                Button(action: { dismiss() }) {
-                    Image(systemName: "xmark.circle.fill")
+        LiquidGlassWindowBackdrop {
+            VStack(spacing: 0) {
+                // Header Bar
+                HStack {
+                    Image(systemName: "arrow.triangle.2.circlepath.circle.fill")
                         .font(.system(size: 20 * fontScale))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.accentColor)
+                    Text(loc.text("checkUpdates"))
+                        .font(.system(size: 18 * fontScale, weight: .bold))
+                    Spacer()
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 20 * fontScale))
+                            .foregroundColor(.gray)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
-            }
-            .padding()
-            .background(Color(NSColor.controlBackgroundColor))
-            
-            Divider()
+                .padding()
+                .background(.thinMaterial)
+                
+                Divider()
             
             VStack(spacing: 20 * fontScale) {
                 // Hero Icon
@@ -118,7 +119,8 @@ public struct SoftwareUpdateView: View {
                 }
             }
             .padding()
-            .background(Color(NSColor.controlBackgroundColor))
+            .background(.thinMaterial)
+        }
         }
         .frame(width: 480 * fontScale, height: 480 * fontScale)
         .onAppear {

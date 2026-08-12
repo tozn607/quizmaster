@@ -14,26 +14,27 @@ public struct AskGeminiSheet: View {
     @State private var errorMessage: String? = nil
     
     public var body: some View {
-        VStack(spacing: 0) {
-            // Header Bar
-            HStack {
-                Image(systemName: "sparkles")
-                    .font(.system(size: 20 * fontScale))
-                    .foregroundColor(.accentColor)
-                Text("Hỏi Gemini AI về Câu hỏi này")
-                    .font(.system(size: 18 * fontScale, weight: .bold))
-                Spacer()
-                Button(action: { dismiss() }) {
-                    Image(systemName: "xmark.circle.fill")
+        LiquidGlassWindowBackdrop {
+            VStack(spacing: 0) {
+                // Header Bar
+                HStack {
+                    Image(systemName: "sparkles")
                         .font(.system(size: 20 * fontScale))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.accentColor)
+                    Text("Hỏi Gemini AI về Câu hỏi này")
+                        .font(.system(size: 18 * fontScale, weight: .bold))
+                    Spacer()
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 20 * fontScale))
+                            .foregroundColor(.gray)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
-            }
-            .padding()
-            .background(Color(NSColor.controlBackgroundColor))
-            
-            Divider()
+                .padding()
+                .background(.thinMaterial)
+                
+                Divider()
             
             ScrollView {
                 VStack(alignment: .leading, spacing: 18 * fontScale) {
@@ -178,7 +179,8 @@ public struct AskGeminiSheet: View {
                 }
             }
             .padding()
-            .background(Color(NSColor.controlBackgroundColor))
+            .background(.thinMaterial)
+        }
         }
         .frame(width: 680 * fontScale, height: 680 * fontScale)
         .onAppear {
