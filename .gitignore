@@ -1,0 +1,13 @@
+# Swift / SPM Build Artifacts
+.build/
+.swiftpm/
+QuizMaster.app
+
+# macOS System Files
+.DS_Store
+*.swp
+*~
+
+# Temporary Icon generation artifacts
+AppIcon.iconset
+.build_number
