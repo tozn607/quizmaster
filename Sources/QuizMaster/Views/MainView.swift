@@ -371,16 +371,16 @@ public struct MainView: View {
                  // Action Buttons: 3 Study Modes
                  VStack(spacing: 10) {
                      HStack(spacing: 10) {
-                         PrimaryButton(title: loc.text("practiceMode"), icon: "pencil.and.outline", color: .accentColor) {
+                         PrimaryButton(title: loc.text("practiceMode"), icon: "pencil.and.outline", color: LiquidGlassPalette.oceanBlue) {
                              activePracticeQuiz = quiz
                          }
                          
-                         PrimaryButton(title: loc.text("examMode"), icon: "timer", color: .accentColor) {
+                         PrimaryButton(title: loc.text("examMode"), icon: "timer", color: LiquidGlassPalette.sunsetOrange) {
                              activeExamQuiz = quiz
                          }
                      }
                      
-                     SecondaryButton(title: loc.text("flashcardMode"), icon: "rectangle.on.rectangle.angled") {
+                     PrimaryButton(title: loc.text("flashcardMode"), icon: "rectangle.on.rectangle.angled", color: LiquidGlassPalette.deepPurple) {
                          activeFlashcardQuiz = quiz
                      }
                  }

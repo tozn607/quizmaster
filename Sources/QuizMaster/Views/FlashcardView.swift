@@ -47,7 +47,7 @@ public struct FlashcardView: View {
                         
                         Text("Vòng học thứ \(studyRound) • Còn lại \(cardQueue.count + (currentCard != nil ? 1 : 0)) thẻ")
                             .font(.system(size: 12 * fontScale, weight: .bold))
-                            .foregroundColor(.accentColor)
+                            .foregroundColor(LiquidGlassPalette.deepPurple)
                     }
                     
                     Spacer()
@@ -59,10 +59,10 @@ public struct FlashcardView: View {
                             Text(loc.text("questionNavPane"))
                         }
                         .font(.system(size: 12 * fontScale, weight: .medium))
-                        .foregroundColor(showNavPane ? .accentColor : .secondary)
+                        .foregroundColor(showNavPane ? LiquidGlassPalette.deepPurple : .secondary)
                         .padding(.horizontal, 10 * fontScale)
                         .padding(.vertical, 5 * fontScale)
-                        .background(showNavPane ? Color.accentColor.opacity(0.12) : Color.clear)
+                        .background(showNavPane ? LiquidGlassPalette.deepPurple.opacity(0.12) : Color.clear)
                         .cornerRadius(8)
                     }
                     .buttonStyle(.plain)
@@ -87,7 +87,7 @@ public struct FlashcardView: View {
                                     // Front: Question Side
                                     GlassCard {
                                         VStack(spacing: 16 * fontScale) {
-                                            BadgeView(text: loc.text("questionSide"), color: .accentColor)
+                                            BadgeView(text: loc.text("questionSide"), color: LiquidGlassPalette.deepPurple)
                                             
                                             Spacer()
                                             
@@ -109,7 +109,7 @@ public struct FlashcardView: View {
                                     // Back: Answer Side
                                     GlassCard {
                                         VStack(spacing: 16 * fontScale) {
-                                            BadgeView(text: loc.text("answerSide"), color: .green)
+                                            BadgeView(text: loc.text("answerSide"), color: LiquidGlassPalette.emeraldMint)
                                             
                                             Spacer()
                                             
@@ -118,7 +118,7 @@ public struct FlashcardView: View {
                                             VStack(spacing: 10 * fontScale) {
                                                 Text("Đáp án đúng: \(card.correctAnswerLabel)")
                                                     .font(.system(size: 16 * fontScale, weight: .bold))
-                                                    .foregroundColor(.green)
+                                                    .foregroundColor(LiquidGlassPalette.emeraldMint)
                                                 
                                                 Text(correctOpt?.text ?? "")
                                                     .font(.system(size: 20 * fontScale, weight: .bold))
@@ -163,11 +163,11 @@ public struct FlashcardView: View {
                                 }
                                 .disabled(historyStack.isEmpty)
                                 
-                                PrimaryButton(title: "Chưa thuộc", icon: "xmark", color: .red) {
+                                PrimaryButton(title: "Chưa thuộc", icon: "xmark", color: LiquidGlassPalette.coralRed) {
                                     markCard(mastered: false)
                                 }
                                 
-                                PrimaryButton(title: "Đã thuộc bài", icon: "checkmark", color: .green) {
+                                PrimaryButton(title: "Đã thuộc bài", icon: "checkmark", color: LiquidGlassPalette.emeraldMint) {
                                     markCard(mastered: true)
                                 }
                             }
@@ -230,7 +230,7 @@ public struct FlashcardView: View {
         let isMastered = masteredIds.contains(question.id)
         let isNeedReview = needReviewIds.contains(question.id)
         
-        let btnColor: Color = isCurrent ? .accentColor : (isMastered ? .green : (isNeedReview ? .red : .gray.opacity(0.4)))
+        let btnColor: Color = isCurrent ? LiquidGlassPalette.deepPurple : (isMastered ? LiquidGlassPalette.emeraldMint : (isNeedReview ? LiquidGlassPalette.coralRed : .gray.opacity(0.4)))
         
         Button(action: {
             jumpToCard(question: question)
@@ -243,7 +243,7 @@ public struct FlashcardView: View {
                 .cornerRadius(8)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(isCurrent ? Color.accentColor : Color.clear, lineWidth: 2)
+                        .stroke(isCurrent ? LiquidGlassPalette.deepPurple : Color.clear, lineWidth: 2)
                 )
         }
         .buttonStyle(.plain)

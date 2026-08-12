@@ -38,12 +38,19 @@ public struct LiquidGlassWindowBackdrop<Content: View>: View {
             GlassVisualEffectView(material: .fullScreenUI, blendingMode: .behindWindow)
                 .ignoresSafeArea()
             
-            // Dynamic Ambient Liquid Glass Mesh Glow
+            // Light Mode / Dark Mode Contrast Backing
+            if colorScheme == .light {
+                Color(NSColor.windowBackgroundColor)
+                    .opacity(0.45)
+                    .ignoresSafeArea()
+            }
+            
+            // Dynamic Vibrant Ambient Liquid Glass Mesh Glow
             LinearGradient(
                 colors: [
-                    Color.accentColor.opacity(colorScheme == .dark ? 0.12 : 0.08),
+                    LiquidGlassPalette.oceanBlue.opacity(colorScheme == .dark ? 0.15 : 0.08),
                     Color.clear,
-                    Color.accentColor.opacity(colorScheme == .dark ? 0.06 : 0.04)
+                    LiquidGlassPalette.deepPurple.opacity(colorScheme == .dark ? 0.10 : 0.05)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing

@@ -62,9 +62,9 @@ public struct SidebarView: View {
             Button(action: { showNewProjectSheet = true }) {
                 HStack {
                     Image(systemName: "plus.circle.fill")
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(LiquidGlassPalette.oceanBlue)
                     Text(loc.text("addProject"))
-                        .fontWeight(.semibold)
+                        .fontWeight(.bold)
                     Spacer()
                 }
                 .padding(12)
@@ -82,10 +82,10 @@ public struct SidebarView: View {
         HStack(spacing: 12) {
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.accentColor.opacity(0.15))
+                    .fill(LiquidGlassPalette.oceanBlue.opacity(0.15))
                     .frame(width: 36, height: 36)
                 Image(systemName: "folder.fill")
-                    .foregroundColor(.accentColor)
+                    .foregroundColor(LiquidGlassPalette.oceanBlue)
             }
             
             VStack(alignment: .leading, spacing: 3) {
@@ -106,7 +106,7 @@ public struct SidebarView: View {
             Spacer()
             
             if project.overallMasteryPercentage > 0 {
-                BadgeView(text: "\(project.overallMasteryPercentage)%", color: project.overallMasteryPercentage > 75 ? .green : .blue)
+                BadgeView(text: "\(project.overallMasteryPercentage)%", color: project.overallMasteryPercentage > 75 ? LiquidGlassPalette.emeraldMint : LiquidGlassPalette.oceanBlue)
             }
         }
         .padding(.vertical, 4)

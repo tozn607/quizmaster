@@ -9,6 +9,7 @@ public struct ExamView: View {
     @EnvironmentObject var storage: StorageManager
     @EnvironmentObject var loc: LocalizationManager
     @Environment(\.appFontScale) var fontScale
+    @Environment(\.colorScheme) var colorScheme
     @Environment(\.dismiss) var dismiss
     
     @State private var activeQuestions: [Question] = []
@@ -44,7 +45,7 @@ public struct ExamView: View {
                         if !activeQuestions.isEmpty {
                             Text(String(format: loc.text("progressFormat"), "\(currentIndex + 1)", "\(activeQuestions.count)"))
                                 .font(.system(size: 12 * fontScale, weight: .bold))
-                                .foregroundColor(.accentColor)
+                                .foregroundColor(LiquidGlassPalette.sunsetOrange)
                         }
                     }
                     
@@ -57,10 +58,10 @@ public struct ExamView: View {
                             Text(loc.text("questionNavPane"))
                         }
                         .font(.system(size: 12 * fontScale, weight: .medium))
-                        .foregroundColor(showNavPane ? .accentColor : .secondary)
+                        .foregroundColor(showNavPane ? LiquidGlassPalette.sunsetOrange : .secondary)
                         .padding(.horizontal, 8 * fontScale)
                         .padding(.vertical, 4 * fontScale)
-                        .background(showNavPane ? Color.accentColor.opacity(0.12) : Color.clear)
+                        .background(showNavPane ? LiquidGlassPalette.sunsetOrange.opacity(0.12) : Color.clear)
                         .cornerRadius(6)
                     }
                     .buttonStyle(.plain)
@@ -73,7 +74,7 @@ public struct ExamView: View {
                     ProgressBar(
                         value: Double(userAnswers.count) / Double(activeQuestions.count),
                         height: 6,
-                        color: .accentColor
+                        color: LiquidGlassPalette.sunsetOrange
                     )
                 }
                 
@@ -90,7 +91,7 @@ public struct ExamView: View {
                                 GlassCard {
                                     VStack(alignment: .leading, spacing: 10 * fontScale) {
                                         HStack {
-                                            BadgeView(text: "\(loc.text("questionHeader")) \(currentIndex + 1)", color: .accentColor)
+                                            BadgeView(text: "\(loc.text("questionHeader")) \(currentIndex + 1)", color: LiquidGlassPalette.sunsetOrange)
                                             Spacer()
                                         }
                                         
@@ -161,7 +162,7 @@ public struct ExamView: View {
                     PrimaryButton(
                         title: "Nộp bài thi (\(userAnswers.count)/\(activeQuestions.count) câu)",
                         icon: "checkmark.seal.fill",
-                        color: .accentColor
+                        color: LiquidGlassPalette.sunsetOrange
                     ) {
                         submitExam()
                     }
@@ -179,11 +180,19 @@ public struct ExamView: View {
             AskGeminiSheet(question: q)
         }
         .onAppear {
-            activeQuestions = quiz.questions
+            setupExamQuestions()
             setupKeyboardMonitor()
         }
         .onDisappear {
             removeKeyboardMonitor()
+        }
+    }
+    
+    private func setupExamQuestions() {
+        if redoWrongOnly, let prog = project.progressMap[quiz.id], !prog.wrongQuestionIds.isEmpty {
+            activeQuestions = quiz.questions.filter { prog.wrongQuestionIds.contains($0.id) }
+        } else {
+            activeQuestions = quiz.questions
         }
     }
     
@@ -192,7 +201,7 @@ public struct ExamView: View {
     private func navButton(index: Int, question: Question) -> some View {
         let isCurrent = index == currentIndex
         let isAnswered = userAnswers[question.id] != nil
-        let btnColor: Color = isCurrent ? .accentColor : (isAnswered ? .accentColor.opacity(0.7) : .gray.opacity(0.4))
+        let btnColor: Color = isCurrent ? LiquidGlassPalette.sunsetOrange : (isAnswered ? LiquidGlassPalette.sunsetOrange.opacity(0.7) : .gray.opacity(0.4))
         
         Button(action: {
             currentIndex = index
@@ -205,7 +214,7 @@ public struct ExamView: View {
                 .cornerRadius(8)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(isCurrent ? Color.accentColor : Color.clear, lineWidth: 2)
+                        .stroke(isCurrent ? LiquidGlassPalette.sunsetOrange : Color.clear, lineWidth: 2)
                 )
         }
         .buttonStyle(.plain)
@@ -214,38 +223,42 @@ public struct ExamView: View {
     private func optionButton(for option: QuestionOption, index: Int, question: Question) -> some View {
         let isSelected = userAnswers[question.id] == index
         
+        let bgColor = isSelected ? LiquidGlassPalette.sunsetOrange.opacity(0.20) : (colorScheme == .light ? Color.white : Color(NSColor.controlBackgroundColor))
+        let borderColor = isSelected ? LiquidGlassPalette.sunsetOrange : (colorScheme == .light ? Color.black.opacity(0.18) : Color.white.opacity(0.20))
+        let textColor = isSelected ? LiquidGlassPalette.sunsetOrange : (colorScheme == .light ? Color(NSColor.labelColor) : Color.white)
+        
         return Button(action: {
             userAnswers[question.id] = index
         }) {
             HStack(spacing: 14 * fontScale) {
                 ZStack {
                     Circle()
-                        .fill(isSelected ? Color.accentColor.opacity(0.3) : Color.gray.opacity(0.15))
+                        .fill(isSelected ? LiquidGlassPalette.sunsetOrange.opacity(0.3) : Color.gray.opacity(0.15))
                         .frame(width: 32 * fontScale, height: 32 * fontScale)
                     Text(option.label)
                         .font(.system(size: 14 * fontScale, weight: .bold))
-                        .foregroundColor(isSelected ? .accentColor : .primary)
+                        .foregroundColor(textColor)
                 }
                 
                 Text(option.text)
                     .font(.system(size: 15 * fontScale))
-                    .foregroundColor(.primary)
+                    .foregroundColor(colorScheme == .light ? Color(NSColor.labelColor) : Color.white)
                     .multilineTextAlignment(.leading)
                 
                 Spacer()
                 
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(LiquidGlassPalette.sunsetOrange)
                         .font(.system(size: 18 * fontScale))
                 }
             }
             .padding(14 * fontScale)
-            .background(isSelected ? Color.accentColor.opacity(0.12) : Color(NSColor.controlBackgroundColor))
+            .background(bgColor)
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? Color.accentColor : Color.gray.opacity(0.25), lineWidth: isSelected ? 2 : 1)
+                    .stroke(borderColor, lineWidth: isSelected ? 2 : 1)
             )
         }
         .buttonStyle(.plain)

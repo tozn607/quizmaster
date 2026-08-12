@@ -1,7 +1,7 @@
 {
-  "version": "1.0.3",
-  "buildNumber": 138,
-  "releaseTag": "v1.0.3-b138",
-  "buildDate": "2026-08-12T13:05:00Z",
-  "releaseNotes": "QuizMaster v1.0.3 (Build 138):\n- Updated App Icon with vibrant rainbow gradient and pure white graduation cap main icon\n- Replaced solid gray container backgrounds with vibrant NSVisualEffectView Liquid Glass window backdrops\n- Translucent thinMaterial bar layers and floating specular glass cards\n- AppIcon added to top of README\n- Strict single release enforcement per version number on GitHub\n- Saved Ask Gemini AI answers persistent storage\n- Codesign & Gatekeeper quarantine launch error fix\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
+  "version": "1.1.0",
+  "buildNumber": 139,
+  "releaseTag": "v1.1.0-b139",
+  "buildDate": "2026-08-12T16:28:41Z",
+  "releaseNotes": "QuizMaster v1.1.0 (Build 139):\n- Markdown Formatted Explanations for Saved Ask Gemini Answers\n- Guaranteed Light Mode Readability with Solid Card Backings & High-Contrast Dark Typography\n- 100% Solid, Saturated & Vibrant LiquidGlassPalette Colors (Ocean Blue, Sunset Orange, Deep Purple, Emerald Mint, Coral Red, Cyan Teal)\n- Authentic macOS Liquid Glass Translucent Backdrop (NSVisualEffectView fullScreenUI)\n- 6-Color Rainbow Gradient App Icon with Pure White Graduation Cap Main Icon\n- Strict Single Release Enforcement per Version Number on GitHub\n- Persistent Ask Gemini AI Answers\n- Gatekeeper Quarantine & Ad-hoc Code-signing Fix\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation\n- Practice Checkpoint Progress Save & Resume"
 }

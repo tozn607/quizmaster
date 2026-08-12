@@ -2,7 +2,7 @@
   <img src="AppIcon.png" width="128" height="128" alt="QuizMaster App Icon">
 </p>
 
-# 🎓 QuizMaster (v1.0.3)
+# 🎓 QuizMaster (v1.1.0)
 
 > **Native macOS Self-Study & AI-Powered Multiple-Choice Quiz Generator**  
 > *Developed by [@tozn607](https://github.com/tozn607)*
@@ -11,7 +11,7 @@
 
 ### 🚀 Quick Download / Tải ứng dụng ngay:
 
-[![](https://img.shields.io/badge/⬇️_Download_Latest_macOS_Release-v1.0.3-brightgreen?style=for-the-badge&logo=apple)](https://github.com/tozn607/quizmaster/releases/latest)
+[![](https://img.shields.io/badge/⬇️_Download_Latest_macOS_Release-v1.1.0-brightgreen?style=for-the-badge&logo=apple)](https://github.com/tozn607/quizmaster/releases/latest)
 
 👉 **[Click here to download the latest QuizMaster.app macOS release](https://github.com/tozn607/quizmaster/releases/latest)**
 
@@ -36,7 +36,7 @@
 
 ---
 
-## 🇻🇳 Tiếng Việt: Tóm tắt Tính năng v1.0.3
+## 🇻🇳 Tiếng Việt: Tóm tắt Tính năng v1.1.0
 
 **QuizMaster** là ứng dụng native trên macOS được biên dịch 100% bằng **Swift** và **SwiftUI**. Ứng dụng tích hợp mô hình AI **Gemini 3.5 Flash Lite** từ Google AI Studio giúp sinh viên, học sinh và giáo viên tự động quét tài liệu bài giảng (PDF, Word `.docx`, TXT) để tạo ra các bộ đề thi trắc nghiệm chất lượng cao.
 

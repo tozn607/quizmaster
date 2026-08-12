@@ -11,36 +11,43 @@ if [ -f "$BUILD_FILE" ]; then
     BUILD_NUMBER=$(cat "$BUILD_FILE")
     BUILD_NUMBER=$((BUILD_NUMBER + 1))
 else
-    BUILD_NUMBER=137
+    BUILD_NUMBER=139
 fi
 echo "$BUILD_NUMBER" > "$BUILD_FILE"
 
-VERSION="1.0.3"
+VERSION="1.1.0"
 RELEASE_TAG="v${VERSION}-b${BUILD_NUMBER}"
 
 echo "🔢 Building QuizMaster v${VERSION} (Build ${BUILD_NUMBER})...."
 
 # Create build_info.json in source repository
-cat <<'EOF' > "build_info.json"
+cat <<EOF > "build_info.json"
 {
-  "version": "1.0.3",
-  "buildNumber": 138,
-  "releaseTag": "v1.0.3-b138",
-  "buildDate": "2026-08-12T13:05:00Z",
-  "releaseNotes": "QuizMaster v1.0.3 (Build 138):\n- Updated App Icon with vibrant rainbow gradient and pure white graduation cap main icon\n- Replaced solid gray container backgrounds with vibrant NSVisualEffectView Liquid Glass window backdrops\n- Translucent thinMaterial bar layers and floating specular glass cards\n- AppIcon added to top of README\n- Strict single release enforcement per version number on GitHub\n- Saved Ask Gemini AI answers persistent storage\n- Codesign & Gatekeeper quarantine launch error fix\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
+  "version": "1.1.0",
+  "buildNumber": ${BUILD_NUMBER},
+  "releaseTag": "v1.1.0-b${BUILD_NUMBER}",
+  "buildDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "releaseNotes": "QuizMaster v1.1.0 (Build ${BUILD_NUMBER}):\n- Markdown Formatted Explanations for Saved Ask Gemini Answers\n- Guaranteed Light Mode Readability with Solid Card Backings & High-Contrast Dark Typography\n- 100% Solid, Saturated & Vibrant LiquidGlassPalette Colors (Ocean Blue, Sunset Orange, Deep Purple, Emerald Mint, Coral Red, Cyan Teal)\n- Authentic macOS Liquid Glass Translucent Backdrop (NSVisualEffectView fullScreenUI)\n- 6-Color Rainbow Gradient App Icon with Pure White Graduation Cap Main Icon\n- Strict Single Release Enforcement per Version Number on GitHub\n- Persistent Ask Gemini AI Answers\n- Gatekeeper Quarantine & Ad-hoc Code-signing Fix\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation\n- Practice Checkpoint Progress Save & Resume"
 }
 EOF
 
 # Create release_notes.txt
-cat <<'EOF' > "release_notes.txt"
-# 🚀 QuizMaster v1.0.3 (Build 138) Release Notes
+cat <<EOF > "release_notes.txt"
+# 🚀 QuizMaster v1.1.0 (Build ${BUILD_NUMBER}) Release Notes
 
-### 🌟 New Features & Enhancements:
-- **🌈 Vibrant Rainbow Gradient App Icon**: Updated app icon with a rich, multi-color rainbow gradient (Coral Red → Orange → Gold → Emerald Green → Cyan → Purple) and a crisp, pure white graduation cap main icon.
-- **🧊 Authentic Liquid Glass Window Backdrop**: Translucent, blurred macOS Liquid Glass backdrop (`NSVisualEffectView` behind-window blending) with ambient accent light mesh, matching native system apps like Safari and Apple Music.
-- **🖼️ README App Icon**: Embedded full-resolution App Icon at the top of README.
-- **🎨 macOS Native System Accent Color**: Seamless integration with user's system accent color settings.
-- **🧹 Single Release Enforcement**: Automatically removes ALL previous builds of the same version number on GitHub, keeping only 1 release per version.
+### 🌟 New Features & Enhancements in v1.1.0:
+- **📝 Markdown Formatted Explanations for Saved Ask Gemini Answers**: Saved Ask Gemini explanations in Practice Mode now parse headers (\`###\`), bold text (\`**...**\`), section dividers (\`---\`), bullet points, and quotes (\`> ...\`) directly inside the explanation box.
+- **☀️ Guaranteed Light Mode Readability**: \`GlassCard\` and option containers use 100% solid white backgrounds (\`Color.white\`) with dark high-contrast typography in Light Mode, eliminating white-on-white text glare.
+- **🌈 100% Solid, Saturated & Vibrant \`LiquidGlassPalette\` Colors**: Rich, vivid solid color fills for primary buttons, badges, and study modes:
+  - **Ocean Blue** (\`#0073FB\`): Practice Mode & primary actions.
+  - **Sunset Orange** (\`#FA730D\`): Exam Mode & exam badges.
+  - **Deep Purple** (\`#8C40EB\`): Flashcard Mode, AI sparkles, and Ask Gemini actions.
+  - **Emerald Mint** (\`#19B861\`): Correct answer indicators, success toasts, and mastered cards.
+  - **Coral Red** (\`#EB2E4D\`): Wrong answer indicators, delete actions, and need-review cards.
+  - **Cyan Teal** (\`#00AEB8\`): Reset progress actions.
+- **🧊 Authentic Liquid Glass Window Backdrop**: Translucent, blurred macOS Liquid Glass backdrop (\`NSVisualEffectView\` behind-window blending) with ambient accent light mesh.
+- **🌈 Vibrant Rainbow Gradient App Icon**: Multi-color rainbow gradient background with a crisp, pure white graduation cap main icon.
+- **🧹 Single Release Enforcement**: Automatically removes ALL previous builds of version 1.1.0 on GitHub, keeping only 1 release per version.
 - **💾 Persistent Ask Gemini Answers**: AI explanations are saved to persistent storage and restored whenever returning to that question.
 - **🔒 Gatekeeper & Code-signing Fix**: Applied ad-hoc codesigning and stripped quarantine flags to prevent launch errors.
 - **🔀 Question & Option Shuffling Toggle**: Toggle question and option randomization on or off.
@@ -48,7 +55,6 @@ cat <<'EOF' > "release_notes.txt"
 - **🃏 3D Flashcard Flipping**: True 3D card rotation effect with upright text rendering.
 - **📊 Fixed Practice Mode Progress Bar**: Progress bar now advances strictly based on completed questions count.
 - **🚫 Exam Mode Anti-Cheating**: Removed Ask Gemini from Exam Mode to maintain test simulation integrity.
-- **📝 Cleaned Ask Gemini Markdown Output**: Formatted markdown headers, blockquotes, and rules cleanly in response text views.
 - **📍 Question Navigator Pane**: Collapsible right-side sidebar for instant question jumping and status visualization.
 - **💾 Practice Checkpoint Resume**: Automatically save and resume at your exact question index.
 EOF

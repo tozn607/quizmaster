@@ -9,6 +9,7 @@ public struct PracticeView: View {
     @EnvironmentObject var storage: StorageManager
     @EnvironmentObject var loc: LocalizationManager
     @Environment(\.appFontScale) var fontScale
+    @Environment(\.colorScheme) var colorScheme
     
     @State private var activeQuestions: [Question] = []
     @State private var currentIndex: Int = 0
@@ -53,7 +54,7 @@ public struct PracticeView: View {
                         if !activeQuestions.isEmpty {
                             Text(String(format: loc.text("progressFormat"), "\(currentIndex + 1)", "\(activeQuestions.count)"))
                                 .font(.system(size: 12 * fontScale, weight: .bold))
-                                .foregroundColor(.accentColor)
+                                .foregroundColor(LiquidGlassPalette.oceanBlue)
                         }
                     }
                     
@@ -66,10 +67,10 @@ public struct PracticeView: View {
                             Text(loc.text("questionNavPane"))
                         }
                         .font(.system(size: 12 * fontScale, weight: .medium))
-                        .foregroundColor(showNavPane ? .accentColor : .secondary)
+                        .foregroundColor(showNavPane ? LiquidGlassPalette.oceanBlue : .secondary)
                         .padding(.horizontal, 8 * fontScale)
                         .padding(.vertical, 4 * fontScale)
-                        .background(showNavPane ? Color.accentColor.opacity(0.12) : Color.clear)
+                        .background(showNavPane ? LiquidGlassPalette.oceanBlue.opacity(0.12) : Color.clear)
                         .cornerRadius(6)
                     }
                     .buttonStyle(.plain)
@@ -82,7 +83,7 @@ public struct PracticeView: View {
                     ProgressBar(
                         value: Double(userAnswers.count) / Double(activeQuestions.count),
                         height: 6,
-                        color: .accentColor
+                        color: LiquidGlassPalette.oceanBlue
                     )
                 }
                 
@@ -100,7 +101,7 @@ public struct PracticeView: View {
                                 GlassCard {
                                     VStack(alignment: .leading, spacing: 10 * fontScale) {
                                         HStack {
-                                            BadgeView(text: "\(loc.text("questionHeader")) \(currentIndex + 1)", color: .accentColor)
+                                            BadgeView(text: "\(loc.text("questionHeader")) \(currentIndex + 1)", color: LiquidGlassPalette.oceanBlue)
                                             Spacer()
                                             
                                             Button(action: { askingGeminiQuestion = currentQuestion }) {
@@ -109,10 +110,10 @@ public struct PracticeView: View {
                                                     Text("Hỏi Gemini AI về câu này")
                                                 }
                                                 .font(.system(size: 12 * fontScale, weight: .semibold))
-                                                .foregroundColor(.accentColor)
+                                                .foregroundColor(LiquidGlassPalette.deepPurple)
                                                 .padding(.horizontal, 10 * fontScale)
                                                 .padding(.vertical, 5 * fontScale)
-                                                .background(Color.accentColor.opacity(0.12))
+                                                .background(LiquidGlassPalette.deepPurple.opacity(0.12))
                                                 .cornerRadius(8)
                                             }
                                             .buttonStyle(.plain)
@@ -141,21 +142,25 @@ public struct PracticeView: View {
                                             Text(selectedOptionIndex == currentQuestion.correctAnswerIndex ? loc.text("correctAnswer") : loc.text("wrongAnswer"))
                                                 .font(.system(size: 16 * fontScale, weight: .bold))
                                         }
-                                        .foregroundColor(selectedOptionIndex == currentQuestion.correctAnswerIndex ? .green : .red)
+                                        .foregroundColor(selectedOptionIndex == currentQuestion.correctAnswerIndex ? LiquidGlassPalette.emeraldMint : LiquidGlassPalette.coralRed)
                                         
                                         if !currentQuestion.explanation.isEmpty {
-                                            Text(currentQuestion.explanation)
+                                            Text(formattedMarkdownKey(currentQuestion.explanation))
                                                 .font(.system(size: 14 * fontScale))
-                                                .foregroundColor(.secondary)
-                                                .padding(.top, 2)
+                                                .foregroundColor(colorScheme == .light ? Color(NSColor.labelColor) : Color.white)
+                                                .padding(.top, 4 * fontScale)
                                         }
                                     }
                                     .padding(14 * fontScale)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .background(
-                                        (selectedOptionIndex == currentQuestion.correctAnswerIndex ? Color.green : Color.red).opacity(0.12)
+                                        (selectedOptionIndex == currentQuestion.correctAnswerIndex ? LiquidGlassPalette.emeraldMint : LiquidGlassPalette.coralRed).opacity(0.18)
                                     )
                                     .cornerRadius(12)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke((selectedOptionIndex == currentQuestion.correctAnswerIndex ? LiquidGlassPalette.emeraldMint : LiquidGlassPalette.coralRed), lineWidth: 1.5)
+                                    )
                                     .transition(.opacity.combined(with: .move(edge: .bottom)))
                                 }
                             }
@@ -206,7 +211,7 @@ public struct PracticeView: View {
                         PrimaryButton(
                             title: currentIndex + 1 < activeQuestions.count ? loc.text("nextQuestion") : loc.text("finishPractice"),
                             icon: currentIndex + 1 < activeQuestions.count ? "arrow.right" : "checkmark.seal.fill",
-                            color: currentIndex + 1 < activeQuestions.count ? .accentColor : .green
+                            color: currentIndex + 1 < activeQuestions.count ? LiquidGlassPalette.oceanBlue : LiquidGlassPalette.emeraldMint
                         ) {
                             advanceToNextQuestion()
                         }
@@ -234,12 +239,12 @@ public struct PracticeView: View {
         }
     }
     
-    // MARK: - Option Button Renderer
+    // MARK: - Option & Nav Button Renderers
     @ViewBuilder
     private func navButton(index: Int, question: Question) -> some View {
         let isCurrent = index == currentIndex
         let userAns = userAnswers[question.id]
-        let btnColor: Color = isCurrent ? .accentColor : (userAns != nil ? (userAns == question.correctAnswerIndex ? .green : .red) : .gray.opacity(0.4))
+        let btnColor: Color = isCurrent ? LiquidGlassPalette.oceanBlue : (userAns != nil ? (userAns == question.correctAnswerIndex ? LiquidGlassPalette.emeraldMint : LiquidGlassPalette.coralRed) : .gray.opacity(0.4))
         
         Button(action: {
             jumpToQuestion(index: index)
@@ -252,10 +257,29 @@ public struct PracticeView: View {
                 .cornerRadius(8)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(isCurrent ? Color.accentColor : Color.clear, lineWidth: 2)
+                        .stroke(isCurrent ? LiquidGlassPalette.oceanBlue : Color.clear, lineWidth: 2)
                 )
         }
         .buttonStyle(.plain)
+    }
+    
+    private func formattedMarkdownKey(_ rawText: String) -> LocalizedStringKey {
+        var str = rawText.trimmingCharacters(in: .whitespacesAndNewlines)
+        if str.hasPrefix("```markdown") { str = String(str.dropFirst(11)) }
+        if str.hasPrefix("```") { str = String(str.dropFirst(3)) }
+        if str.hasSuffix("```") { str = String(str.dropLast(3)) }
+        
+        let lines = str.components(separatedBy: "\n")
+        let cleanedLines = lines.map { line -> String in
+            var l = line.trimmingCharacters(in: .whitespaces)
+            if l.hasPrefix("### ") { l = "**" + l.dropFirst(4) + "**" }
+            else if l.hasPrefix("## ") { l = "**" + l.dropFirst(3) + "**" }
+            else if l.hasPrefix("# ") { l = "**" + l.dropFirst(2) + "**" }
+            if l == "---" || l == "***" || l == "___" { return "───────────────" }
+            if l.hasPrefix("> ") { l = "💡 " + l.dropFirst(2) }
+            return l
+        }
+        return LocalizedStringKey(cleanedLines.joined(separator: "\n"))
     }
     
     private func optionButton(for option: QuestionOption, index: Int, question: Question) -> some View {
@@ -268,26 +292,26 @@ public struct PracticeView: View {
         
         if isAnswered {
             if isCorrect {
-                bgColor = Color.green.opacity(0.2)
-                borderColor = Color.green
-                textColor = .green
+                bgColor = LiquidGlassPalette.emeraldMint.opacity(0.22)
+                borderColor = LiquidGlassPalette.emeraldMint
+                textColor = LiquidGlassPalette.emeraldMint
             } else if isSelected && !isCorrect {
-                bgColor = Color.red.opacity(0.2)
-                borderColor = Color.red
-                textColor = .red
+                bgColor = LiquidGlassPalette.coralRed.opacity(0.22)
+                borderColor = LiquidGlassPalette.coralRed
+                textColor = LiquidGlassPalette.coralRed
             } else {
-                bgColor = Color(NSColor.controlBackgroundColor)
-                borderColor = Color.gray.opacity(0.25)
-                textColor = .primary
+                bgColor = colorScheme == .light ? Color.white : Color(NSColor.controlBackgroundColor)
+                borderColor = colorScheme == .light ? Color.black.opacity(0.18) : Color.white.opacity(0.20)
+                textColor = colorScheme == .light ? Color(NSColor.labelColor) : Color.white
             }
         } else if isSelected {
-            bgColor = Color.accentColor.opacity(0.15)
-            borderColor = Color.accentColor
-            textColor = .primary
+            bgColor = LiquidGlassPalette.oceanBlue.opacity(0.20)
+            borderColor = LiquidGlassPalette.oceanBlue
+            textColor = LiquidGlassPalette.oceanBlue
         } else {
-            bgColor = Color(NSColor.controlBackgroundColor)
-            borderColor = Color.gray.opacity(0.25)
-            textColor = .primary
+            bgColor = colorScheme == .light ? Color.white : Color(NSColor.controlBackgroundColor)
+            borderColor = colorScheme == .light ? Color.black.opacity(0.18) : Color.white.opacity(0.20)
+            textColor = colorScheme == .light ? Color(NSColor.labelColor) : Color.white
         }
         
         return Button(action: {
@@ -497,7 +521,7 @@ public struct PracticeView: View {
                     showReviewView = true
                 }
                 
-                PrimaryButton(title: "Thi lại từ đầu (Reset Quiz)", icon: "arrow.clockwise", color: .accentColor) {
+                PrimaryButton(title: "Thi lại từ đầu (Reset Quiz)", icon: "arrow.clockwise", color: LiquidGlassPalette.cyanTeal) {
                     showFinishDialog = false
                     storage.resetQuizProgress(projectId: project.id, quizId: quiz.id)
                     setupQuizQuestions()

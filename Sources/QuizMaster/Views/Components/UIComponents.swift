@@ -1,123 +1,24 @@
 import SwiftUI
+import AppKit
 
-public struct GlassConfiguration {
-    public var tintColor: Color? = nil
-    public var isInteractive: Bool = false
-    
-    public static var regular: GlassConfiguration { GlassConfiguration() }
-    
-    public func tint(_ color: Color) -> GlassConfiguration {
-        var copy = self
-        copy.tintColor = color
-        return copy
-    }
-    
-    public func interactive(_ enabled: Bool = true) -> GlassConfiguration {
-        var copy = self
-        copy.isInteractive = enabled
-        return copy
-    }
-}
-
-public enum GlassShape {
-    case capsule
-    case rect(cornerRadius: CGFloat)
-    case circle
-}
-
-extension View {
-    @ViewBuilder
-    public func glassEffect(_ config: GlassConfiguration = .regular, in shape: GlassShape = .rect(cornerRadius: 12.0)) -> some View {
-        let tint = config.tintColor ?? Color.accentColor
-        
-        switch shape {
-        case .capsule:
-            let capsule = Capsule()
-            self
-                .background(
-                    ZStack {
-                        tint.opacity(0.18)
-                    }
-                    .background(.regularMaterial, in: capsule)
-                )
-                .clipShape(capsule)
-                .overlay(
-                    capsule.strokeBorder(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.45),
-                                tint.opacity(0.3),
-                                Color.white.opacity(0.1)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 1
-                    )
-                )
-                .shadow(color: Color.black.opacity(0.08), radius: 6, x: 0, y: 3)
-        case .rect(let cr):
-            let rect = RoundedRectangle(cornerRadius: cr, style: .continuous)
-            self
-                .background(
-                    ZStack {
-                        tint.opacity(0.18)
-                    }
-                    .background(.regularMaterial, in: rect)
-                )
-                .clipShape(rect)
-                .overlay(
-                    rect.strokeBorder(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.45),
-                                tint.opacity(0.3),
-                                Color.white.opacity(0.1)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 1
-                    )
-                )
-                .shadow(color: Color.black.opacity(0.08), radius: 6, x: 0, y: 3)
-        case .circle:
-            let circle = Circle()
-            self
-                .background(
-                    ZStack {
-                        tint.opacity(0.18)
-                    }
-                    .background(.regularMaterial, in: circle)
-                )
-                .clipShape(circle)
-                .overlay(
-                    circle.strokeBorder(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.45),
-                                tint.opacity(0.3),
-                                Color.white.opacity(0.1)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 1
-                    )
-                )
-                .shadow(color: Color.black.opacity(0.08), radius: 6, x: 0, y: 3)
-        }
-    }
+public struct LiquidGlassPalette {
+    public static let oceanBlue = Color(red: 0.0, green: 0.45, blue: 0.98)
+    public static let cyanTeal = Color(red: 0.0, green: 0.68, blue: 0.72)
+    public static let emeraldMint = Color(red: 0.10, green: 0.72, blue: 0.38)
+    public static let sunsetOrange = Color(red: 0.98, green: 0.45, blue: 0.05)
+    public static let coralRed = Color(red: 0.92, green: 0.18, blue: 0.30)
+    public static let deepPurple = Color(red: 0.55, green: 0.25, blue: 0.92)
 }
 
 public struct PrimaryButton: View {
     @Environment(\.appFontScale) var fontScale
+    @Environment(\.colorScheme) var colorScheme
     let title: String
     let icon: String?
     let action: () -> Void
-    var color: Color = .accentColor
+    var color: Color = LiquidGlassPalette.oceanBlue
     
-    public init(title: String, icon: String? = nil, color: Color = .accentColor, action: @escaping () -> Void) {
+    public init(title: String, icon: String? = nil, color: Color = LiquidGlassPalette.oceanBlue, action: @escaping () -> Void) {
         self.title = title
         self.icon = icon
         self.color = color
@@ -129,15 +30,33 @@ public struct PrimaryButton: View {
             HStack(spacing: 8) {
                 if let icon = icon {
                     Image(systemName: icon)
-                        .font(.system(size: 14 * fontScale, weight: .semibold))
+                        .font(.system(size: 14 * fontScale, weight: .bold))
                 }
                 Text(title)
-                    .font(.system(size: 14 * fontScale, weight: .semibold))
+                    .font(.system(size: 14 * fontScale, weight: .bold))
             }
             .foregroundColor(.white)
             .padding(.horizontal, 16 * fontScale)
             .padding(.vertical, 9 * fontScale)
-            .glassEffect(.regular.tint(color).interactive(), in: .rect(cornerRadius: 10))
+            .background(
+                ZStack {
+                    // Full solid vibrant color fill
+                    color
+                    
+                    // Glossy specular top shine
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.30), Color.clear],
+                        startPoint: .top,
+                        endPoint: .center
+                    )
+                }
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(Color.white.opacity(0.40), lineWidth: 1)
+            )
+            .shadow(color: color.opacity(0.45), radius: 6, x: 0, y: 3)
         }
         .buttonStyle(.plain)
     }
@@ -145,6 +64,7 @@ public struct PrimaryButton: View {
 
 public struct SecondaryButton: View {
     @Environment(\.appFontScale) var fontScale
+    @Environment(\.colorScheme) var colorScheme
     let title: String
     let icon: String?
     let action: () -> Void
@@ -160,14 +80,30 @@ public struct SecondaryButton: View {
             HStack(spacing: 8) {
                 if let icon = icon {
                     Image(systemName: icon)
-                        .font(.system(size: 14 * fontScale, weight: .medium))
+                        .font(.system(size: 14 * fontScale, weight: .bold))
                 }
                 Text(title)
-                    .font(.system(size: 14 * fontScale, weight: .medium))
+                    .font(.system(size: 14 * fontScale, weight: .bold))
             }
+            .foregroundColor(colorScheme == .light ? Color(NSColor.labelColor) : Color.white)
             .padding(.horizontal, 14 * fontScale)
             .padding(.vertical, 8 * fontScale)
-            .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 8))
+            .background(
+                colorScheme == .light
+                ? Color.white
+                : Color.white.opacity(0.15)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .strokeBorder(
+                        colorScheme == .light
+                        ? Color.black.opacity(0.25)
+                        : Color.white.opacity(0.35),
+                        lineWidth: 1.5
+                    )
+            )
+            .shadow(color: Color.black.opacity(0.08), radius: 3, x: 0, y: 2)
         }
         .buttonStyle(.plain)
     }
@@ -176,19 +112,19 @@ public struct SecondaryButton: View {
 public struct ProgressBar: View {
     let value: Double // 0.0 to 1.0
     var height: CGFloat = 8
-    var color: Color = .accentColor
+    var color: Color = LiquidGlassPalette.oceanBlue
     
     public var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: height / 2, style: .continuous)
-                    .fill(Color.gray.opacity(0.2))
+                    .fill(Color.gray.opacity(0.30))
                     .frame(height: height)
                 
                 RoundedRectangle(cornerRadius: height / 2, style: .continuous)
                     .fill(
                         LinearGradient(
-                            colors: [color, color.opacity(0.8)],
+                            colors: [color, color.opacity(0.85)],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
@@ -202,6 +138,7 @@ public struct ProgressBar: View {
 }
 
 public struct GlassCard<Content: View>: View {
+    @Environment(\.colorScheme) var colorScheme
     let content: Content
     
     public init(@ViewBuilder content: () -> Content) {
@@ -211,16 +148,37 @@ public struct GlassCard<Content: View>: View {
     public var body: some View {
         content
             .padding(18)
-            .glassEffect(.regular, in: .rect(cornerRadius: 14))
+            .foregroundColor(colorScheme == .light ? Color(NSColor.labelColor) : Color.white)
+            .background(
+                colorScheme == .light
+                ? Color.white // Solid 100% white in Light Mode to guarantee zero white-on-white text issues!
+                : Color(NSColor.controlBackgroundColor) // Solid dark background in Dark Mode
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .strokeBorder(
+                        colorScheme == .light
+                        ? Color.black.opacity(0.18)
+                        : Color.white.opacity(0.25),
+                        lineWidth: 1.5
+                    )
+            )
+            .shadow(
+                color: colorScheme == .light ? Color.black.opacity(0.10) : Color.black.opacity(0.40),
+                radius: colorScheme == .light ? 8 : 12,
+                x: 0,
+                y: 4
+            )
     }
 }
 
 public struct BadgeView: View {
     @Environment(\.appFontScale) var fontScale
     let text: String
-    var color: Color = .accentColor
+    var color: Color = LiquidGlassPalette.oceanBlue
     
-    public init(text: String, color: Color = .accentColor) {
+    public init(text: String, color: Color = LiquidGlassPalette.oceanBlue) {
         self.text = text
         self.color = color
     }
@@ -231,6 +189,8 @@ public struct BadgeView: View {
             .padding(.horizontal, 10 * fontScale)
             .padding(.vertical, 4 * fontScale)
             .foregroundColor(.white)
-            .glassEffect(.regular.tint(color), in: .capsule)
+            .background(color) // Solid 100% vibrant color fill
+            .clipShape(Capsule())
+            .shadow(color: color.opacity(0.4), radius: 3, x: 0, y: 1)
     }
 }
