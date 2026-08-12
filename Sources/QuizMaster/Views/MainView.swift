@@ -373,7 +373,7 @@ public struct MainView: View {
                              activePracticeQuiz = quiz
                          }
                          
-                         PrimaryButton(title: loc.text("examMode"), icon: "timer", color: .orange) {
+                         PrimaryButton(title: loc.text("examMode"), icon: "timer", color: .accentColor) {
                              activeExamQuiz = quiz
                          }
                      }

@@ -52,7 +52,7 @@ public struct PracticeView: View {
                     if !activeQuestions.isEmpty {
                         Text(String(format: loc.text("progressFormat"), "\(currentIndex + 1)", "\(activeQuestions.count)"))
                             .font(.system(size: 12 * fontScale, weight: .bold))
-                            .foregroundColor(.blue)
+                            .foregroundColor(.accentColor)
                     }
                 }
                 
@@ -65,10 +65,10 @@ public struct PracticeView: View {
                         Text(loc.text("questionNavPane"))
                     }
                     .font(.system(size: 12 * fontScale, weight: .medium))
-                    .foregroundColor(showNavPane ? .blue : .secondary)
+                    .foregroundColor(showNavPane ? .accentColor : .secondary)
                     .padding(.horizontal, 8 * fontScale)
                     .padding(.vertical, 4 * fontScale)
-                    .background(showNavPane ? Color.blue.opacity(0.12) : Color.clear)
+                    .background(showNavPane ? Color.accentColor.opacity(0.12) : Color.clear)
                     .cornerRadius(6)
                 }
                 .buttonStyle(.plain)
@@ -81,7 +81,7 @@ public struct PracticeView: View {
                 ProgressBar(
                     value: Double(userAnswers.count) / Double(activeQuestions.count),
                     height: 6,
-                    color: .blue
+                    color: .accentColor
                 )
             }
             
@@ -99,7 +99,7 @@ public struct PracticeView: View {
                             GlassCard {
                                 VStack(alignment: .leading, spacing: 10 * fontScale) {
                                     HStack {
-                                        BadgeView(text: "\(loc.text("questionHeader")) \(currentIndex + 1)", color: .blue)
+                                        BadgeView(text: "\(loc.text("questionHeader")) \(currentIndex + 1)", color: .accentColor)
                                         Spacer()
                                         
                                         Button(action: { askingGeminiQuestion = currentQuestion }) {
@@ -108,10 +108,10 @@ public struct PracticeView: View {
                                                 Text("Hỏi Gemini AI về câu này")
                                             }
                                             .font(.system(size: 12 * fontScale, weight: .semibold))
-                                            .foregroundColor(.purple)
+                                            .foregroundColor(.accentColor)
                                             .padding(.horizontal, 10 * fontScale)
                                             .padding(.vertical, 5 * fontScale)
-                                            .background(Color.purple.opacity(0.12))
+                                            .background(Color.accentColor.opacity(0.12))
                                             .cornerRadius(8)
                                         }
                                         .buttonStyle(.plain)
@@ -205,7 +205,7 @@ public struct PracticeView: View {
                     PrimaryButton(
                         title: currentIndex + 1 < activeQuestions.count ? loc.text("nextQuestion") : loc.text("finishPractice"),
                         icon: currentIndex + 1 < activeQuestions.count ? "arrow.right" : "checkmark.seal.fill",
-                        color: currentIndex + 1 < activeQuestions.count ? .blue : .green
+                        color: currentIndex + 1 < activeQuestions.count ? .accentColor : .green
                     ) {
                         advanceToNextQuestion()
                     }
@@ -237,7 +237,7 @@ public struct PracticeView: View {
     private func navButton(index: Int, question: Question) -> some View {
         let isCurrent = index == currentIndex
         let userAns = userAnswers[question.id]
-        let btnColor: Color = isCurrent ? .blue : (userAns != nil ? (userAns == question.correctAnswerIndex ? .green : .red) : .gray.opacity(0.4))
+        let btnColor: Color = isCurrent ? .accentColor : (userAns != nil ? (userAns == question.correctAnswerIndex ? .green : .red) : .gray.opacity(0.4))
         
         Button(action: {
             jumpToQuestion(index: index)
@@ -250,7 +250,7 @@ public struct PracticeView: View {
                 .cornerRadius(8)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(isCurrent ? Color.blue : Color.clear, lineWidth: 2)
+                        .stroke(isCurrent ? Color.accentColor : Color.clear, lineWidth: 2)
                 )
         }
         .buttonStyle(.plain)
@@ -279,8 +279,8 @@ public struct PracticeView: View {
                 textColor = .primary
             }
         } else if isSelected {
-            bgColor = Color.blue.opacity(0.15)
-            borderColor = Color.blue
+            bgColor = Color.accentColor.opacity(0.15)
+            borderColor = Color.accentColor
             textColor = .primary
         } else {
             bgColor = Color(NSColor.controlBackgroundColor)

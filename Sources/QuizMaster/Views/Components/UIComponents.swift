@@ -9,6 +9,7 @@ public struct LiquidGlassPalette {
 
 public struct PrimaryButton: View {
     @Environment(\.appFontScale) var fontScale
+    @Environment(\.colorScheme) var colorScheme
     let title: String
     let icon: String?
     let action: () -> Void
@@ -33,16 +34,20 @@ public struct PrimaryButton: View {
             }
             .foregroundColor(.white)
             .padding(.horizontal, 16 * fontScale)
-            .padding(.vertical, 10 * fontScale)
+            .padding(.vertical, 9 * fontScale)
             .background(
                 LinearGradient(
-                    colors: [color, color.opacity(0.85)],
+                    colors: [color, color.opacity(0.88)],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
             )
-            .cornerRadius(10)
-            .shadow(color: color.opacity(0.3), radius: 4, x: 0, y: 2)
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(Color.white.opacity(0.25), lineWidth: 1)
+            )
+            .shadow(color: color.opacity(0.35), radius: 5, x: 0, y: 2)
         }
         .buttonStyle(.plain)
     }
@@ -50,6 +55,7 @@ public struct PrimaryButton: View {
 
 public struct SecondaryButton: View {
     @Environment(\.appFontScale) var fontScale
+    @Environment(\.colorScheme) var colorScheme
     let title: String
     let icon: String?
     let action: () -> Void
@@ -72,11 +78,16 @@ public struct SecondaryButton: View {
             }
             .padding(.horizontal, 14 * fontScale)
             .padding(.vertical, 8 * fontScale)
-            .background(Color(NSColor.controlBackgroundColor).opacity(0.8))
-            .cornerRadius(8)
+            .background(
+                ZStack {
+                    GlassVisualEffectView(material: .hudWindow, blendingMode: .withinWindow)
+                    Color(NSColor.controlBackgroundColor).opacity(colorScheme == .dark ? 0.4 : 0.6)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            )
             .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .strokeBorder(Color.white.opacity(colorScheme == .dark ? 0.2 : 0.4), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -91,11 +102,11 @@ public struct ProgressBar: View {
     public var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: height / 2)
+                RoundedRectangle(cornerRadius: height / 2, style: .continuous)
                     .fill(Color.gray.opacity(0.2))
                     .frame(height: height)
                 
-                RoundedRectangle(cornerRadius: height / 2)
+                RoundedRectangle(cornerRadius: height / 2, style: .continuous)
                     .fill(
                         LinearGradient(
                             colors: [color, color.opacity(0.8)],
@@ -120,16 +131,7 @@ public struct GlassCard<Content: View>: View {
     
     public var body: some View {
         content
-            .padding(18)
-            .background(
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(Color(NSColor.controlBackgroundColor).opacity(0.7))
-                    .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 4)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 14)
-                    .stroke(Color.white.opacity(0.15), lineWidth: 1)
-            )
+            .liquidGlassCard(cornerRadius: 14, accentColor: .accentColor)
     }
 }
 
@@ -147,10 +149,10 @@ public struct BadgeView: View {
         Text(text)
             .font(.system(size: 11 * fontScale, weight: .bold))
             .padding(.horizontal, 10 * fontScale)
-            .padding(.vertical, 5 * fontScale)
+            .padding(.vertical, 4 * fontScale)
             .foregroundColor(.white)
             .background(color.opacity(0.88))
-            .cornerRadius(12)
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             .shadow(color: color.opacity(0.25), radius: 2, x: 0, y: 1)
     }
 }

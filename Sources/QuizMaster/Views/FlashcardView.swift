@@ -46,7 +46,7 @@ public struct FlashcardView: View {
                     
                     Text("Vòng học thứ \(studyRound) • Còn lại \(cardQueue.count + (currentCard != nil ? 1 : 0)) thẻ")
                         .font(.system(size: 12 * fontScale, weight: .bold))
-                        .foregroundColor(.blue)
+                        .foregroundColor(.accentColor)
                 }
                 
                 Spacer()
@@ -58,10 +58,10 @@ public struct FlashcardView: View {
                         Text(loc.text("questionNavPane"))
                     }
                     .font(.system(size: 12 * fontScale, weight: .medium))
-                    .foregroundColor(showNavPane ? .blue : .secondary)
+                    .foregroundColor(showNavPane ? .accentColor : .secondary)
                     .padding(.horizontal, 10 * fontScale)
                     .padding(.vertical, 5 * fontScale)
-                    .background(showNavPane ? Color.blue.opacity(0.1) : Color(NSColor.controlBackgroundColor))
+                    .background(showNavPane ? Color.accentColor.opacity(0.1) : Color(NSColor.controlBackgroundColor))
                     .cornerRadius(8)
                 }
                 .buttonStyle(.plain)
@@ -86,7 +86,7 @@ public struct FlashcardView: View {
                                 // Front: Question Side
                                 GlassCard {
                                     VStack(spacing: 16 * fontScale) {
-                                        BadgeView(text: loc.text("questionSide"), color: .blue)
+                                        BadgeView(text: loc.text("questionSide"), color: .accentColor)
                                         
                                         Spacer()
                                         

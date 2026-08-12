@@ -13,12 +13,10 @@ public struct ExamView: View {
     
     @State private var activeQuestions: [Question] = []
     @State private var currentIndex: Int = 0
-    @State private var userAnswers: [String: Int] = [:]
-    
-    @State private var isExamFinished: Bool = false
+    @State private var userAnswers: [String: Int] = [:] // questionId -> selectedOptionIndex
     @State private var showEndingView: Bool = false
+    @State private var showNavPane: Bool = false
     @State private var askingGeminiQuestion: Question? = nil
-    @State private var showNavPane: Bool = true
     @State private var eventMonitor: Any? = nil
     
     public var body: some View {
@@ -45,7 +43,7 @@ public struct ExamView: View {
                     if !activeQuestions.isEmpty {
                         Text(String(format: loc.text("progressFormat"), "\(currentIndex + 1)", "\(activeQuestions.count)"))
                             .font(.system(size: 12 * fontScale, weight: .bold))
-                            .foregroundColor(.orange)
+                            .foregroundColor(.accentColor)
                     }
                 }
                 
@@ -58,10 +56,10 @@ public struct ExamView: View {
                         Text(loc.text("questionNavPane"))
                     }
                     .font(.system(size: 12 * fontScale, weight: .medium))
-                    .foregroundColor(showNavPane ? .orange : .secondary)
+                    .foregroundColor(showNavPane ? .accentColor : .secondary)
                     .padding(.horizontal, 8 * fontScale)
                     .padding(.vertical, 4 * fontScale)
-                    .background(showNavPane ? Color.orange.opacity(0.12) : Color.clear)
+                    .background(showNavPane ? Color.accentColor.opacity(0.12) : Color.clear)
                     .cornerRadius(6)
                 }
                 .buttonStyle(.plain)
@@ -74,7 +72,7 @@ public struct ExamView: View {
                 ProgressBar(
                     value: Double(userAnswers.count) / Double(activeQuestions.count),
                     height: 6,
-                    color: .orange
+                    color: .accentColor
                 )
             }
             
@@ -91,7 +89,7 @@ public struct ExamView: View {
                             GlassCard {
                                 VStack(alignment: .leading, spacing: 10 * fontScale) {
                                     HStack {
-                                        BadgeView(text: "\(loc.text("questionHeader")) \(currentIndex + 1)", color: .orange)
+                                        BadgeView(text: "\(loc.text("questionHeader")) \(currentIndex + 1)", color: .accentColor)
                                         Spacer()
                                     }
                                     
@@ -162,7 +160,7 @@ public struct ExamView: View {
                 PrimaryButton(
                     title: "Nộp bài thi (\(userAnswers.count)/\(activeQuestions.count) câu)",
                     icon: "checkmark.seal.fill",
-                    color: .orange
+                    color: .accentColor
                 ) {
                     submitExam()
                 }
@@ -192,7 +190,7 @@ public struct ExamView: View {
     private func navButton(index: Int, question: Question) -> some View {
         let isCurrent = index == currentIndex
         let isAnswered = userAnswers[question.id] != nil
-        let btnColor: Color = isCurrent ? .orange : (isAnswered ? .blue : .gray.opacity(0.4))
+        let btnColor: Color = isCurrent ? .accentColor : (isAnswered ? .accentColor.opacity(0.7) : .gray.opacity(0.4))
         
         Button(action: {
             currentIndex = index
@@ -205,7 +203,7 @@ public struct ExamView: View {
                 .cornerRadius(8)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(isCurrent ? Color.orange : Color.clear, lineWidth: 2)
+                        .stroke(isCurrent ? Color.accentColor : Color.clear, lineWidth: 2)
                 )
         }
         .buttonStyle(.plain)
@@ -220,11 +218,11 @@ public struct ExamView: View {
             HStack(spacing: 14 * fontScale) {
                 ZStack {
                     Circle()
-                        .fill(isSelected ? Color.orange.opacity(0.3) : Color.gray.opacity(0.15))
+                        .fill(isSelected ? Color.accentColor.opacity(0.3) : Color.gray.opacity(0.15))
                         .frame(width: 32 * fontScale, height: 32 * fontScale)
                     Text(option.label)
                         .font(.system(size: 14 * fontScale, weight: .bold))
-                        .foregroundColor(isSelected ? .orange : .primary)
+                        .foregroundColor(isSelected ? .accentColor : .primary)
                 }
                 
                 Text(option.text)
@@ -236,16 +234,16 @@ public struct ExamView: View {
                 
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.orange)
+                        .foregroundColor(.accentColor)
                         .font(.system(size: 18 * fontScale))
                 }
             }
             .padding(14 * fontScale)
-            .background(isSelected ? Color.orange.opacity(0.12) : Color(NSColor.controlBackgroundColor))
+            .background(isSelected ? Color.accentColor.opacity(0.12) : Color(NSColor.controlBackgroundColor))
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? Color.orange : Color.gray.opacity(0.25), lineWidth: isSelected ? 2 : 1)
+                    .stroke(isSelected ? Color.accentColor : Color.gray.opacity(0.25), lineWidth: isSelected ? 2 : 1)
             )
         }
         .buttonStyle(.plain)

@@ -1,7 +1,7 @@
 {
   "version": "1.0.3",
-  "buildNumber": 129,
-  "releaseTag": "v1.0.3-b129",
-  "buildDate": "2026-08-12T12:40:16Z",
-  "releaseNotes": "QuizMaster v1.0.3 (Build 129):\n- AppIcon added to top of README\n- Native macOS System Accent Color palette integration\n- Strict single release enforcement per version number on GitHub\n- Saved Ask Gemini AI answers persistent storage\n- Codesign & Gatekeeper quarantine launch error fix\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
+  "buildNumber": 131,
+  "releaseTag": "v1.0.3-b131",
+  "buildDate": "2026-08-12T12:45:09Z",
+  "releaseNotes": "QuizMaster v1.0.3 (Build 131):\n- AppIcon added to top of README\n- macOS native System Accent Color integration\n- Strict single release enforcement per version number on GitHub\n- Saved Ask Gemini AI answers persistent storage\n- Codesign & Gatekeeper quarantine launch error fix\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
 }

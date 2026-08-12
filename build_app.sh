@@ -11,7 +11,7 @@ if [ -f "$BUILD_FILE" ]; then
     BUILD_NUMBER=$(cat "$BUILD_FILE")
     BUILD_NUMBER=$((BUILD_NUMBER + 1))
 else
-    BUILD_NUMBER=128
+    BUILD_NUMBER=129
 fi
 echo "$BUILD_NUMBER" > "$BUILD_FILE"
 
@@ -27,7 +27,7 @@ cat <<EOF > "build_info.json"
   "buildNumber": ${BUILD_NUMBER},
   "releaseTag": "${RELEASE_TAG}",
   "buildDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "releaseNotes": "QuizMaster v${VERSION} (Build ${BUILD_NUMBER}):\n- AppIcon added to top of README\n- Native macOS System Accent Color palette integration\n- Strict single release enforcement per version number on GitHub\n- Saved Ask Gemini AI answers persistent storage\n- Codesign & Gatekeeper quarantine launch error fix\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
+  "releaseNotes": "QuizMaster v${VERSION} (Build ${BUILD_NUMBER}):\n- AppIcon added to top of README\n- macOS native System Accent Color integration\n- Strict single release enforcement per version number on GitHub\n- Saved Ask Gemini AI answers persistent storage\n- Codesign & Gatekeeper quarantine launch error fix\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
 }
 EOF
 
@@ -123,13 +123,13 @@ echo "📦 Packaged Release Zip: '${ZIP_NAME}'"
 if command -v gh &> /dev/null; then
     echo "🔍 Finding all existing GitHub releases for version v${VERSION}..."
     
-    SAME_VERSION_RELEASES=$(gh release list --limit 50 | grep "^v${VERSION}-b" | awk '{print $1}' || true)
+    SAME_VERSION_RELEASES=$(gh release list --limit 100 --json tagName -q '.[].tagName' | grep "^v${VERSION}-" || true)
     
     if [ -n "$SAME_VERSION_RELEASES" ]; then
         echo "🧹 Deleting ALL older builds for version v${VERSION} on GitHub so only 1 release remains..."
         for old_tag in $SAME_VERSION_RELEASES; do
             if [ "$old_tag" != "${RELEASE_TAG}" ]; then
-                echo "🗑️ Deleting older release ${old_tag}..."
+                echo "🗑️ Deleting older release tag ${old_tag}..."
                 gh release delete "${old_tag}" -y --cleanup-tag || true
             fi
         done
