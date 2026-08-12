@@ -17,7 +17,7 @@ func renderIcon(size: CGFloat) -> NSImage {
     context.addPath(path)
     context.clip()
     
-    // Gradient fill (Ocean Blue to Cyan Teal & Emerald Mint)
+    // Gradient fill (Ocean Blue to Cyan Teal)
     let colorSpace = CGColorSpaceCreateDeviceRGB()
     let colors = [
         NSColor(calibratedRed: 0.0, green: 0.48, blue: 1.0, alpha: 1.0).cgColor,
@@ -73,4 +73,7 @@ for (filename, sz) in sizes {
     savePNG(image: img, path: "\(iconsetDir)/\(filename)")
 }
 
-print("AppIcon.iconset generated with Ocean Blue & Cyan Teal gradient!")
+let mainIcon = renderIcon(size: 256)
+savePNG(image: mainIcon, path: "AppIcon.png")
+
+print("AppIcon.iconset and AppIcon.png generated successfully!")
