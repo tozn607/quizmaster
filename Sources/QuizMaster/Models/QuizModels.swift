@@ -182,6 +182,7 @@ public struct Quiz: Identifiable, Codable, Equatable, Hashable {
 public struct QuizProgress: Identifiable, Codable, Equatable, Hashable {
     public var id: String
     public var quizId: String
+    public var currentIndex: Int
     public var userAnswers: [String: Int]
     public var wrongQuestionIds: Set<String>
     public var flashcardMasteredIds: Set<String>
@@ -189,9 +190,10 @@ public struct QuizProgress: Identifiable, Codable, Equatable, Hashable {
     public var startTime: Date
     public var endTime: Date?
     
-    public init(id: String = UUID().uuidString, quizId: String, userAnswers: [String: Int] = [:], wrongQuestionIds: Set<String> = [], flashcardMasteredIds: Set<String> = [], isCompleted: Bool = false, startTime: Date = Date(), endTime: Date? = nil) {
+    public init(id: String = UUID().uuidString, quizId: String, currentIndex: Int = 0, userAnswers: [String: Int] = [:], wrongQuestionIds: Set<String> = [], flashcardMasteredIds: Set<String> = [], isCompleted: Bool = false, startTime: Date = Date(), endTime: Date? = nil) {
         self.id = id
         self.quizId = quizId
+        self.currentIndex = currentIndex
         self.userAnswers = userAnswers
         self.wrongQuestionIds = wrongQuestionIds
         self.flashcardMasteredIds = flashcardMasteredIds

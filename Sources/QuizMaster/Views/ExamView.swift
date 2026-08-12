@@ -9,18 +9,17 @@ public struct ExamView: View {
     @EnvironmentObject var storage: StorageManager
     @EnvironmentObject var loc: LocalizationManager
     @Environment(\.appFontScale) var fontScale
+    @Environment(\.dismiss) var dismiss
     
     @State private var activeQuestions: [Question] = []
     @State private var currentIndex: Int = 0
     @State private var userAnswers: [String: Int] = [:]
-    @State private var wrongQuestionIds: Set<String> = []
     
     @State private var isExamFinished: Bool = false
-    @State private var showFinishDialog: Bool = false
-    @State private var showReviewView: Bool = false
+    @State private var showEndingView: Bool = false
+    @State private var askingGeminiQuestion: Question? = nil
+    @State private var showNavPane: Bool = true
     @State private var eventMonitor: Any? = nil
-    
-    @Environment(\.dismiss) var dismiss
     
     public var body: some View {
         VStack(spacing: 0) {
@@ -29,27 +28,21 @@ public struct ExamView: View {
                 Button(action: { dismiss() }) {
                     HStack(spacing: 4) {
                         Image(systemName: "chevron.left")
-                        Text("Thoát bài thi")
+                        Text(loc.text("quitQuiz"))
                     }
                     .font(.system(size: 13 * fontScale))
                     .foregroundColor(.secondary)
                 }
                 .buttonStyle(.plain)
-                .help("Bấm phím Delete để thoát")
                 
                 Spacer()
                 
                 VStack(spacing: 2) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "timer")
-                            .foregroundColor(.orange)
-                        Text("Thi thử (Exam Mode): \(quiz.title)")
-                            .font(.system(size: 16 * fontScale, weight: .bold))
-                            .lineLimit(1)
-                    }
+                    Text("\(quiz.title) (Thi thử - Exam Mode)")
+                        .font(.system(size: 16 * fontScale, weight: .bold))
                     
                     if !activeQuestions.isEmpty {
-                        Text("Đã trả lời \(userAnswers.count) / \(activeQuestions.count) câu")
+                        Text(String(format: loc.text("progressFormat"), "\(currentIndex + 1)", "\(activeQuestions.count)"))
                             .font(.system(size: 12 * fontScale, weight: .bold))
                             .foregroundColor(.orange)
                     }
@@ -57,9 +50,20 @@ public struct ExamView: View {
                 
                 Spacer()
                 
-                PrimaryButton(title: "Nộp bài thi", icon: "paperplane.fill", color: .orange) {
-                    submitExam()
+                // Toggle Question Navigator Sidebar
+                Button(action: { withAnimation { showNavPane.toggle() } }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "sidebar.right")
+                        Text(loc.text("questionNavPane"))
+                    }
+                    .font(.system(size: 12 * fontScale, weight: .medium))
+                    .foregroundColor(showNavPane ? .orange : .secondary)
+                    .padding(.horizontal, 8 * fontScale)
+                    .padding(.vertical, 4 * fontScale)
+                    .background(showNavPane ? Color.orange.opacity(0.12) : Color.clear)
+                    .cornerRadius(6)
                 }
+                .buttonStyle(.plain)
             }
             .padding()
             .background(Color(NSColor.controlBackgroundColor))
@@ -75,85 +79,120 @@ public struct ExamView: View {
             
             Divider()
             
-            // Question & Options Area
-            if !activeQuestions.isEmpty && currentIndex < activeQuestions.count {
-                let currentQuestion = activeQuestions[currentIndex]
-                let selectedOption = userAnswers[currentQuestion.id]
-                
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 20 * fontScale) {
-                        // Question Card
-                        GlassCard {
-                            VStack(alignment: .leading, spacing: 10 * fontScale) {
-                                HStack {
-                                    BadgeView(text: "Câu \(currentIndex + 1) / \(activeQuestions.count)", color: .orange)
-                                    Spacer()
-                                    if selectedOption != nil {
-                                        BadgeView(text: "Đã chọn đáp án", color: .blue)
-                                    } else {
-                                        BadgeView(text: "Chưa trả lời", color: .gray)
+            // Main Question & Right Navigation Split View
+            HStack(spacing: 0) {
+                // Left Question Area
+                if !activeQuestions.isEmpty && currentIndex < activeQuestions.count {
+                    let currentQuestion = activeQuestions[currentIndex]
+                    
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 20 * fontScale) {
+                            GlassCard {
+                                VStack(alignment: .leading, spacing: 10 * fontScale) {
+                                    HStack {
+                                        BadgeView(text: "\(loc.text("questionHeader")) \(currentIndex + 1)", color: .orange)
+                                        Spacer()
+                                        
+                                        Button(action: { askingGeminiQuestion = currentQuestion }) {
+                                            HStack(spacing: 6) {
+                                                Image(systemName: "sparkles")
+                                                Text("Hỏi Gemini AI về câu này")
+                                            }
+                                            .font(.system(size: 12 * fontScale, weight: .semibold))
+                                            .foregroundColor(.purple)
+                                            .padding(.horizontal, 10 * fontScale)
+                                            .padding(.vertical, 5 * fontScale)
+                                            .background(Color.purple.opacity(0.12))
+                                            .cornerRadius(8)
+                                        }
+                                        .buttonStyle(.plain)
                                     }
+                                    
+                                    Text(currentQuestion.text)
+                                        .font(.system(size: 19 * fontScale, weight: .bold))
+                                        .lineSpacing(4)
                                 }
-                                
-                                Text(currentQuestion.text)
-                                    .font(.system(size: 19 * fontScale, weight: .bold))
-                                    .lineSpacing(4)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        
-                        // Option Buttons
-                        VStack(spacing: 12 * fontScale) {
-                            ForEach(Array(currentQuestion.options.enumerated()), id: \.offset) { idx, option in
-                                optionButton(for: option, index: idx, question: currentQuestion, selectedOption: selectedOption)
+                            
+                            VStack(spacing: 12 * fontScale) {
+                                ForEach(Array(currentQuestion.options.enumerated()), id: \.offset) { idx, option in
+                                    optionButton(for: option, index: idx, question: currentQuestion)
+                                }
                             }
                         }
+                        .padding()
                     }
-                    .padding()
-                }
-                
-                Divider()
-                
-                // Footer Navigation
-                HStack {
-                    Text("Phím tắt: A/B/C/D (hoặc 1/2/3/4) chọn đáp án • ← → di chuyển • Enter nộp bài • Delete thoát")
-                        .font(.system(size: 11 * fontScale))
-                        .foregroundColor(.secondary)
-                    
+                } else {
                     Spacer()
-                    
-                    if currentIndex > 0 {
-                        SecondaryButton(title: "Câu trước", icon: "arrow.left") {
-                            currentIndex -= 1
-                        }
-                    }
-                    
-                    if currentIndex + 1 < activeQuestions.count {
-                        PrimaryButton(title: "Câu tiếp", icon: "arrow.right", color: .blue) {
-                            currentIndex += 1
-                        }
-                    } else {
-                        PrimaryButton(title: "Nộp bài thi thử", icon: "checkmark.seal.fill", color: .green) {
-                            submitExam()
-                        }
-                    }
+                    ProgressView()
+                    Spacer()
                 }
-                .padding()
-                .background(Color(NSColor.controlBackgroundColor))
-            } else {
+                
+                // Right Navigation Pane Sidebar
+                if showNavPane && !activeQuestions.isEmpty {
+                    Divider()
+                    
+                    VStack(alignment: .leading, spacing: 12 * fontScale) {
+                        Text(loc.text("questionNavPane"))
+                            .font(.system(size: 13 * fontScale, weight: .bold))
+                            .foregroundColor(.secondary)
+                            .padding(.top, 12 * fontScale)
+                            .padding(.horizontal, 12 * fontScale)
+                        
+                        ScrollView {
+                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 40 * fontScale), spacing: 8 * fontScale)], spacing: 8 * fontScale) {
+                                ForEach(0..<activeQuestions.count, id: \.self) { idx in
+                                    navButton(index: idx, question: activeQuestions[idx])
+                                }
+                            }
+                            .padding(.horizontal, 12 * fontScale)
+                        }
+                    }
+                    .frame(width: 180 * fontScale)
+                    .background(Color(NSColor.controlBackgroundColor).opacity(0.5))
+                }
+            }
+            
+            Divider()
+            
+            // Footer Navigation
+            HStack {
+                HStack(spacing: 12 * fontScale) {
+                    SecondaryButton(title: "Câu trước (←)", icon: "arrow.left") {
+                        if currentIndex > 0 { currentIndex -= 1 }
+                    }
+                    .disabled(currentIndex == 0)
+                    
+                    SecondaryButton(title: "Câu sau (→)", icon: "arrow.right") {
+                        if currentIndex + 1 < activeQuestions.count { currentIndex += 1 }
+                    }
+                    .disabled(currentIndex + 1 >= activeQuestions.count)
+                }
+                
                 Spacer()
-                ProgressView()
-                Spacer()
+                
+                PrimaryButton(
+                    title: "Nộp bài thi (\(userAnswers.count)/\(activeQuestions.count) câu)",
+                    icon: "checkmark.seal.fill",
+                    color: .orange
+                ) {
+                    submitExam()
+                }
+            }
+            .padding()
+            .background(Color(NSColor.controlBackgroundColor))
+        }
+        .sheet(isPresented: $showEndingView) {
+            if let prog = project.progressMap[quiz.id] {
+                EndingView(project: project, quiz: quiz, progress: prog)
             }
         }
-        .sheet(isPresented: $showFinishDialog) {
-            examFinishDialog
-        }
-        .sheet(isPresented: $showReviewView) {
-            ReviewView(quiz: quiz, questions: activeQuestions, userAnswers: userAnswers, wrongIds: wrongQuestionIds)
+        .sheet(item: $askingGeminiQuestion) { q in
+            AskGeminiSheet(question: q)
         }
         .onAppear {
-            setupExamQuestions()
+            activeQuestions = quiz.questions
             setupKeyboardMonitor()
         }
         .onDisappear {
@@ -161,12 +200,32 @@ public struct ExamView: View {
         }
     }
     
-    private func optionButton(for option: QuestionOption, index: Int, question: Question, selectedOption: Int?) -> some View {
-        let isSelected = selectedOption == index
+    // MARK: - Navigation Button Renderer
+    @ViewBuilder
+    private func navButton(index: Int, question: Question) -> some View {
+        let isCurrent = index == currentIndex
+        let isAnswered = userAnswers[question.id] != nil
+        let btnColor: Color = isCurrent ? .orange : (isAnswered ? .blue : .gray.opacity(0.4))
         
-        let bgColor = isSelected ? Color.blue.opacity(0.18) : Color(NSColor.controlBackgroundColor)
-        let borderColor = isSelected ? Color.blue : Color.gray.opacity(0.25)
-        let textColor = isSelected ? Color.blue : Color.primary
+        Button(action: {
+            currentIndex = index
+        }) {
+            Text("\(index + 1)")
+                .font(.system(size: 13 * fontScale, weight: .bold))
+                .foregroundColor(isCurrent || isAnswered ? .white : .primary)
+                .frame(width: 38 * fontScale, height: 38 * fontScale)
+                .background(btnColor)
+                .cornerRadius(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(isCurrent ? Color.orange : Color.clear, lineWidth: 2)
+                )
+        }
+        .buttonStyle(.plain)
+    }
+    
+    private func optionButton(for option: QuestionOption, index: Int, question: Question) -> some View {
+        let isSelected = userAnswers[question.id] == index
         
         return Button(action: {
             userAnswers[question.id] = index
@@ -174,11 +233,11 @@ public struct ExamView: View {
             HStack(spacing: 14 * fontScale) {
                 ZStack {
                     Circle()
-                        .fill(borderColor.opacity(0.3))
+                        .fill(isSelected ? Color.orange.opacity(0.3) : Color.gray.opacity(0.15))
                         .frame(width: 32 * fontScale, height: 32 * fontScale)
                     Text(option.label)
                         .font(.system(size: 14 * fontScale, weight: .bold))
-                        .foregroundColor(textColor)
+                        .foregroundColor(isSelected ? .orange : .primary)
                 }
                 
                 Text(option.text)
@@ -189,25 +248,51 @@ public struct ExamView: View {
                 Spacer()
                 
                 if isSelected {
-                    Image(systemName: "largecircle.fill.circle")
-                        .foregroundColor(.blue)
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.orange)
                         .font(.system(size: 18 * fontScale))
                 }
             }
             .padding(14 * fontScale)
-            .background(bgColor)
+            .background(isSelected ? Color.orange.opacity(0.12) : Color(NSColor.controlBackgroundColor))
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(borderColor, lineWidth: isSelected ? 2 : 1)
+                    .stroke(isSelected ? Color.orange : Color.gray.opacity(0.25), lineWidth: isSelected ? 2 : 1)
             )
         }
         .buttonStyle(.plain)
     }
     
+    private func submitExam() {
+        var wrongIds: Set<String> = []
+        for q in activeQuestions {
+            if let ans = userAnswers[q.id] {
+                if ans != q.correctAnswerIndex {
+                    wrongIds.insert(q.id)
+                }
+            } else {
+                wrongIds.insert(q.id)
+            }
+        }
+        
+        let prog = QuizProgress(
+            quizId: quiz.id,
+            currentIndex: currentIndex,
+            userAnswers: userAnswers,
+            wrongQuestionIds: wrongIds,
+            isCompleted: true
+        )
+        
+        storage.saveProgress(projectId: project.id, progress: prog)
+        showEndingView = true
+    }
+    
     private func setupKeyboardMonitor() {
         removeKeyboardMonitor()
         eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            guard askingGeminiQuestion == nil && !showEndingView else { return event }
+            
             let chars = event.charactersIgnoringModifiers?.lowercased() ?? ""
             
             if event.keyCode == 51 {
@@ -215,31 +300,22 @@ public struct ExamView: View {
                 return nil
             }
             
-            if event.keyCode == 123 && currentIndex > 0 {
-                currentIndex -= 1
+            if event.keyCode == 123 {
+                if currentIndex > 0 { currentIndex -= 1 }
                 return nil
             }
             
-            if event.keyCode == 124 && currentIndex + 1 < activeQuestions.count {
-                currentIndex += 1
-                return nil
-            }
-            
-            if event.keyCode == 36 {
-                if currentIndex + 1 < activeQuestions.count {
-                    currentIndex += 1
-                } else {
-                    submitExam()
-                }
+            if event.keyCode == 124 {
+                if currentIndex + 1 < activeQuestions.count { currentIndex += 1 }
                 return nil
             }
             
             if !activeQuestions.isEmpty && currentIndex < activeQuestions.count {
-                let currentQuestion = activeQuestions[currentIndex]
-                if chars == "a" || chars == "1" { userAnswers[currentQuestion.id] = 0; return nil }
-                if chars == "b" || chars == "2" { userAnswers[currentQuestion.id] = 1; return nil }
-                if chars == "c" || chars == "3" { userAnswers[currentQuestion.id] = 2; return nil }
-                if chars == "d" || chars == "4" { userAnswers[currentQuestion.id] = 3; return nil }
+                let q = activeQuestions[currentIndex]
+                if chars == "a" || chars == "1" { userAnswers[q.id] = 0; return nil }
+                if chars == "b" || chars == "2" { userAnswers[q.id] = 1; return nil }
+                if chars == "c" || chars == "3" { userAnswers[q.id] = 2; return nil }
+                if chars == "d" || chars == "4" { userAnswers[q.id] = 3; return nil }
             }
             
             return event
@@ -251,129 +327,5 @@ public struct ExamView: View {
             NSEvent.removeMonitor(monitor)
             eventMonitor = nil
         }
-    }
-    
-    private func setupExamQuestions() {
-        if redoWrongOnly, let prog = project.progressMap[quiz.id] {
-            activeQuestions = quiz.questions.filter { prog.wrongQuestionIds.contains($0.id) }
-            if activeQuestions.isEmpty { activeQuestions = quiz.questions }
-        } else {
-            activeQuestions = quiz.questions
-        }
-        currentIndex = 0
-        userAnswers = [:]
-        wrongQuestionIds = []
-    }
-    
-    private func submitExam() {
-        var wrongs = Set<String>()
-        for q in activeQuestions {
-            let ans = userAnswers[q.id]
-            if ans != q.correctAnswerIndex {
-                wrongs.insert(q.id)
-            }
-        }
-        self.wrongQuestionIds = wrongs
-        
-        let prog = QuizProgress(
-            quizId: quiz.id,
-            userAnswers: userAnswers,
-            wrongQuestionIds: wrongQuestionIds,
-            isCompleted: true
-        )
-        storage.saveProgress(projectId: project.id, progress: prog)
-        
-        isExamFinished = true
-        showFinishDialog = true
-    }
-    
-    private var examFinishDialog: some View {
-        let total = activeQuestions.count
-        let correctCount = total - wrongQuestionIds.count
-        let accuracyPercent = total > 0 ? Int((Double(correctCount) / Double(total)) * 100.0) : 0
-        
-        return VStack(spacing: 20 * fontScale) {
-            Image(systemName: accuracyPercent >= 80 ? "trophy.fill" : "checkmark.seal.fill")
-                .font(.system(size: 54 * fontScale))
-                .foregroundColor(accuracyPercent >= 80 ? .yellow : .blue)
-            
-            VStack(spacing: 6) {
-                Text("Kết quả Bài Thi Thử")
-                    .font(.system(size: 20 * fontScale, weight: .bold))
-                Text(quiz.title)
-                    .font(.system(size: 14 * fontScale))
-                    .foregroundColor(.secondary)
-            }
-            
-            GlassCard {
-                VStack(spacing: 14 * fontScale) {
-                    HStack(spacing: 14 * fontScale) {
-                        statTile(title: "Điểm số", value: "\(accuracyPercent)%", color: accuracyPercent >= 70 ? .green : .orange)
-                        statTile(title: "Trả lời Đúng", value: "\(correctCount) / \(total)", color: .blue)
-                        statTile(title: "Trả lời Sai", value: "\(wrongQuestionIds.count)", color: .red)
-                    }
-                }
-            }
-            
-            Divider()
-            
-            VStack(spacing: 12 * fontScale) {
-                if !wrongQuestionIds.isEmpty {
-                    PrimaryButton(
-                        title: "Thi lại các câu làm SAI (\(wrongQuestionIds.count) câu)",
-                        icon: "arrow.triangle.2.circlepath",
-                        color: .orange
-                    ) {
-                        showFinishDialog = false
-                        let questionsToRedo = quiz.questions.filter { wrongQuestionIds.contains($0.id) }
-                        activeQuestions = questionsToRedo.isEmpty ? quiz.questions : questionsToRedo
-                        userAnswers.removeAll()
-                        wrongQuestionIds.removeAll()
-                        currentIndex = 0
-                    }
-                }
-                
-                SecondaryButton(
-                    title: "Xem lại đáp án chi tiết & giải thích",
-                    icon: "doc.text.magnifyingglass"
-                ) {
-                    showFinishDialog = false
-                    showReviewView = true
-                }
-                
-                PrimaryButton(title: "Thi lại từ đầu", icon: "arrow.clockwise", color: .purple) {
-                    showFinishDialog = false
-                    setupExamQuestions()
-                }
-                
-                Button(loc.text("backToDashboard")) {
-                    showFinishDialog = false
-                    dismiss()
-                }
-                .buttonStyle(.plain)
-                .font(.system(size: 13 * fontScale))
-                .foregroundColor(.secondary)
-                .padding(.top, 4)
-            }
-        }
-        .padding(28)
-        .frame(width: 440 * fontScale)
-    }
-    
-    @ViewBuilder
-    private func statTile(title: String, value: String, color: Color) -> some View {
-        VStack(spacing: 6) {
-            Text(value)
-                .font(.system(size: 20 * fontScale, weight: .bold))
-                .foregroundColor(color)
-            Text(title)
-                .font(.system(size: 12 * fontScale))
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 10 * fontScale)
-        .background(color.opacity(0.1))
-        .cornerRadius(10)
     }
 }

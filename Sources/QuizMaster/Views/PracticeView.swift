@@ -23,6 +23,7 @@ public struct PracticeView: View {
     @State private var showReviewView: Bool = false
     @State private var isRedoingWrong: Bool = false
     @State private var askingGeminiQuestion: Question? = nil
+    @State private var showNavPane: Bool = true
     @State private var eventMonitor: Any? = nil
     
     @Environment(\.dismiss) var dismiss
@@ -40,7 +41,6 @@ public struct PracticeView: View {
                     .foregroundColor(.secondary)
                 }
                 .buttonStyle(.plain)
-                .help("Bấm phím Delete để thoát")
                 
                 Spacer()
                 
@@ -58,10 +58,20 @@ public struct PracticeView: View {
                 
                 Spacer()
                 
-                Text(loc.text("scoreHiddenNote"))
-                    .font(.system(size: 11 * fontScale))
-                    .foregroundColor(.secondary)
-                    .italic()
+                // Toggle Question Navigator Sidebar
+                Button(action: { withAnimation { showNavPane.toggle() } }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "sidebar.right")
+                        Text(loc.text("questionNavPane"))
+                    }
+                    .font(.system(size: 12 * fontScale, weight: .medium))
+                    .foregroundColor(showNavPane ? .blue : .secondary)
+                    .padding(.horizontal, 8 * fontScale)
+                    .padding(.vertical, 4 * fontScale)
+                    .background(showNavPane ? Color.blue.opacity(0.12) : Color.clear)
+                    .cornerRadius(6)
+                }
+                .buttonStyle(.plain)
             }
             .padding()
             .background(Color(NSColor.controlBackgroundColor))
@@ -77,106 +87,132 @@ public struct PracticeView: View {
             
             Divider()
             
-            // Question & Options Area
-            if !activeQuestions.isEmpty && currentIndex < activeQuestions.count {
-                let currentQuestion = activeQuestions[currentIndex]
-                
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 20 * fontScale) {
-                        // Question Card
-                        GlassCard {
-                            VStack(alignment: .leading, spacing: 10 * fontScale) {
-                                HStack {
-                                    BadgeView(text: "\(loc.text("questionHeader")) \(currentIndex + 1)", color: .blue)
-                                    Spacer()
-                                    
-                                    Button(action: { askingGeminiQuestion = currentQuestion }) {
-                                        HStack(spacing: 6) {
-                                            Image(systemName: "sparkles")
-                                            Text("Hỏi Gemini AI về câu này")
+            // Main Question & Right Navigation Split View
+            HStack(spacing: 0) {
+                // Left Question & Options Area
+                if !activeQuestions.isEmpty && currentIndex < activeQuestions.count {
+                    let currentQuestion = activeQuestions[currentIndex]
+                    
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 20 * fontScale) {
+                            // Question Card
+                            GlassCard {
+                                VStack(alignment: .leading, spacing: 10 * fontScale) {
+                                    HStack {
+                                        BadgeView(text: "\(loc.text("questionHeader")) \(currentIndex + 1)", color: .blue)
+                                        Spacer()
+                                        
+                                        Button(action: { askingGeminiQuestion = currentQuestion }) {
+                                            HStack(spacing: 6) {
+                                                Image(systemName: "sparkles")
+                                                Text("Hỏi Gemini AI về câu này")
+                                            }
+                                            .font(.system(size: 12 * fontScale, weight: .semibold))
+                                            .foregroundColor(.purple)
+                                            .padding(.horizontal, 10 * fontScale)
+                                            .padding(.vertical, 5 * fontScale)
+                                            .background(Color.purple.opacity(0.12))
+                                            .cornerRadius(8)
                                         }
-                                        .font(.system(size: 12 * fontScale, weight: .semibold))
-                                        .foregroundColor(.purple)
-                                        .padding(.horizontal, 10 * fontScale)
-                                        .padding(.vertical, 5 * fontScale)
-                                        .background(Color.purple.opacity(0.12))
-                                        .cornerRadius(8)
+                                        .buttonStyle(.plain)
                                     }
-                                    .buttonStyle(.plain)
-                                    .help("Hỏi Gemini 3.5 Flash Lite để nhận giải thích sâu hơn")
+                                    
+                                    Text(currentQuestion.text)
+                                        .font(.system(size: 19 * fontScale, weight: .bold))
+                                        .lineSpacing(4)
                                 }
-                                
-                                Text(currentQuestion.text)
-                                    .font(.system(size: 19 * fontScale, weight: .bold))
-                                    .lineSpacing(4)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        
-                        // Option Buttons
-                        VStack(spacing: 12 * fontScale) {
-                            ForEach(Array(currentQuestion.options.enumerated()), id: \.offset) { idx, option in
-                                optionButton(for: option, index: idx, question: currentQuestion)
-                            }
-                        }
-                        
-                        // Explanation Banner (when answered)
-                        if isAnswered {
-                            VStack(alignment: .leading, spacing: 8 * fontScale) {
-                                HStack {
-                                    Image(systemName: selectedOptionIndex == currentQuestion.correctAnswerIndex ? "checkmark.circle.fill" : "xmark.circle.fill")
-                                        .font(.system(size: 18 * fontScale))
-                                    Text(selectedOptionIndex == currentQuestion.correctAnswerIndex ? loc.text("correctAnswer") : loc.text("wrongAnswer"))
-                                        .font(.system(size: 16 * fontScale, weight: .bold))
-                                }
-                                .foregroundColor(selectedOptionIndex == currentQuestion.correctAnswerIndex ? .green : .red)
-                                
-                                if !currentQuestion.explanation.isEmpty {
-                                    Text(currentQuestion.explanation)
-                                        .font(.system(size: 14 * fontScale))
-                                        .foregroundColor(.secondary)
-                                        .padding(.top, 2)
+                            
+                            // Option Buttons
+                            VStack(spacing: 12 * fontScale) {
+                                ForEach(Array(currentQuestion.options.enumerated()), id: \.offset) { idx, option in
+                                    optionButton(for: option, index: idx, question: currentQuestion)
                                 }
                             }
-                            .padding(14 * fontScale)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(
-                                (selectedOptionIndex == currentQuestion.correctAnswerIndex ? Color.green : Color.red).opacity(0.12)
-                            )
-                            .cornerRadius(12)
-                            .transition(.opacity.combined(with: .move(edge: .bottom)))
+                            
+                            // Explanation Banner (when answered)
+                            if isAnswered {
+                                VStack(alignment: .leading, spacing: 8 * fontScale) {
+                                    HStack {
+                                        Image(systemName: selectedOptionIndex == currentQuestion.correctAnswerIndex ? "checkmark.circle.fill" : "xmark.circle.fill")
+                                            .font(.system(size: 18 * fontScale))
+                                        Text(selectedOptionIndex == currentQuestion.correctAnswerIndex ? loc.text("correctAnswer") : loc.text("wrongAnswer"))
+                                            .font(.system(size: 16 * fontScale, weight: .bold))
+                                    }
+                                    .foregroundColor(selectedOptionIndex == currentQuestion.correctAnswerIndex ? .green : .red)
+                                    
+                                    if !currentQuestion.explanation.isEmpty {
+                                        Text(currentQuestion.explanation)
+                                            .font(.system(size: 14 * fontScale))
+                                            .foregroundColor(.secondary)
+                                            .padding(.top, 2)
+                                    }
+                                }
+                                .padding(14 * fontScale)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .background(
+                                    (selectedOptionIndex == currentQuestion.correctAnswerIndex ? Color.green : Color.red).opacity(0.12)
+                                )
+                                .cornerRadius(12)
+                                .transition(.opacity.combined(with: .move(edge: .bottom)))
+                            }
                         }
+                        .padding()
                     }
-                    .padding()
-                }
-                
-                Divider()
-                
-                // Footer Navigation
-                HStack {
-                    Text("Phím tắt: A/B/C/D (hoặc 1/2/3/4) chọn đáp án • Enter tiếp tục • Delete thoát")
-                        .font(.system(size: 11 * fontScale))
-                        .foregroundColor(.secondary)
-                    
+                } else {
                     Spacer()
+                    ProgressView()
+                    Spacer()
+                }
+                
+                // Right Navigation Pane Sidebar
+                if showNavPane && !activeQuestions.isEmpty {
+                    Divider()
                     
-                    if isAnswered {
-                        PrimaryButton(
-                            title: currentIndex + 1 < activeQuestions.count ? loc.text("nextQuestion") : loc.text("finishPractice"),
-                            icon: currentIndex + 1 < activeQuestions.count ? "arrow.right" : "checkmark.seal.fill",
-                            color: currentIndex + 1 < activeQuestions.count ? .blue : .green
-                        ) {
-                            advanceToNextQuestion()
+                    VStack(alignment: .leading, spacing: 12 * fontScale) {
+                        Text(loc.text("questionNavPane"))
+                            .font(.system(size: 13 * fontScale, weight: .bold))
+                            .foregroundColor(.secondary)
+                            .padding(.top, 12 * fontScale)
+                            .padding(.horizontal, 12 * fontScale)
+                        
+                        ScrollView {
+                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 40 * fontScale), spacing: 8 * fontScale)], spacing: 8 * fontScale) {
+                                ForEach(0..<activeQuestions.count, id: \.self) { idx in
+                                    navButton(index: idx, question: activeQuestions[idx])
+                                }
+                            }
+                            .padding(.horizontal, 12 * fontScale)
                         }
                     }
+                    .frame(width: 180 * fontScale)
+                    .background(Color(NSColor.controlBackgroundColor).opacity(0.5))
                 }
-                .padding()
-                .background(Color(NSColor.controlBackgroundColor))
-            } else {
-                Spacer()
-                ProgressView()
-                Spacer()
             }
+            
+            Divider()
+            
+            // Footer Navigation
+            HStack {
+                Text("Phím tắt: A/B/C/D chọn đáp án • Enter tiếp tục • Delete thoát")
+                    .font(.system(size: 11 * fontScale))
+                    .foregroundColor(.secondary)
+                
+                Spacer()
+                
+                if isAnswered {
+                    PrimaryButton(
+                        title: currentIndex + 1 < activeQuestions.count ? loc.text("nextQuestion") : loc.text("finishPractice"),
+                        icon: currentIndex + 1 < activeQuestions.count ? "arrow.right" : "checkmark.seal.fill",
+                        color: currentIndex + 1 < activeQuestions.count ? .blue : .green
+                    ) {
+                        advanceToNextQuestion()
+                    }
+                }
+            }
+            .padding()
+            .background(Color(NSColor.controlBackgroundColor))
         }
         .sheet(isPresented: $showFinishDialog) {
             quizFinishDialog
@@ -196,7 +232,30 @@ public struct PracticeView: View {
         }
     }
     
-    // MARK: - Option Button Renderer (Clean A, B, C, D without brackets)
+    // MARK: - Option Button Renderer
+    @ViewBuilder
+    private func navButton(index: Int, question: Question) -> some View {
+        let isCurrent = index == currentIndex
+        let userAns = userAnswers[question.id]
+        let btnColor: Color = isCurrent ? .blue : (userAns != nil ? (userAns == question.correctAnswerIndex ? .green : .red) : .gray.opacity(0.4))
+        
+        Button(action: {
+            jumpToQuestion(index: index)
+        }) {
+            Text("\(index + 1)")
+                .font(.system(size: 13 * fontScale, weight: .bold))
+                .foregroundColor(isCurrent || userAns != nil ? .white : .primary)
+                .frame(width: 38 * fontScale, height: 38 * fontScale)
+                .background(btnColor)
+                .cornerRadius(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(isCurrent ? Color.blue : Color.clear, lineWidth: 2)
+                )
+        }
+        .buttonStyle(.plain)
+    }
+    
     private func optionButton(for option: QuestionOption, index: Int, question: Question) -> some View {
         let isSelected = selectedOptionIndex == index
         let isCorrect = index == question.correctAnswerIndex
@@ -274,9 +333,15 @@ public struct PracticeView: View {
         .disabled(isAnswered)
     }
     
+    // MARK: - Keyboard Monitor (Disabled when AskGemini sheet is active!)
     private func setupKeyboardMonitor() {
         removeKeyboardMonitor()
         eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            // Temporarily disable shortcuts if Ask Gemini sheet is open!
+            guard askingGeminiQuestion == nil && !showFinishDialog && !showReviewView else {
+                return event
+            }
+            
             let chars = event.charactersIgnoringModifiers?.lowercased() ?? ""
             
             if event.keyCode == 51 {
@@ -310,24 +375,47 @@ public struct PracticeView: View {
         }
     }
     
+    // MARK: - Logic & Checkpoint Progress Restore
     private func setupQuizQuestions() {
-        if redoWrongOnly, let prog = project.progressMap[quiz.id] {
-            activeQuestions = quiz.questions.filter { prog.wrongQuestionIds.contains($0.id) }
-            if activeQuestions.isEmpty { activeQuestions = quiz.questions }
-            isRedoingWrong = true
-            self.wrongQuestionIds.removeAll()
-        } else {
-            activeQuestions = quiz.questions
-            isRedoingWrong = false
-            if let prog = project.progressMap[quiz.id] {
-                self.userAnswers = prog.userAnswers
-                self.wrongQuestionIds = prog.wrongQuestionIds
+        activeQuestions = quiz.questions
+        
+        // Restore checkpoint progress if exists!
+        if let prog = project.progressMap[quiz.id] {
+            self.userAnswers = prog.userAnswers
+            self.wrongQuestionIds = prog.wrongQuestionIds
+            
+            // Checkpoint index restore
+            if prog.currentIndex >= 0 && prog.currentIndex < activeQuestions.count {
+                self.currentIndex = prog.currentIndex
+            } else {
+                self.currentIndex = 0
             }
+        } else {
+            self.currentIndex = 0
+            self.userAnswers = [:]
+            self.wrongQuestionIds = []
         }
         
-        currentIndex = 0
-        isAnswered = false
-        selectedOptionIndex = nil
+        loadCurrentQuestionState()
+    }
+    
+    private func loadCurrentQuestionState() {
+        guard currentIndex < activeQuestions.count else { return }
+        let currentQuestion = activeQuestions[currentIndex]
+        if let ansIndex = userAnswers[currentQuestion.id] {
+            selectedOptionIndex = ansIndex
+            isAnswered = true
+        } else {
+            selectedOptionIndex = nil
+            isAnswered = false
+        }
+    }
+    
+    private func jumpToQuestion(index: Int) {
+        guard index >= 0 && index < activeQuestions.count else { return }
+        currentIndex = index
+        loadCurrentQuestionState()
+        saveCurrentProgress(isCompleted: false)
     }
     
     private func selectOption(index: Int, question: Question) {
@@ -346,8 +434,8 @@ public struct PracticeView: View {
     private func advanceToNextQuestion() {
         if currentIndex + 1 < activeQuestions.count {
             currentIndex += 1
-            isAnswered = false
-            selectedOptionIndex = nil
+            loadCurrentQuestionState()
+            saveCurrentProgress(isCompleted: false)
         } else {
             isQuizFinished = true
             saveCurrentProgress(isCompleted: true)
@@ -358,6 +446,7 @@ public struct PracticeView: View {
     private func saveCurrentProgress(isCompleted: Bool) {
         let prog = QuizProgress(
             quizId: quiz.id,
+            currentIndex: currentIndex,
             userAnswers: userAnswers,
             wrongQuestionIds: wrongQuestionIds,
             isCompleted: isCompleted
@@ -404,6 +493,12 @@ public struct PracticeView: View {
                 ) {
                     showFinishDialog = false
                     showReviewView = true
+                }
+                
+                PrimaryButton(title: "Thi lại từ đầu (Reset Quiz)", icon: "arrow.clockwise", color: .purple) {
+                    showFinishDialog = false
+                    storage.resetQuizProgress(projectId: project.id, quizId: quiz.id)
+                    setupQuizQuestions()
                 }
                 
                 Button(loc.text("backToDashboard")) {
