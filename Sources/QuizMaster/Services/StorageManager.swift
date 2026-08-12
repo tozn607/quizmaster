@@ -150,6 +150,18 @@ public class StorageManager: ObservableObject {
         }
     }
     
+    public func resetProjectProgress(projectId: String) {
+        guard let index = projects.firstIndex(where: { $0.id == projectId }) else { return }
+        projects[index].progressMap.removeAll()
+        saveProjects()
+    }
+    
+    public func resetQuizProgress(projectId: String, quizId: String) {
+        guard let index = projects.firstIndex(where: { $0.id == projectId }) else { return }
+        projects[index].progressMap.removeValue(forKey: quizId)
+        saveProjects()
+    }
+    
     public func saveProgress(projectId: String, progress: QuizProgress) {
         guard let index = projects.firstIndex(where: { $0.id == projectId }) else { return }
         projects[index].progressMap[progress.quizId] = progress

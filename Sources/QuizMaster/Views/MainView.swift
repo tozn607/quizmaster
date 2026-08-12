@@ -229,7 +229,7 @@ public struct MainView: View {
                             Image(systemName: "doc.text.magnifyingglass")
                                 .font(.system(size: 54))
                                 .foregroundColor(.gray.opacity(0.6))
-                            Text("Dự án này chưa có bộ đề thi nào.")
+                            Text(loc.text("noQuizzesInProject"))
                                 .font(.headline)
                                 .foregroundColor(.secondary)
                             PrimaryButton(title: loc.text("importDoc"), icon: "plus", color: .purple) {
@@ -302,7 +302,7 @@ public struct MainView: View {
                             .foregroundColor(.blue.opacity(0.8))
                     }
                     .buttonStyle(.plain)
-                    .help("Đổi tên bộ đề thi này")
+                    .help(loc.text("renameQuiz"))
                     
                     // Delete Quiz Set Button
                     Button(action: {
@@ -313,7 +313,7 @@ public struct MainView: View {
                             .foregroundColor(.gray.opacity(0.7))
                     }
                     .buttonStyle(.plain)
-                    .help("Xóa bộ đề thi này")
+                    .help(loc.text("deleteQuiz"))
                 }
                 
                 // Quiz Title
@@ -341,7 +341,7 @@ public struct MainView: View {
                 
                 Divider()
                 
-                // Action Buttons (Spacious 2-Row Layout)
+                // Action Buttons: 3 Study Modes
                 VStack(spacing: 10) {
                     HStack(spacing: 10) {
                         PrimaryButton(title: loc.text("practiceMode"), icon: "pencil.and.outline", color: .blue) {
@@ -353,34 +353,27 @@ public struct MainView: View {
                         }
                     }
                     
-                    HStack(spacing: 10) {
-                        SecondaryButton(title: loc.text("flashcardMode"), icon: "rectangle.on.rectangle.angled") {
-                            activeFlashcardQuiz = quiz
-                        }
-                        
-                        Spacer()
-                        
-                        // Export Word Zip button
-                        Button(action: { exportToWord(quiz: quiz) }) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "square.and.arrow.up")
-                                Text("Xuất Zip / Word")
-                            }
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(.blue)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .background(Color.blue.opacity(0.1))
-                            .cornerRadius(8)
-                        }
-                        .buttonStyle(.plain)
-                        .help(loc.text("exportWord"))
+                    SecondaryButton(title: loc.text("flashcardMode"), icon: "rectangle.on.rectangle.angled") {
+                        activeFlashcardQuiz = quiz
                     }
                 }
             }
         }
         .contextMenu {
+            Button {
+                exportToZip(quiz: quiz)
+            } label: {
+                Label(loc.text("exportZip"), systemImage: "archivebox")
+            }
+            
+            Button {
+                exportToWordDocx(quiz: quiz)
+            } label: {
+                Label(loc.text("exportWordDocx"), systemImage: "doc.text")
+            }
+            
+            Divider()
+            
             Button {
                 quizToMove = quiz
                 targetMoveProjectId = storage.projects.first(where: { $0.id != project.id })?.id ?? ""
@@ -397,10 +390,9 @@ public struct MainView: View {
             }
             
             Button {
-                let url = storage.storageDirectoryURL
-                NSWorkspace.shared.open(url)
+                storage.resetQuizProgress(projectId: project.id, quizId: quiz.id)
             } label: {
-                Label(loc.text("showInFinder"), systemImage: "folder")
+                Label(loc.text("resetProgress"), systemImage: "arrow.counterclockwise")
             }
             
             Divider()
@@ -498,13 +490,23 @@ public struct MainView: View {
         }
     }
     
-    private func exportToWord(quiz: Quiz) {
+    private func exportToZip(quiz: Quiz) {
+        let outputDir = storage.settings.defaultOutputDirectory
+        do {
+            let zipPath = try WordExporter.shared.exportQuizToZipBundle(quiz: quiz, outputDirectory: outputDir)
+            exportNotificationMessage = "✓ Đã xuất thành công gói Zip Bundle (Mặc định) tại: \(zipPath)"
+        } catch {
+            exportNotificationMessage = "✕ Lỗi xuất Zip: \(error.localizedDescription)"
+        }
+    }
+    
+    private func exportToWordDocx(quiz: Quiz) {
         let outputDir = storage.settings.defaultOutputDirectory
         do {
             let zipPath = try WordExporter.shared.exportQuizToWordDocxZip(quiz: quiz, outputDirectory: outputDir)
-            exportNotificationMessage = "Đã xuất thành công gói đề thi Word (.docx) tại: \(zipPath)"
+            exportNotificationMessage = "✓ Đã xuất thành công gói đề thi Word (.docx) tại: \(zipPath)"
         } catch {
-            exportNotificationMessage = "Lỗi xuất đề thi Word: \(error.localizedDescription)"
+            exportNotificationMessage = "✕ Lỗi xuất đề thi Word: \(error.localizedDescription)"
         }
     }
 }

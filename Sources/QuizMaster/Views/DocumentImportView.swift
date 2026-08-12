@@ -10,18 +10,19 @@ public struct DocumentImportView: View {
     @Environment(\.appFontScale) var fontScale
     @Environment(\.dismiss) var dismiss
     
-    // Section 1: Gemini AI Document Scanner
+    // Default Document Scanner State
     @State private var docFileURL: URL? = nil
-    @State private var isCreateMultipleChoice: Bool = false // OFF by default as requested!
+    @State private var isCreateMultipleChoice: Bool = false
     @State private var depthMode: QuestionDepthMode = .normal
     @State private var geminiTitle: String = ""
     @State private var isProcessingGemini: Bool = false
     @State private var geminiError: String? = nil
     @State private var geminiSuccessQuiz: Quiz? = nil
     @State private var exportedZipPath: String? = nil
-    @State private var showScanConfirmation: Bool = false // Confirmation modal state
+    @State private var showScanConfirmation: Bool = false
     
-    // Section 2: Pre-made Quiz File Import
+    // Bottom Dropdown State for Pre-made Quiz File Import
+    @State private var isPremadeImportExpanded: Bool = false
     @State private var quizFileURL: URL? = nil
     @State private var isProcessingQuizFile: Bool = false
     @State private var quizFileError: String? = nil
@@ -46,16 +47,16 @@ public struct DocumentImportView: View {
             Divider()
             
             ScrollView {
-                VStack(alignment: .leading, spacing: 24 * fontScale) {
+                VStack(alignment: .leading, spacing: 20 * fontScale) {
                     
-                    // SECTION 1: GEMINI AI ASSISTED DOCUMENT SCANNER
+                    // DEFAULT MAIN SECTION: GEMINI AI DOCUMENT SCANNER
                     GlassCard {
                         VStack(alignment: .leading, spacing: 14 * fontScale) {
                             HStack {
                                 Image(systemName: "sparkles")
                                     .font(.system(size: 20 * fontScale))
                                     .foregroundColor(.purple)
-                                Text("PHẦN 1: QUÉT TÀI LIỆU VỚI GEMINI 3.5 FLASH LITE")
+                                Text("Quét & Nhận diện Tài liệu với Gemini 3.5 Flash Lite")
                                     .font(.system(size: 16 * fontScale, weight: .bold))
                                     .foregroundColor(.purple)
                             }
@@ -179,56 +180,59 @@ public struct DocumentImportView: View {
                         }
                     }
                     
-                    // SECTION 2: PRE-MADE QUIZ FILE IMPORT
+                    // BOTTOM DROPDOWN MENU: PRE-MADE QUIZ FILE IMPORT
                     GlassCard {
-                        VStack(alignment: .leading, spacing: 14 * fontScale) {
-                            HStack {
-                                Image(systemName: "arrow.down.doc.fill")
-                                    .font(.system(size: 20 * fontScale))
-                                    .foregroundColor(.blue)
-                                Text("PHẦN 2: NHẬP BỘ ĐỀ CÓ SẴN (ZIP BUNDLE / JSON)")
-                                    .font(.system(size: 16 * fontScale, weight: .bold))
-                                    .foregroundColor(.blue)
-                            }
-                            
-                            Text("Dành cho người dùng nạp bài thi có sẵn dưới dạng tệp Zip Bundle (.zip) hoặc tệp JSON được xuất từ ứng dụng trước đây.")
-                                .font(.system(size: 12 * fontScale))
-                                .foregroundColor(.secondary)
-                            
-                            Divider()
-                            
-                            VStack(alignment: .leading, spacing: 6 * fontScale) {
-                                Text("Chọn tệp bộ đề (.zip hoặc .json):")
-                                    .font(.system(size: 13 * fontScale, weight: .semibold))
+                        DisclosureGroup(isExpanded: $isPremadeImportExpanded) {
+                            VStack(alignment: .leading, spacing: 14 * fontScale) {
+                                Text("Dành cho người dùng nạp bài thi có sẵn dưới dạng tệp Zip Bundle (.zip) hoặc tệp JSON được xuất từ ứng dụng trước đây.")
+                                    .font(.system(size: 12 * fontScale))
+                                    .foregroundColor(.secondary)
                                 
-                                HStack {
-                                    Text(quizFileURL?.lastPathComponent ?? "Chưa chọn tệp bộ đề...")
-                                        .font(.system(size: 13 * fontScale))
-                                        .foregroundColor(quizFileURL != nil ? .primary : .secondary)
-                                        .lineLimit(1)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .padding(8 * fontScale)
-                                        .background(Color(NSColor.controlBackgroundColor))
-                                        .cornerRadius(6)
+                                Divider()
+                                
+                                VStack(alignment: .leading, spacing: 6 * fontScale) {
+                                    Text("Chọn tệp bộ đề (.zip hoặc .json):")
+                                        .font(.system(size: 13 * fontScale, weight: .semibold))
                                     
-                                    SecondaryButton(title: "Chọn tệp đề...", icon: "folder.badge.plus") {
-                                        selectQuizFile()
+                                    HStack {
+                                        Text(quizFileURL?.lastPathComponent ?? "Chưa chọn tệp bộ đề...")
+                                            .font(.system(size: 13 * fontScale))
+                                            .foregroundColor(quizFileURL != nil ? .primary : .secondary)
+                                            .lineLimit(1)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                            .padding(8 * fontScale)
+                                            .background(Color(NSColor.controlBackgroundColor))
+                                            .cornerRadius(6)
+                                        
+                                        SecondaryButton(title: "Chọn tệp đề...", icon: "folder.badge.plus") {
+                                            selectQuizFile()
+                                        }
                                     }
                                 }
-                            }
-                            
-                            if let err = quizFileError {
-                                Text("✕ Lỗi: \(err)")
-                                    .font(.system(size: 12 * fontScale))
-                                    .foregroundColor(.red)
-                            }
-                            
-                            HStack {
-                                Spacer()
-                                PrimaryButton(title: "Nhập Bộ Đề Có Sẵn vào Dự án", icon: "square.and.arrow.down.fill", color: .blue) {
-                                    processQuizFileImport()
+                                
+                                if let err = quizFileError {
+                                    Text("✕ Lỗi: \(err)")
+                                        .font(.system(size: 12 * fontScale))
+                                        .foregroundColor(.red)
                                 }
-                                .disabled(quizFileURL == nil || isProcessingQuizFile)
+                                
+                                HStack {
+                                    Spacer()
+                                    PrimaryButton(title: "Nhập Bộ Đề Có Sẵn vào Dự án", icon: "square.and.arrow.down.fill", color: .blue) {
+                                        processQuizFileImport()
+                                    }
+                                    .disabled(quizFileURL == nil || isProcessingQuizFile)
+                                }
+                            }
+                            .padding(.top, 10 * fontScale)
+                        } label: {
+                            HStack {
+                                Image(systemName: "arrow.down.doc.fill")
+                                    .font(.system(size: 18 * fontScale))
+                                    .foregroundColor(.blue)
+                                Text(loc.text("orImportPremade"))
+                                    .font(.system(size: 14 * fontScale, weight: .bold))
+                                    .foregroundColor(.blue)
                             }
                         }
                     }

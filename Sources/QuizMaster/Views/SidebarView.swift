@@ -112,9 +112,9 @@ public struct SidebarView: View {
         .padding(.vertical, 4)
         .contextMenu {
             Button {
-                showInFinder(project: project)
+                storage.resetProjectProgress(projectId: project.id)
             } label: {
-                Label(loc.text("showInFinder"), systemImage: "folder")
+                Label(loc.text("resetProgress"), systemImage: "arrow.counterclockwise")
             }
             
             Divider()
