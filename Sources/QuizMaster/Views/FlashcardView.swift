@@ -228,7 +228,7 @@ public struct FlashcardView: View {
         let isMastered = masteredIds.contains(question.id)
         let isNeedReview = needReviewIds.contains(question.id)
         
-        let btnColor: Color = isCurrent ? .purple : (isMastered ? .green : (isNeedReview ? .red : .gray.opacity(0.4)))
+        let btnColor: Color = isCurrent ? LiquidGlassPalette.oceanBlue : (isMastered ? LiquidGlassPalette.emeraldMint : (isNeedReview ? LiquidGlassPalette.crimsonRed : .gray.opacity(0.4)))
         
         Button(action: {
             jumpToCard(question: question)
@@ -241,7 +241,7 @@ public struct FlashcardView: View {
                 .cornerRadius(8)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(isCurrent ? Color.purple : Color.clear, lineWidth: 2)
+                        .stroke(isCurrent ? LiquidGlassPalette.oceanBlue : Color.clear, lineWidth: 2)
                 )
         }
         .buttonStyle(.plain)
@@ -313,7 +313,7 @@ public struct FlashcardView: View {
         VStack(spacing: 20 * fontScale) {
             Image(systemName: "star.circle.fill")
                 .font(.system(size: 64 * fontScale))
-                .foregroundColor(.green)
+                .foregroundColor(LiquidGlassPalette.emeraldMint)
             
             Text("Chúc mừng! Bạn đã thuộc 100% các thẻ ghi nhớ!")
                 .font(.system(size: 20 * fontScale, weight: .bold))
@@ -322,7 +322,7 @@ public struct FlashcardView: View {
                 .font(.system(size: 14 * fontScale))
                 .foregroundColor(.secondary)
             
-            PrimaryButton(title: "Học lại từ đầu (Vòng 1)", icon: "arrow.clockwise", color: .purple) {
+            PrimaryButton(title: "Học lại từ đầu (Vòng 1)", icon: "arrow.clockwise", color: LiquidGlassPalette.cyanTeal) {
                 setupFlashcards()
             }
         }

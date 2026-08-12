@@ -11,7 +11,7 @@ if [ -f "$BUILD_FILE" ]; then
     BUILD_NUMBER=$(cat "$BUILD_FILE")
     BUILD_NUMBER=$((BUILD_NUMBER + 1))
 else
-    BUILD_NUMBER=118
+    BUILD_NUMBER=127
 fi
 echo "$BUILD_NUMBER" > "$BUILD_FILE"
 
@@ -27,7 +27,7 @@ cat <<EOF > "build_info.json"
   "buildNumber": ${BUILD_NUMBER},
   "releaseTag": "${RELEASE_TAG}",
   "buildDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "releaseNotes": "QuizMaster v${VERSION} (Build ${BUILD_NUMBER}):\n- Ocean Blue, Cyan Teal & Emerald Mint color palette styling\n- Saved Ask Gemini AI answers persistent storage\n- Smart GitHub Release cleanup for same-version builds\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
+  "releaseNotes": "QuizMaster v${VERSION} (Build ${BUILD_NUMBER}):\n- Ocean Blue, Cyan Teal & Emerald Mint color palette & updated icon\n- Saved Ask Gemini AI answers persistent storage\n- Smart GitHub Release cleanup for same-version builds\n- Codesign & Gatekeeper quarantine launch error fix\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
 }
 EOF
 
@@ -36,8 +36,9 @@ cat <<EOF > "release_notes.txt"
 # 🚀 QuizMaster v${VERSION} (Build ${BUILD_NUMBER}) Release Notes
 
 ### 🌟 New Features & Enhancements in Build ${BUILD_NUMBER}:
-- **🎨 Ocean Blue, Cyan Teal & Emerald Mint Theme**: Refined application color palette omitting purple for maximum legibility.
+- **🎨 Ocean Blue, Cyan Teal & Emerald Mint Theme & Icon**: Updated app icon and refined color palette omitting purple for maximum legibility.
 - **💾 Persistent Ask Gemini Answers**: AI explanations are saved to persistent storage and restored whenever returning to that question.
+- **🔒 Gatekeeper & Code-signing Fix**: Applied ad-hoc codesigning and stripped quarantine flags to prevent 'app is damaged' launch errors.
 - **🧹 Automated GitHub Release Cleanup**: Script automatically removes older builds of the same version on GitHub while preserving prior major version releases.
 - **🔀 Question & Option Shuffling Toggle**: Toggle question and option randomization on or off.
 - **🎛️ Resizable & Spacious Windows**: Flexible frame dimensions for Practice, Exam, and Flashcard views.
@@ -104,9 +105,12 @@ cat <<EOF > "${CONTENTS_DIR}/Info.plist"
 EOF
 
 chmod +x "${MACOS_DIR}/${APP_NAME}"
+echo "🔒 Applying ad-hoc code signing and clearing Gatekeeper quarantine flags..."
+codesign --force --deep --sign - "${BUNDLE_DIR}" || true
+xattr -cr "${BUNDLE_DIR}" || true
 touch -c "${BUNDLE_DIR}"
 
-# Create Zip Archive for GitHub Release Asset
+# Create Zip Archive for Release Asset
 ZIP_NAME="QuizMaster-v${VERSION}-b${BUILD_NUMBER}.zip"
 rm -f "${ZIP_NAME}"
 zip -r -q "${ZIP_NAME}" "${BUNDLE_DIR}"
@@ -118,7 +122,6 @@ echo "📦 Packaged Release Zip: '${ZIP_NAME}'"
 if command -v gh &> /dev/null; then
     echo "🔍 Checking existing GitHub releases for v${VERSION} cleanup..."
     
-    # List tags starting with current version prefix e.g. v1.0.3-b
     SAME_VERSION_RELEASES=$(gh release list --limit 50 | grep "^v${VERSION}-b" | awk '{print $1}' || true)
     
     SAME_VERSION_COUNT=0

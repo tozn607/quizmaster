@@ -48,18 +48,18 @@ public struct SettingsView: View {
                                 Button(action: openAIStudioURL) {
                                     HStack(spacing: 5) {
                                         Image(systemName: "key.fill")
-                                            .foregroundColor(.purple)
+                                            .foregroundColor(LiquidGlassPalette.cyanTeal)
                                         Text("Lấy API Key từ Google AI Studio ↗")
                                             .font(.system(size: 12 * fontScale, weight: .semibold))
-                                            .foregroundColor(.purple)
+                                            .foregroundColor(LiquidGlassPalette.cyanTeal)
                                     }
                                     .padding(.horizontal, 10 * fontScale)
                                     .padding(.vertical, 5 * fontScale)
-                                    .background(Color.purple.opacity(0.12))
+                                    .background(LiquidGlassPalette.cyanTeal.opacity(0.12))
                                     .cornerRadius(8)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 8)
-                                            .stroke(Color.purple.opacity(0.3), lineWidth: 1)
+                                            .stroke(LiquidGlassPalette.cyanTeal.opacity(0.3), lineWidth: 1)
                                     )
                                 }
                                 .buttonStyle(.plain)
@@ -186,7 +186,7 @@ public struct SettingsView: View {
                                 
                                 Text(loc.text("geminiLangNote"))
                                     .font(.system(size: 11 * fontScale))
-                                    .foregroundColor(.purple)
+                                    .foregroundColor(LiquidGlassPalette.cyanTeal)
                                     .padding(.top, 4 * fontScale)
                             }
                         }
@@ -205,19 +205,19 @@ public struct SettingsView: View {
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .frame(width: 52 * fontScale, height: 52 * fontScale)
-                                    .foregroundColor(.purple)
+                                    .foregroundColor(LiquidGlassPalette.oceanBlue)
                                 
                                 VStack(alignment: .leading, spacing: 4 * fontScale) {
                                     HStack {
                                         Text("QuizMaster")
                                             .font(.system(size: 18 * fontScale, weight: .bold))
                                         
-                                        BadgeView(text: "\(AppVersionInfo.currentVersion) (Build \(AppVersionInfo.buildNumber))", color: .purple)
+                                        BadgeView(text: "\(AppVersionInfo.currentVersion) (Build \(AppVersionInfo.buildNumber))", color: LiquidGlassPalette.oceanBlue)
                                     }
                                     
                                     Text("Tác giả / Creator: @tozn607 (Anh Vinh)")
                                         .font(.system(size: 12 * fontScale, weight: .semibold))
-                                        .foregroundColor(.blue)
+                                        .foregroundColor(LiquidGlassPalette.oceanBlue)
                                     
                                     Text("Ứng dụng tự học & tạo đề thi trắc nghiệm bằng Gemini 3.5 Flash Lite trên macOS.")
                                         .font(.system(size: 11 * fontScale))
@@ -236,7 +236,7 @@ public struct SettingsView: View {
                                     .font(.system(size: 12 * fontScale, weight: .medium))
                                 }
                                 .buttonStyle(.plain)
-                                .foregroundColor(.purple)
+                                .foregroundColor(LiquidGlassPalette.oceanBlue)
                             }
                         }
                     }

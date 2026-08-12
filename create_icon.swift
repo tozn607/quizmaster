@@ -17,11 +17,11 @@ func renderIcon(size: CGFloat) -> NSImage {
     context.addPath(path)
     context.clip()
     
-    // Gradient fill (blue to purple)
+    // Gradient fill (Ocean Blue to Cyan Teal & Emerald Mint)
     let colorSpace = CGColorSpaceCreateDeviceRGB()
     let colors = [
-        NSColor(calibratedRed: 0.15, green: 0.45, blue: 0.95, alpha: 1.0).cgColor,
-        NSColor(calibratedRed: 0.55, green: 0.2, blue: 0.9, alpha: 1.0).cgColor
+        NSColor(calibratedRed: 0.0, green: 0.48, blue: 1.0, alpha: 1.0).cgColor,
+        NSColor(calibratedRed: 0.0, green: 0.78, blue: 0.75, alpha: 1.0).cgColor
     ] as CFArray
     if let gradient = CGGradient(colorsSpace: colorSpace, colors: colors, locations: [0.0, 1.0]) {
         context.drawLinearGradient(gradient, start: CGPoint(x: 0, y: size), end: CGPoint(x: size, y: 0), options: [])
@@ -73,4 +73,4 @@ for (filename, sz) in sizes {
     savePNG(image: img, path: "\(iconsetDir)/\(filename)")
 }
 
-print("AppIcon.iconset generated!")
+print("AppIcon.iconset generated with Ocean Blue & Cyan Teal gradient!")
