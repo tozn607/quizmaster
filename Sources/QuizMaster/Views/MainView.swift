@@ -3,31 +3,31 @@ import SwiftUI
 public struct MainView: View {
     @EnvironmentObject var storage: StorageManager
     @EnvironmentObject var loc: LocalizationManager
+    @ObservedObject var updateChecker = UpdateChecker.shared
     
-    @StateObject private var updateChecker = UpdateChecker.shared
-    
-    @State private var selectedProject: StudyProject? = nil
+    @State private var selectedProject: StudyProject?
     @State private var showSettingsSheet: Bool = false
     @State private var showImportSheet: Bool = false
+    
     @State private var activePracticeQuiz: Quiz? = nil
     @State private var activeExamQuiz: Quiz? = nil
     @State private var activeFlashcardQuiz: Quiz? = nil
-    @State private var exportNotificationMessage: String? = nil
     
-    // Quiz Rename State
     @State private var quizToRename: Quiz? = nil
     @State private var renameTitleInput: String = ""
     
-    // Quiz Single/Multi Move State
-    @State private var quizToMove: Quiz? = nil
     @State private var isMultiSelectMode: Bool = false
     @State private var selectedQuizIds: Set<String> = []
+    
     @State private var showMoveModal: Bool = false
+    @State private var quizToMove: Quiz? = nil
     @State private var targetMoveProjectId: String = ""
     
+    @State private var exportNotificationMessage: String? = nil
+    
     private var currentSelectedProject: StudyProject? {
-        if let sel = selectedProject, let updated = storage.projects.first(where: { $0.id == sel.id }) {
-            return updated
+        if let sel = selectedProject, storage.projects.contains(where: { $0.id == sel.id }) {
+            return storage.projects.first(where: { $0.id == sel.id })
         }
         return storage.projects.first
     }
@@ -35,7 +35,7 @@ public struct MainView: View {
     public var body: some View {
         NavigationSplitView {
             SidebarView(selectedProject: $selectedProject, showSettingsSheet: $showSettingsSheet)
-                .frame(minWidth: 260, idealWidth: 280)
+                .navigationSplitViewColumnWidth(min: 240, ideal: 280, max: 340)
         } detail: {
             VStack(spacing: 0) {
                 // GitHub Update Banner
@@ -43,13 +43,13 @@ public struct MainView: View {
                     HStack(spacing: 12) {
                         Image(systemName: "arrow.triangle.2.circlepath.circle.fill")
                             .font(.title3)
-                            .foregroundColor(LiquidGlassPalette.oceanBlue)
+                            .foregroundColor(.accentColor)
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Phiên bản mới \(updateChecker.latestVersionTag) đã có sẵn trên GitHub!")
                                 .font(.subheadline)
                                 .fontWeight(.bold)
-                                .foregroundColor(LiquidGlassPalette.oceanBlue)
+                                .foregroundColor(.accentColor)
                             Text("Hãy cập nhật ứng dụng để trải nghiệm các tính năng và sửa lỗi mới nhất.")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
@@ -57,16 +57,16 @@ public struct MainView: View {
                         
                         Spacer()
                         
-                        PrimaryButton(title: "Cập nhật ngay ↗", icon: "square.and.arrow.up", color: LiquidGlassPalette.oceanBlue) {
+                        PrimaryButton(title: "Cập nhật ngay ↗", icon: "square.and.arrow.up", color: .accentColor) {
                             updateChecker.openReleasePage()
                         }
                     }
                     .padding()
-                    .background(LiquidGlassPalette.oceanBlue.opacity(0.12))
+                    .background(Color.accentColor.opacity(0.12))
                     .overlay(
                         Rectangle()
                             .frame(height: 1)
-                            .foregroundColor(LiquidGlassPalette.oceanBlue.opacity(0.3)),
+                            .foregroundColor(Color.accentColor.opacity(0.3)),
                         alignment: .bottom
                     )
                 }
@@ -112,7 +112,7 @@ public struct MainView: View {
                         quizToRename = nil
                     }
                     
-                    PrimaryButton(title: "Lưu tên mới", icon: "checkmark", color: .blue) {
+                    PrimaryButton(title: "Lưu tên mới", icon: "checkmark", color: .accentColor) {
                         if let proj = currentSelectedProject, !renameTitleInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                             storage.renameQuiz(projectId: proj.id, quizId: quiz.id, newTitle: renameTitleInput.trimmingCharacters(in: .whitespacesAndNewlines))
                         }
@@ -163,14 +163,14 @@ public struct MainView: View {
                 }) {
                     HStack(spacing: 6) {
                         Image(systemName: storage.settings.isShuffleEnabled ? "arrow.triangle.2.circlepath.circle.fill" : "arrow.triangle.2.circlepath.circle")
-                            .foregroundColor(storage.settings.isShuffleEnabled ? LiquidGlassPalette.cyanTeal : .gray)
+                            .foregroundColor(storage.settings.isShuffleEnabled ? .accentColor : .gray)
                         Text(loc.text("toggleShuffle"))
                             .font(.subheadline)
                             .fontWeight(.medium)
                     }
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
-                    .background(storage.settings.isShuffleEnabled ? LiquidGlassPalette.cyanTeal.opacity(0.12) : Color(NSColor.controlBackgroundColor))
+                    .background(storage.settings.isShuffleEnabled ? Color.accentColor.opacity(0.12) : Color(NSColor.controlBackgroundColor))
                     .cornerRadius(8)
                 }
                 .buttonStyle(.plain)
@@ -189,15 +189,15 @@ public struct MainView: View {
                     }
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundColor(isMultiSelectMode ? LiquidGlassPalette.cyanTeal : .primary)
+                    .foregroundColor(isMultiSelectMode ? .accentColor : .primary)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
-                    .background(isMultiSelectMode ? LiquidGlassPalette.cyanTeal.opacity(0.15) : Color(NSColor.controlBackgroundColor))
+                    .background(isMultiSelectMode ? Color.accentColor.opacity(0.15) : Color(NSColor.controlBackgroundColor))
                     .cornerRadius(8)
                 }
                 .buttonStyle(.plain)
                 
-                PrimaryButton(title: loc.text("importDoc"), icon: "plus.circle.fill", color: LiquidGlassPalette.cyanTeal) {
+                PrimaryButton(title: loc.text("importDoc"), icon: "plus.circle.fill", color: .accentColor) {
                     showImportSheet = true
                 }
             }
@@ -210,23 +210,23 @@ public struct MainView: View {
                     Text("Đã chọn \(selectedQuizIds.count) bộ đề thi")
                         .font(.subheadline)
                         .fontWeight(.bold)
-                        .foregroundColor(LiquidGlassPalette.cyanTeal)
+                        .foregroundColor(.accentColor)
                     
                     Spacer()
                     
-                    PrimaryButton(title: "Chuyển sang Dự án khác...", icon: "folder.arrow.up", color: LiquidGlassPalette.oceanBlue) {
+                    PrimaryButton(title: "Chuyển sang Dự án khác...", icon: "folder.arrow.up", color: .accentColor) {
                         targetMoveProjectId = storage.projects.first(where: { $0.id != project.id })?.id ?? ""
                         showMoveModal = true
                     }
                     
-                    PrimaryButton(title: "Xóa các bộ đề đã chọn (\(selectedQuizIds.count))", icon: "trash.fill", color: LiquidGlassPalette.crimsonRed) {
+                    PrimaryButton(title: "Xóa các bộ đề đã chọn (\(selectedQuizIds.count))", icon: "trash.fill", color: .red) {
                         storage.deleteQuizzes(quizIds: selectedQuizIds, fromProjectId: project.id)
                         selectedQuizIds.removeAll()
                     }
                 }
                 .padding()
-                .background(LiquidGlassPalette.cyanTeal.opacity(0.1))
-                .border(LiquidGlassPalette.cyanTeal.opacity(0.3), width: 1)
+                .background(Color.accentColor.opacity(0.1))
+                .border(Color.accentColor.opacity(0.3), width: 1)
             }
             
             Divider()
@@ -257,7 +257,7 @@ public struct MainView: View {
                             Text(loc.text("noQuizzesInProject"))
                                 .font(.headline)
                                 .foregroundColor(.secondary)
-                            PrimaryButton(title: loc.text("importDoc"), icon: "plus", color: LiquidGlassPalette.cyanTeal) {
+                            PrimaryButton(title: loc.text("importDoc"), icon: "plus", color: .accentColor) {
                                  showImportSheet = true
                              }
                          }
@@ -293,12 +293,12 @@ public struct MainView: View {
                          }) {
                              Image(systemName: isSelectedInMulti ? "checkmark.square.fill" : "square")
                                  .font(.title2)
-                                 .foregroundColor(isSelectedInMulti ? LiquidGlassPalette.cyanTeal : .gray)
+                                 .foregroundColor(isSelectedInMulti ? .accentColor : .gray)
                          }
                          .buttonStyle(.plain)
                      }
                      
-                     BadgeView(text: "\(quiz.questions.count) \(loc.text("questionsCount"))", color: LiquidGlassPalette.oceanBlue)
+                     BadgeView(text: "\(quiz.questions.count) \(loc.text("questionsCount"))", color: .accentColor)
                      if quiz.isPreMade {
                          BadgeView(text: "Bộ đề có sẵn", color: .gray)
                      }
@@ -312,7 +312,7 @@ public struct MainView: View {
                      }) {
                          Image(systemName: "folder.arrow.up")
                              .font(.subheadline)
-                             .foregroundColor(LiquidGlassPalette.oceanBlue.opacity(0.8))
+                             .foregroundColor(.accentColor.opacity(0.8))
                      }
                      .buttonStyle(.plain)
                      .help("Chuyển bộ đề sang Dự án khác")
@@ -324,7 +324,7 @@ public struct MainView: View {
                      }) {
                          Image(systemName: "pencil")
                              .font(.subheadline)
-                             .foregroundColor(LiquidGlassPalette.cyanTeal.opacity(0.8))
+                             .foregroundColor(.accentColor.opacity(0.8))
                      }
                      .buttonStyle(.plain)
                      .help(loc.text("renameQuiz"))
@@ -358,9 +358,9 @@ public struct MainView: View {
                              Text("\(prog.wrongQuestionIds.isEmpty ? 100 : Int(Double(quiz.questions.count - prog.wrongQuestionIds.count) / Double(quiz.questions.count) * 100))%")
                                  .font(.caption)
                                  .fontWeight(.bold)
-                                 .foregroundColor(LiquidGlassPalette.emeraldMint)
+                                 .foregroundColor(.green)
                          }
-                         ProgressBar(value: Double(prog.userAnswers.count) / Double(quiz.questions.count), height: 4, color: LiquidGlassPalette.emeraldMint)
+                         ProgressBar(value: Double(prog.userAnswers.count) / Double(quiz.questions.count), height: 4, color: .green)
                      }
                  }
                  
@@ -369,7 +369,7 @@ public struct MainView: View {
                  // Action Buttons: 3 Study Modes
                  VStack(spacing: 10) {
                      HStack(spacing: 10) {
-                         PrimaryButton(title: loc.text("practiceMode"), icon: "pencil.and.outline", color: LiquidGlassPalette.oceanBlue) {
+                         PrimaryButton(title: loc.text("practiceMode"), icon: "pencil.and.outline", color: .accentColor) {
                              activePracticeQuiz = quiz
                          }
                          
@@ -438,7 +438,7 @@ public struct MainView: View {
              HStack {
                  Image(systemName: "folder.arrow.up")
                      .font(.title2)
-                     .foregroundColor(LiquidGlassPalette.oceanBlue)
+                     .foregroundColor(.accentColor)
                  Text(quizToMove != nil ? "Chuyển Bộ đề thi" : "Chuyển \(selectedQuizIds.count) Bộ đề thi")
                      .font(.title3)
                      .fontWeight(.bold)
@@ -476,7 +476,7 @@ public struct MainView: View {
                  
                  Spacer()
                  
-                 PrimaryButton(title: "Xác nhận Chuyển", icon: "checkmark", color: LiquidGlassPalette.oceanBlue) {
+                 PrimaryButton(title: "Xác nhận Chuyển", icon: "checkmark", color: .accentColor) {
                      if let proj = currentSelectedProject, !targetMoveProjectId.isEmpty {
                          if let q = quizToMove {
                              storage.moveQuiz(quizId: q.id, fromProjectId: proj.id, toProjectId: targetMoveProjectId)

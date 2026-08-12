@@ -495,7 +495,7 @@ public struct PracticeView: View {
                     showReviewView = true
                 }
                 
-                PrimaryButton(title: "Thi lại từ đầu (Reset Quiz)", icon: "arrow.clockwise", color: LiquidGlassPalette.cyanTeal) {
+                PrimaryButton(title: "Thi lại từ đầu (Reset Quiz)", icon: "arrow.clockwise", color: .accentColor) {
                     showFinishDialog = false
                     storage.resetQuizProgress(projectId: project.id, quizId: quiz.id)
                     setupQuizQuestions()

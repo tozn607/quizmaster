@@ -11,7 +11,7 @@ if [ -f "$BUILD_FILE" ]; then
     BUILD_NUMBER=$(cat "$BUILD_FILE")
     BUILD_NUMBER=$((BUILD_NUMBER + 1))
 else
-    BUILD_NUMBER=129
+    BUILD_NUMBER=134
 fi
 echo "$BUILD_NUMBER" > "$BUILD_FILE"
 
@@ -21,21 +21,22 @@ RELEASE_TAG="v${VERSION}-b${BUILD_NUMBER}"
 echo "🔢 Building QuizMaster v${VERSION} (Build ${BUILD_NUMBER})..."
 
 # Create build_info.json in source repository
-cat <<EOF > "build_info.json"
+cat <<'EOF' > "build_info.json"
 {
-  "version": "${VERSION}",
-  "buildNumber": ${BUILD_NUMBER},
-  "releaseTag": "${RELEASE_TAG}",
-  "buildDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "releaseNotes": "QuizMaster v${VERSION} (Build ${BUILD_NUMBER}):\n- AppIcon added to top of README\n- macOS native System Accent Color integration\n- Strict single release enforcement per version number on GitHub\n- Saved Ask Gemini AI answers persistent storage\n- Codesign & Gatekeeper quarantine launch error fix\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
+  "version": "1.0.3",
+  "buildNumber": 135,
+  "releaseTag": "v1.0.3-b135",
+  "buildDate": "2026-08-12T12:50:00Z",
+  "releaseNotes": "QuizMaster v1.0.3 (Build 135):\n- Adopted official SwiftUI Liquid Glass API design\n- AppIcon added to top of README\n- macOS native System Accent Color integration\n- Strict single release enforcement per version number on GitHub\n- Saved Ask Gemini AI answers persistent storage\n- Codesign & Gatekeeper quarantine launch error fix\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation Restored\n- Practice Mode Progress Bar Fix\n- Exam Mode Anti-Cheating (Ask Gemini removed)\n- Ask Gemini Markdown Formatting Cleanup\n- Right-Side Question Navigator Pane\n- Checkpoint Progress Save & Resume"
 }
 EOF
 
 # Create release_notes.txt
-cat <<EOF > "release_notes.txt"
-# 🚀 QuizMaster v${VERSION} (Build ${BUILD_NUMBER}) Release Notes
+cat <<'EOF' > "release_notes.txt"
+# 🚀 QuizMaster v1.0.3 (Build 135) Release Notes
 
-### 🌟 New Features & Enhancements in Build ${BUILD_NUMBER}:
+### 🌟 New Features & Enhancements:
+- **🧊 Official SwiftUI Liquid Glass Design**: Adopted Apple's official Liquid Glass API design (`glassEffect()`, `GlassConfiguration`, `GlassShape`).
 - **🖼️ README App Icon**: Added full-resolution App Icon at the top of README.
 - **🎨 macOS Native System Accent Color**: Seamless integration with user's system accent color settings.
 - **🧹 Single Release Enforcement**: Automatically removes ALL previous builds of the same version number on GitHub, keeping only 1 release per version.

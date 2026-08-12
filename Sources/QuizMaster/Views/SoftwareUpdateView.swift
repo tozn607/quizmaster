@@ -13,7 +13,7 @@ public struct SoftwareUpdateView: View {
             HStack {
                 Image(systemName: "arrow.triangle.2.circlepath.circle.fill")
                     .font(.system(size: 20 * fontScale))
-                    .foregroundColor(LiquidGlassPalette.oceanBlue)
+                    .foregroundColor(.accentColor)
                 Text(loc.text("checkUpdates"))
                     .font(.system(size: 18 * fontScale, weight: .bold))
                 Spacer()
@@ -33,7 +33,7 @@ public struct SoftwareUpdateView: View {
                 // Hero Icon
                 Image(systemName: updateChecker.hasUpdateAvailable ? "sparkles.tv.fill" : "checkmark.seal.fill")
                     .font(.system(size: 54 * fontScale))
-                    .foregroundColor(updateChecker.hasUpdateAvailable ? LiquidGlassPalette.cyanTeal : LiquidGlassPalette.emeraldMint)
+                    .foregroundColor(updateChecker.hasUpdateAvailable ? .accentColor : .green)
                     .padding(.top, 12 * fontScale)
                 
                 VStack(spacing: 6 * fontScale) {
@@ -59,7 +59,7 @@ public struct SoftwareUpdateView: View {
                                 Text(loc.text("latestVersionLabel"))
                                     .font(.system(size: 13 * fontScale, weight: .semibold))
                                 Spacer()
-                                BadgeView(text: updateChecker.latestVersionTag, color: LiquidGlassPalette.cyanTeal)
+                                BadgeView(text: updateChecker.latestVersionTag, color: .accentColor)
                             }
                             
                             if !updateChecker.releaseNotes.isEmpty {
@@ -67,7 +67,7 @@ public struct SoftwareUpdateView: View {
                                 VStack(alignment: .leading, spacing: 4 * fontScale) {
                                     Text(loc.text("releaseNotesLabel"))
                                         .font(.system(size: 12 * fontScale, weight: .bold))
-                                        .foregroundColor(LiquidGlassPalette.cyanTeal)
+                                        .foregroundColor(.accentColor)
                                     ScrollView {
                                         Text(updateChecker.releaseNotes)
                                             .font(.system(size: 12 * fontScale))
@@ -106,11 +106,11 @@ public struct SoftwareUpdateView: View {
                 Spacer()
                 
                 if updateChecker.hasUpdateAvailable {
-                    PrimaryButton(title: loc.text("downloadUpdate"), icon: "arrow.down.circle.fill", color: LiquidGlassPalette.cyanTeal) {
+                    PrimaryButton(title: loc.text("downloadUpdate"), icon: "arrow.down.circle.fill", color: .accentColor) {
                         updateChecker.openReleasePage()
                     }
                 } else {
-                    PrimaryButton(title: loc.text("checkUpdates"), icon: "arrow.clockwise", color: LiquidGlassPalette.oceanBlue) {
+                    PrimaryButton(title: loc.text("checkUpdates"), icon: "arrow.clockwise", color: .accentColor) {
                         Task {
                             await updateChecker.checkForUpdates()
                         }

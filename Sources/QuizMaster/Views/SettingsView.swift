@@ -48,18 +48,18 @@ public struct SettingsView: View {
                                 Button(action: openAIStudioURL) {
                                     HStack(spacing: 5) {
                                         Image(systemName: "key.fill")
-                                            .foregroundColor(LiquidGlassPalette.cyanTeal)
+                                            .foregroundColor(.accentColor)
                                         Text("Lấy API Key từ Google AI Studio ↗")
                                             .font(.system(size: 12 * fontScale, weight: .semibold))
-                                            .foregroundColor(LiquidGlassPalette.cyanTeal)
+                                            .foregroundColor(.accentColor)
                                     }
                                     .padding(.horizontal, 10 * fontScale)
                                     .padding(.vertical, 5 * fontScale)
-                                    .background(LiquidGlassPalette.cyanTeal.opacity(0.12))
+                                    .background(Color.accentColor.opacity(0.12))
                                     .cornerRadius(8)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 8)
-                                            .stroke(LiquidGlassPalette.cyanTeal.opacity(0.3), lineWidth: 1)
+                                            .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
                                     )
                                 }
                                 .buttonStyle(.plain)
@@ -101,7 +101,7 @@ public struct SettingsView: View {
                                 .font(.system(size: 14 * fontScale, weight: .semibold))
                             
                             HStack {
-                                BadgeView(text: "gemini-3.5-flash-lite", color: .purple)
+                                BadgeView(text: "gemini-3.5-flash-lite", color: .accentColor)
                                 Spacer()
                                 Text(loc.text("modelFixedNote"))
                                     .font(.system(size: 12 * fontScale))
@@ -186,7 +186,7 @@ public struct SettingsView: View {
                                 
                                 Text(loc.text("geminiLangNote"))
                                     .font(.system(size: 11 * fontScale))
-                                    .foregroundColor(LiquidGlassPalette.cyanTeal)
+                                    .foregroundColor(.accentColor)
                                     .padding(.top, 4 * fontScale)
                             }
                         }
@@ -205,19 +205,19 @@ public struct SettingsView: View {
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .frame(width: 52 * fontScale, height: 52 * fontScale)
-                                    .foregroundColor(LiquidGlassPalette.oceanBlue)
+                                    .foregroundColor(.accentColor)
                                 
                                 VStack(alignment: .leading, spacing: 4 * fontScale) {
                                     HStack {
                                         Text("QuizMaster")
                                             .font(.system(size: 18 * fontScale, weight: .bold))
                                         
-                                        BadgeView(text: "\(AppVersionInfo.currentVersion) (Build \(AppVersionInfo.buildNumber))", color: LiquidGlassPalette.oceanBlue)
+                                        BadgeView(text: "\(AppVersionInfo.currentVersion) (Build \(AppVersionInfo.buildNumber))", color: .accentColor)
                                     }
                                     
                                     Text("Tác giả / Creator: @tozn607 (Anh Vinh)")
                                         .font(.system(size: 12 * fontScale, weight: .semibold))
-                                        .foregroundColor(LiquidGlassPalette.oceanBlue)
+                                        .foregroundColor(.accentColor)
                                     
                                     Text("Ứng dụng tự học & tạo đề thi trắc nghiệm bằng Gemini 3.5 Flash Lite trên macOS.")
                                         .font(.system(size: 11 * fontScale))
@@ -236,7 +236,7 @@ public struct SettingsView: View {
                                     .font(.system(size: 12 * fontScale, weight: .medium))
                                 }
                                 .buttonStyle(.plain)
-                                .foregroundColor(LiquidGlassPalette.oceanBlue)
+                                .foregroundColor(.accentColor)
                             }
                         }
                     }

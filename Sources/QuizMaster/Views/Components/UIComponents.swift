@@ -1,15 +1,117 @@
 import SwiftUI
 
-public struct LiquidGlassPalette {
-    public static var oceanBlue: Color { .accentColor }
-    public static var cyanTeal: Color { .accentColor }
-    public static var emeraldMint: Color { .green }
-    public static var crimsonRed: Color { .red }
+public struct GlassConfiguration {
+    public var tintColor: Color? = nil
+    public var isInteractive: Bool = false
+    
+    public static var regular: GlassConfiguration { GlassConfiguration() }
+    
+    public func tint(_ color: Color) -> GlassConfiguration {
+        var copy = self
+        copy.tintColor = color
+        return copy
+    }
+    
+    public func interactive(_ enabled: Bool = true) -> GlassConfiguration {
+        var copy = self
+        copy.isInteractive = enabled
+        return copy
+    }
+}
+
+public enum GlassShape {
+    case capsule
+    case rect(cornerRadius: CGFloat)
+    case circle
+}
+
+extension View {
+    @ViewBuilder
+    public func glassEffect(_ config: GlassConfiguration = .regular, in shape: GlassShape = .rect(cornerRadius: 12.0)) -> some View {
+        let tint = config.tintColor ?? Color.accentColor
+        
+        switch shape {
+        case .capsule:
+            let capsule = Capsule()
+            self
+                .background(
+                    ZStack {
+                        tint.opacity(0.18)
+                    }
+                    .background(.regularMaterial, in: capsule)
+                )
+                .clipShape(capsule)
+                .overlay(
+                    capsule.strokeBorder(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.45),
+                                tint.opacity(0.3),
+                                Color.white.opacity(0.1)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+                )
+                .shadow(color: Color.black.opacity(0.08), radius: 6, x: 0, y: 3)
+        case .rect(let cr):
+            let rect = RoundedRectangle(cornerRadius: cr, style: .continuous)
+            self
+                .background(
+                    ZStack {
+                        tint.opacity(0.18)
+                    }
+                    .background(.regularMaterial, in: rect)
+                )
+                .clipShape(rect)
+                .overlay(
+                    rect.strokeBorder(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.45),
+                                tint.opacity(0.3),
+                                Color.white.opacity(0.1)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+                )
+                .shadow(color: Color.black.opacity(0.08), radius: 6, x: 0, y: 3)
+        case .circle:
+            let circle = Circle()
+            self
+                .background(
+                    ZStack {
+                        tint.opacity(0.18)
+                    }
+                    .background(.regularMaterial, in: circle)
+                )
+                .clipShape(circle)
+                .overlay(
+                    circle.strokeBorder(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.45),
+                                tint.opacity(0.3),
+                                Color.white.opacity(0.1)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+                )
+                .shadow(color: Color.black.opacity(0.08), radius: 6, x: 0, y: 3)
+        }
+    }
 }
 
 public struct PrimaryButton: View {
     @Environment(\.appFontScale) var fontScale
-    @Environment(\.colorScheme) var colorScheme
     let title: String
     let icon: String?
     let action: () -> Void
@@ -35,19 +137,7 @@ public struct PrimaryButton: View {
             .foregroundColor(.white)
             .padding(.horizontal, 16 * fontScale)
             .padding(.vertical, 9 * fontScale)
-            .background(
-                LinearGradient(
-                    colors: [color, color.opacity(0.88)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .strokeBorder(Color.white.opacity(0.25), lineWidth: 1)
-            )
-            .shadow(color: color.opacity(0.35), radius: 5, x: 0, y: 2)
+            .glassEffect(.regular.tint(color).interactive(), in: .rect(cornerRadius: 10))
         }
         .buttonStyle(.plain)
     }
@@ -55,7 +145,6 @@ public struct PrimaryButton: View {
 
 public struct SecondaryButton: View {
     @Environment(\.appFontScale) var fontScale
-    @Environment(\.colorScheme) var colorScheme
     let title: String
     let icon: String?
     let action: () -> Void
@@ -78,17 +167,7 @@ public struct SecondaryButton: View {
             }
             .padding(.horizontal, 14 * fontScale)
             .padding(.vertical, 8 * fontScale)
-            .background(
-                ZStack {
-                    GlassVisualEffectView(material: .hudWindow, blendingMode: .withinWindow)
-                    Color(NSColor.controlBackgroundColor).opacity(colorScheme == .dark ? 0.4 : 0.6)
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .strokeBorder(Color.white.opacity(colorScheme == .dark ? 0.2 : 0.4), lineWidth: 1)
-            )
+            .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 8))
         }
         .buttonStyle(.plain)
     }
@@ -131,7 +210,8 @@ public struct GlassCard<Content: View>: View {
     
     public var body: some View {
         content
-            .liquidGlassCard(cornerRadius: 14, accentColor: .accentColor)
+            .padding(18)
+            .glassEffect(.regular, in: .rect(cornerRadius: 14))
     }
 }
 
@@ -151,8 +231,6 @@ public struct BadgeView: View {
             .padding(.horizontal, 10 * fontScale)
             .padding(.vertical, 4 * fontScale)
             .foregroundColor(.white)
-            .background(color.opacity(0.88))
-            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-            .shadow(color: color.opacity(0.25), radius: 2, x: 0, y: 1)
+            .glassEffect(.regular.tint(color), in: .capsule)
     }
 }
