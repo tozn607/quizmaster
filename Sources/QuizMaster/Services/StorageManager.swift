@@ -95,10 +95,28 @@ public class StorageManager: ObservableObject {
         saveProjects()
     }
     
+    public var storageDirectoryURL: URL {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let dir = appSupport.appendingPathComponent("QuizMaster", isDirectory: true)
+        if !FileManager.default.fileExists(atPath: dir.path) {
+            try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        }
+        return dir
+    }
+    
     public func deleteQuiz(projectId: String, quizId: String) {
         guard let index = projects.firstIndex(where: { $0.id == projectId }) else { return }
         projects[index].quizzes.removeAll { $0.id == quizId }
         projects[index].progressMap.removeValue(forKey: quizId)
+        saveProjects()
+    }
+    
+    public func deleteQuizzes(quizIds: Set<String>, fromProjectId: String) {
+        guard let index = projects.firstIndex(where: { $0.id == fromProjectId }) else { return }
+        projects[index].quizzes.removeAll { quizIds.contains($0.id) }
+        for qId in quizIds {
+            projects[index].progressMap.removeValue(forKey: qId)
+        }
         saveProjects()
     }
     
@@ -107,6 +125,28 @@ public class StorageManager: ObservableObject {
         if let qIndex = projects[index].quizzes.firstIndex(where: { $0.id == quizId }) {
             projects[index].quizzes[qIndex].title = newTitle
             saveProjects()
+        }
+    }
+    
+    public func moveQuiz(quizId: String, fromProjectId: String, toProjectId: String) {
+        guard fromProjectId != toProjectId,
+              let fromIdx = projects.firstIndex(where: { $0.id == fromProjectId }),
+              let toIdx = projects.firstIndex(where: { $0.id == toProjectId }),
+              let quizIdx = projects[fromIdx].quizzes.firstIndex(where: { $0.id == quizId }) else { return }
+        
+        let quiz = projects[fromIdx].quizzes.remove(at: quizIdx)
+        let prog = projects[fromIdx].progressMap.removeValue(forKey: quizId)
+        
+        projects[toIdx].quizzes.append(quiz)
+        if let p = prog {
+            projects[toIdx].progressMap[quizId] = p
+        }
+        saveProjects()
+    }
+    
+    public func moveQuizzes(quizIds: Set<String>, fromProjectId: String, toProjectId: String) {
+        for qId in quizIds {
+            moveQuiz(quizId: qId, fromProjectId: fromProjectId, toProjectId: toProjectId)
         }
     }
     

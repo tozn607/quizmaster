@@ -11,7 +11,28 @@ else
 fi
 echo "$BUILD_NUMBER" > "$BUILD_FILE"
 
-echo "🔢 Building QuizMaster v1.0.1 (Build ${BUILD_NUMBER})..."
+VERSION="1.0.1"
+RELEASE_TAG="v${VERSION}-b${BUILD_NUMBER}"
+
+echo "🔢 Building QuizMaster v${VERSION} (Build ${BUILD_NUMBER})..."
+
+# Create build_info.json in source repository
+cat <<EOF > "build_info.json"
+{
+  "version": "${VERSION}",
+  "buildNumber": ${BUILD_NUMBER},
+  "releaseTag": "${RELEASE_TAG}",
+  "buildDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "releaseNotes": "QuizMaster v${VERSION} (Build ${BUILD_NUMBER}) release update."
+}
+EOF
+
+# Create release_notes.txt
+cat <<EOF > "release_notes.txt"
+# QuizMaster v${VERSION} (Build ${BUILD_NUMBER})
+- Automated release build for Build ${BUILD_NUMBER}.
+- Includes latest bug fixes and study features.
+EOF
 
 echo "🎨 Generating AppIcon..."
 swift create_icon.swift
@@ -56,7 +77,7 @@ cat <<EOF > "${CONTENTS_DIR}/Info.plist"
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.0.1</string>
+    <string>${VERSION}</string>
     <key>CFBundleVersion</key>
     <string>${BUILD_NUMBER}</string>
     <key>LSMinimumSystemVersion</key>
@@ -64,13 +85,9 @@ cat <<EOF > "${CONTENTS_DIR}/Info.plist"
     <key>NSHighResolutionCapable</key>
     <true/>
 </dict>
-</plist>
 EOF
 
 chmod +x "${MACOS_DIR}/${APP_NAME}"
 
-echo "✅ App bundle created successfully: '${BUNDLE_DIR}' v1.0.1 (Build ${BUILD_NUMBER})!"
-echo "📄 Documentation Word files generated:"
-echo "   • QuizMaster_GioiThieuUngDung.docx"
-echo "   • QuizMaster_HuongDanSuDung.docx"
-echo "🚀 You can launch it using: open ${BUNDLE_DIR}"
+echo "✅ App bundle created successfully: '${BUNDLE_DIR}' v${VERSION} (Build ${BUILD_NUMBER})!"
+echo "📄 Build info saved to build_info.json and release_notes.txt"

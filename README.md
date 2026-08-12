@@ -128,5 +128,5 @@ open QuizMaster.app
 
 ## 👤 Author & License
 
-- **Author**: [@tozn607](https://github.com/tozn607) *(App About section displays `@tozn607 (Anh Vinh)`)*
+- **Author**: [@tozn607](https://github.com/tozn607)
 - **License**: Released under the MIT License.

@@ -177,8 +177,7 @@ public struct SidebarView: View {
     }
     
     private func showInFinder(project: StudyProject) {
-        let outputDir = storage.settings.defaultOutputDirectory
-        let url = URL(fileURLWithPath: outputDir)
+        let url = storage.storageDirectoryURL
         NSWorkspace.shared.open(url)
     }
     

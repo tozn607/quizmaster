@@ -5,6 +5,7 @@ public struct AskGeminiSheet: View {
     let question: Question
     @EnvironmentObject var storage: StorageManager
     @EnvironmentObject var loc: LocalizationManager
+    @Environment(\.appFontScale) var fontScale
     @Environment(\.dismiss) var dismiss
     
     @State private var userQuery: String = ""
@@ -17,15 +18,14 @@ public struct AskGeminiSheet: View {
             // Header Bar
             HStack {
                 Image(systemName: "sparkles")
-                    .font(.title2)
+                    .font(.system(size: 20 * fontScale))
                     .foregroundColor(.purple)
                 Text("Hỏi Gemini AI về Câu hỏi này")
-                    .font(.title2)
-                    .fontWeight(.bold)
+                    .font(.system(size: 18 * fontScale, weight: .bold))
                 Spacer()
                 Button(action: { dismiss() }) {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.title2)
+                        .font(.system(size: 20 * fontScale))
                         .foregroundColor(.gray)
                 }
                 .buttonStyle(.plain)
@@ -36,20 +36,19 @@ public struct AskGeminiSheet: View {
             Divider()
             
             ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
+                VStack(alignment: .leading, spacing: 18 * fontScale) {
                     
                     // Warning Banner for API Rate Limits
-                    HStack(alignment: .top, spacing: 12) {
+                    HStack(alignment: .top, spacing: 12 * fontScale) {
                         Image(systemName: "exclamationmark.triangle.fill")
-                            .font(.title3)
+                            .font(.system(size: 18 * fontScale))
                             .foregroundColor(.orange)
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: 4 * fontScale) {
                             Text("CẢNH BÁO GIỚI HẠN API (API RATE LIMIT):")
-                                .font(.subheadline)
-                                .fontWeight(.bold)
+                                .font(.system(size: 13 * fontScale, weight: .bold))
                                 .foregroundColor(.orange)
                             Text("Chỉ nên đặt câu hỏi trực tiếp cho AI đối với những câu thực sự quan trọng hoặc phức tạp để tránh quá tải hạn ngạch sử dụng Google AI Studio API Key của bạn.")
-                                .font(.caption)
+                                .font(.system(size: 11 * fontScale))
                                 .foregroundColor(.secondary)
                         }
                     }
@@ -63,34 +62,31 @@ public struct AskGeminiSheet: View {
                     
                     // Question Preview Card
                     GlassCard {
-                        VStack(alignment: .leading, spacing: 10) {
+                        VStack(alignment: .leading, spacing: 10 * fontScale) {
                             BadgeView(text: "Câu hỏi đang xem", color: .blue)
                             Text(question.text)
-                                .font(.headline)
-                                .fontWeight(.bold)
+                                .font(.system(size: 16 * fontScale, weight: .bold))
                             
-                            VStack(alignment: .leading, spacing: 4) {
+                            VStack(alignment: .leading, spacing: 4 * fontScale) {
                                 ForEach(question.options) { opt in
                                     Text("\(opt.label). \(opt.text)")
-                                        .font(.caption)
+                                        .font(.system(size: 13 * fontScale, weight: opt.label == question.correctAnswerLabel ? .bold : .regular))
                                         .foregroundColor(opt.label == question.correctAnswerLabel ? .green : .secondary)
-                                        .fontWeight(opt.label == question.correctAnswerLabel ? .bold : .regular)
                                 }
                             }
-                            .padding(.top, 4)
+                            .padding(.top, 4 * fontScale)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     
                     // Quick Preset Query Buttons
-                    VStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .leading, spacing: 8 * fontScale) {
                         Text("Gợi ý thắc mắc nhanh:")
-                            .font(.caption)
-                            .fontWeight(.semibold)
+                            .font(.system(size: 12 * fontScale, weight: .semibold))
                             .foregroundColor(.secondary)
                         
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 8) {
+                            HStack(spacing: 8 * fontScale) {
                                 presetButton(title: "Giải thích chi tiết tại sao đáp án đúng", query: "Hãy giải thích chi tiết vì sao đáp án đúng là chính xác.")
                                 presetButton(title: "Phân tích các đáp án sai", query: "Hãy phân tích chi tiết vì sao từng phương án còn lại là sai.")
                                 presetButton(title: "Thêm ví dụ minh họa thực tế", query: "Hãy cho thêm ví dụ minh họa thực tế để hiểu rõ câu hỏi này.")
@@ -100,10 +96,9 @@ public struct AskGeminiSheet: View {
                     
                     // Custom Query Textfield & Ask Button
                     GlassCard {
-                        VStack(alignment: .leading, spacing: 12) {
+                        VStack(alignment: .leading, spacing: 12 * fontScale) {
                             Text("Thắc mắc cụ thể của bạn (Tùy chọn):")
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
+                                .font(.system(size: 14 * fontScale, weight: .semibold))
                             
                             TextField("Ví dụ: Tại sao phương án B lại sai trong trường hợp này?...", text: $userQuery)
                                 .textFieldStyle(.roundedBorder)
@@ -124,10 +119,10 @@ public struct AskGeminiSheet: View {
                     
                     // Loading State
                     if isQuerying {
-                        HStack(spacing: 12) {
+                        HStack(spacing: 12 * fontScale) {
                             ProgressView()
                             Text("Gemini 3.5 Flash Lite đang phân tích và soạn câu trả lời chi tiết...")
-                                .font(.subheadline)
+                                .font(.system(size: 13 * fontScale))
                                 .foregroundColor(.purple)
                         }
                         .padding()
@@ -140,30 +135,30 @@ public struct AskGeminiSheet: View {
                             Text("✕ Lỗi: \(err)")
                         }
                         .foregroundColor(.red)
-                        .font(.caption)
+                        .font(.system(size: 12 * fontScale))
                         .padding()
                         .background(Color.red.opacity(0.1))
                         .cornerRadius(8)
                     }
                     
-                    // AI Detailed Explanation Result Card
+                    // AI Detailed Explanation Result Card with Formatted Markdown Support
                     if let aiText = aiResponseText {
                         GlassCard {
-                            VStack(alignment: .leading, spacing: 12) {
+                            VStack(alignment: .leading, spacing: 12 * fontScale) {
                                 HStack {
                                     Image(systemName: "sparkles")
                                         .foregroundColor(.purple)
                                     Text("Giải thích Chi tiết từ Gemini 3.5 Flash Lite:")
-                                        .font(.headline)
-                                        .fontWeight(.bold)
+                                        .font(.system(size: 16 * fontScale, weight: .bold))
                                         .foregroundColor(.purple)
                                 }
                                 
                                 Divider()
                                 
-                                Text(aiText)
-                                    .font(.body)
-                                    .lineSpacing(6)
+                                // Native Formatted Markdown Rendering using LocalizedStringKey
+                                Text(LocalizedStringKey(cleanMarkdownForSwiftUI(aiText)))
+                                    .font(.system(size: 14 * fontScale))
+                                    .lineSpacing(6 * fontScale)
                                     .textSelection(.enabled)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -185,7 +180,7 @@ public struct AskGeminiSheet: View {
             .padding()
             .background(Color(NSColor.controlBackgroundColor))
         }
-        .frame(width: 650, height: 650)
+        .frame(width: 680 * fontScale, height: 680 * fontScale)
     }
     
     @ViewBuilder
@@ -195,9 +190,9 @@ public struct AskGeminiSheet: View {
             sendQueryToGemini()
         }) {
             Text(title)
-                .font(.caption)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
+                .font(.system(size: 12 * fontScale))
+                .padding(.horizontal, 12 * fontScale)
+                .padding(.vertical, 6 * fontScale)
                 .background(Color.purple.opacity(0.12))
                 .foregroundColor(.purple)
                 .cornerRadius(12)
@@ -234,5 +229,19 @@ public struct AskGeminiSheet: View {
                 }
             }
         }
+    }
+    
+    private func cleanMarkdownForSwiftUI(_ rawText: String) -> String {
+        // Strip markdown code fences if wrapped in ```markdown
+        var str = rawText.trimmingCharacters(in: .whitespacesAndNewlines)
+        if str.hasPrefix("```markdown") {
+            str = String(str.dropFirst(11))
+        } else if str.hasPrefix("```") {
+            str = String(str.dropFirst(3))
+        }
+        if str.hasSuffix("```") {
+            str = String(str.dropLast(3))
+        }
+        return str.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
