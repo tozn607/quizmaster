@@ -1,4 +1,4 @@
-# 📖 HƯỚNG DẪN SỬ DỤNG CHI TIẾT QUIZMASTER (v1.0.3)
+# 📖 HƯỚNG DẪN SỬ DỤNG CHI TIẾT QUIZMASTER (v1.1.0)
 
 Tác giả: **@tozn607**  
 Nền tảng: macOS (Swift / SwiftUI Native)

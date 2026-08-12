@@ -1,4 +1,4 @@
-# 📖 QUIZMASTER DETAILED USER GUIDE (v1.0.3)
+# 📖 QUIZMASTER DETAILED USER GUIDE (v1.1.0)
 
 Author: **@tozn607**  
 Platform: macOS (Native Swift / SwiftUI)
