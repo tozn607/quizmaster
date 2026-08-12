@@ -27,19 +27,9 @@ cat <<EOF > "build_info.json"
 }
 EOF
 
-# Create release_notes.txt
-cat <<EOF > "release_notes.txt"
-# QuizMaster v${VERSION} (Build ${BUILD_NUMBER})
-- Automated release build for Build ${BUILD_NUMBER}.
-- Includes latest bug fixes and study features.
-EOF
-
 echo "🎨 Generating AppIcon..."
 swift create_icon.swift
 iconutil -c icns AppIcon.iconset -o AppIcon.icns
-
-echo "📄 Generating Documentation Word files (.docx)..."
-swift create_docs.swift
 
 echo "🔨 Compiling QuizMaster Swift application..."
 swift build -c release
@@ -58,9 +48,10 @@ mkdir -p "${RESOURCES_DIR}"
 # Copy binary, icon & build_number into App Bundle
 cp ".build/release/${APP_NAME}" "${MACOS_DIR}/${APP_NAME}"
 cp "AppIcon.icns" "${RESOURCES_DIR}/AppIcon.icns"
+cp "AppIcon.icns" "${RESOURCES_DIR}/AppIcon"
 echo "$BUILD_NUMBER" > "${RESOURCES_DIR}/build_number.txt"
 
-# Create Info.plist with AppIcon binding & v1.0.1
+# Create Info.plist with explicit AppIcon.icns binding
 cat <<EOF > "${CONTENTS_DIR}/Info.plist"
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -69,6 +60,8 @@ cat <<EOF > "${CONTENTS_DIR}/Info.plist"
     <key>CFBundleExecutable</key>
     <string>${APP_NAME}</string>
     <key>CFBundleIconFile</key>
+    <string>AppIcon.icns</string>
+    <key>CFBundleIconName</key>
     <string>AppIcon</string>
     <key>CFBundleIdentifier</key>
     <string>com.quizmaster.mac</string>
@@ -85,9 +78,22 @@ cat <<EOF > "${CONTENTS_DIR}/Info.plist"
     <key>NSHighResolutionCapable</key>
     <true/>
 </dict>
+</plist>
 EOF
 
 chmod +x "${MACOS_DIR}/${APP_NAME}"
+touch -c "${BUNDLE_DIR}"
+
+# Create Zip Archive for GitHub Release Asset
+ZIP_NAME="QuizMaster-v${VERSION}-b${BUILD_NUMBER}.zip"
+rm -f "${ZIP_NAME}"
+zip -r -q "${ZIP_NAME}" "${BUNDLE_DIR}"
 
 echo "✅ App bundle created successfully: '${BUNDLE_DIR}' v${VERSION} (Build ${BUILD_NUMBER})!"
-echo "📄 Build info saved to build_info.json and release_notes.txt"
+echo "📦 Packaged Release Zip: '${ZIP_NAME}'"
+
+# If GitHub CLI (gh) is available, create GitHub release and upload zip asset
+if command -v gh &> /dev/null; then
+    echo "🚀 Publishing GitHub Release ${RELEASE_TAG}..."
+    gh release create "${RELEASE_TAG}" "${ZIP_NAME}" --title "QuizMaster v${VERSION} (Build ${BUILD_NUMBER})" --notes "QuizMaster v${VERSION} (Build ${BUILD_NUMBER}) automatic release." || true
+fi

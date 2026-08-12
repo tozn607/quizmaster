@@ -1,3 +1,0 @@
-# QuizMaster v1.0.1 (Build 108)
-- Automated release build for Build 108.
-- Includes latest bug fixes and study features.

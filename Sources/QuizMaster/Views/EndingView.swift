@@ -6,6 +6,7 @@ public struct EndingView: View {
     let progress: QuizProgress
     
     @EnvironmentObject var loc: LocalizationManager
+    @Environment(\.appFontScale) var fontScale
     @Environment(\.dismiss) var dismiss
     
     @State private var showReviewSheet: Bool = false
@@ -24,55 +25,53 @@ public struct EndingView: View {
         
         VStack(spacing: 0) {
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: 24 * fontScale) {
                     // Celebration Banner
-                    VStack(spacing: 12) {
+                    VStack(spacing: 12 * fontScale) {
                         Image(systemName: accuracyPercent >= 80 ? "star.seal.fill" : "checkmark.seal.fill")
-                            .font(.system(size: 64))
+                            .font(.system(size: 64 * fontScale))
                             .foregroundColor(accuracyPercent >= 80 ? .yellow : .blue)
                         
-                        Text(loc.text("congrats"))
-                            .font(.title)
-                            .fontWeight(.bold)
+                        Text(loc.text("quizFinishedTitle"))
+                            .font(.system(size: 24 * fontScale, weight: .bold))
                         
                         Text(quiz.title)
-                            .font(.headline)
+                            .font(.system(size: 16 * fontScale))
                             .foregroundColor(.secondary)
                     }
-                    .padding(.top, 24)
+                    .padding(.top, 24 * fontScale)
                     
                     // Detailed Score Grid
                     GlassCard {
-                        VStack(spacing: 18) {
-                            Text(loc.text("scoreSummary"))
-                                .font(.headline)
-                                .fontWeight(.bold)
+                        VStack(spacing: 18 * fontScale) {
+                            Text("Tổng kết Điểm số")
+                                .font(.system(size: 16 * fontScale, weight: .bold))
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             
-                            HStack(spacing: 16) {
-                                statTile(title: loc.text("accuracyScore"), value: "\(accuracyPercent)%", color: accuracyPercent >= 70 ? .green : .orange)
-                                statTile(title: loc.text("correctCount"), value: "\(correctFirstTry) / \(totalQuestions)", color: .blue)
-                                statTile(title: loc.text("wrongCount"), value: "\(wrongCount)", color: .red)
+                            HStack(spacing: 16 * fontScale) {
+                                statTile(title: "Điểm số", value: "\(accuracyPercent)%", color: accuracyPercent >= 70 ? .green : .orange)
+                                statTile(title: "Trả lời Đúng", value: "\(correctFirstTry) / \(totalQuestions)", color: .blue)
+                                statTile(title: "Trả lời Sai", value: "\(wrongCount)", color: .red)
                             }
                             
                             Divider()
                             
                             HStack {
                                 Text(loc.text("masteryLevel"))
-                                    .fontWeight(.semibold)
+                                    .font(.system(size: 13 * fontScale, weight: .semibold))
                                 Spacer()
                                 Text(masteryRatingText(percent: accuracyPercent))
-                                    .fontWeight(.bold)
+                                    .font(.system(size: 14 * fontScale, weight: .bold))
                                     .foregroundColor(accuracyPercent >= 80 ? .green : .blue)
                             }
                         }
                     }
                     
                     // Action Buttons
-                    VStack(spacing: 12) {
+                    VStack(spacing: 12 * fontScale) {
                         if wrongCount > 0 {
                             PrimaryButton(
-                                title: loc.text("redoWrong"),
+                                title: loc.text("btnRedoWrongOnly") + " (\(wrongCount) câu)",
                                 icon: "arrow.triangle.2.circlepath",
                                 color: .orange
                             ) {
@@ -81,7 +80,7 @@ public struct EndingView: View {
                         }
                         
                         SecondaryButton(
-                            title: loc.text("reviewDetailed"),
+                            title: loc.text("btnReviewWithAnswers"),
                             icon: "doc.text.magnifyingglass"
                         ) {
                             showReviewSheet = true
@@ -91,13 +90,14 @@ public struct EndingView: View {
                             dismiss()
                         }
                         .buttonStyle(.plain)
+                        .font(.system(size: 13 * fontScale))
                         .foregroundColor(.secondary)
                     }
                 }
                 .padding()
             }
         }
-        .frame(width: 520, height: 580)
+        .frame(width: 540 * fontScale, height: 600 * fontScale)
         .sheet(isPresented: $showReviewSheet) {
             ReviewView(quiz: quiz, questions: quiz.questions, userAnswers: progress.userAnswers, wrongIds: progress.wrongQuestionIds)
         }
@@ -107,16 +107,15 @@ public struct EndingView: View {
     private func statTile(title: String, value: String, color: Color) -> some View {
         VStack(spacing: 6) {
             Text(value)
-                .font(.title2)
-                .fontWeight(.bold)
+                .font(.system(size: 20 * fontScale, weight: .bold))
                 .foregroundColor(color)
             Text(title)
-                .font(.caption)
+                .font(.system(size: 12 * fontScale))
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
+        .padding(.vertical, 12 * fontScale)
         .background(color.opacity(0.1))
         .cornerRadius(10)
     }

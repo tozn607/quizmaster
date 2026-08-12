@@ -143,11 +143,23 @@ public struct SettingsView: View {
                         }
                     }
                     
-                    // Display & Font Size Section
+                    // Display, Theme & Font Size Section
                     GlassCard {
                         VStack(alignment: .leading, spacing: 14 * fontScale) {
-                            Text("Giao diện & Cỡ chữ (Display & Font Size)")
+                            Text("Giao diện & Cỡ chữ (Display & Theme)")
                                 .font(.system(size: 16 * fontScale, weight: .bold))
+                            
+                            VStack(alignment: .leading, spacing: 6 * fontScale) {
+                                Text(loc.text("themeLabel"))
+                                    .font(.system(size: 13 * fontScale))
+                                
+                                Picker("", selection: $storage.settings.theme) {
+                                    Text(loc.text("themeSystem")).tag(AppTheme.system)
+                                    Text(loc.text("themeLight")).tag(AppTheme.light)
+                                    Text(loc.text("themeDark")).tag(AppTheme.dark)
+                                }
+                                .pickerStyle(.segmented)
+                            }
                             
                             VStack(alignment: .leading, spacing: 6 * fontScale) {
                                 Text("Cỡ chữ hiển thị ứng dụng:")

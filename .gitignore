@@ -2,6 +2,13 @@
 .build/
 .swiftpm/
 QuizMaster.app
+*.zip
+*.dmg
+
+# Deprecated docx files & release note temp files
+*.docx
+release_notes.txt
+.build_number
 
 # macOS System Files
 .DS_Store
@@ -10,4 +17,3 @@ QuizMaster.app
 
 # Temporary Icon generation artifacts
 AppIcon.iconset
-.build_number
