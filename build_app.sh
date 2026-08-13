@@ -33,30 +33,15 @@ EOF
 
 # Create release_notes.txt
 cat <<EOF > "release_notes.txt"
-# 🚀 QuizMaster v1.1.0 (Build ${BUILD_NUMBER}) Release Notes
+# 🚀 QuizMaster v1.1.1 Release Notes
 
-### 🌟 New Features & Enhancements in v1.1.0:
-- **📝 Markdown Formatted Explanations for Saved Ask Gemini Answers**: Saved Ask Gemini explanations in Practice Mode now parse headers (\`###\`), bold text (\`**...**\`), section dividers (\`---\`), bullet points, and quotes (\`> ...\`) directly inside the explanation box.
-- **☀️ Guaranteed Light Mode Readability**: \`GlassCard\` and option containers use 100% solid white backgrounds (\`Color.white\`) with dark high-contrast typography in Light Mode, eliminating white-on-white text glare.
-- **🌈 100% Solid, Saturated & Vibrant \`LiquidGlassPalette\` Colors**: Rich, vivid solid color fills for primary buttons, badges, and study modes:
-  - **Ocean Blue** (\`#0073FB\`): Practice Mode & primary actions.
-  - **Sunset Orange** (\`#FA730D\`): Exam Mode & exam badges.
-  - **Deep Purple** (\`#8C40EB\`): Flashcard Mode, AI sparkles, and Ask Gemini actions.
-  - **Emerald Mint** (\`#19B861\`): Correct answer indicators, success toasts, and mastered cards.
-  - **Coral Red** (\`#EB2E4D\`): Wrong answer indicators, delete actions, and need-review cards.
-  - **Cyan Teal** (\`#00AEB8\`): Reset progress actions.
-- **🧊 Authentic Liquid Glass Window Backdrop**: Translucent, blurred macOS Liquid Glass backdrop (\`NSVisualEffectView\` behind-window blending) with ambient accent light mesh.
-- **🌈 Vibrant Rainbow Gradient App Icon**: Multi-color rainbow gradient background with a crisp, pure white graduation cap main icon.
-- **🧹 Single Release Enforcement**: Automatically removes ALL previous builds of version 1.1.0 on GitHub, keeping only 1 release per version.
-- **💾 Persistent Ask Gemini Answers**: AI explanations are saved to persistent storage and restored whenever returning to that question.
-- **🔒 Gatekeeper & Code-signing Fix**: Applied ad-hoc codesigning and stripped quarantine flags to prevent launch errors.
-- **🔀 Question & Option Shuffling Toggle**: Toggle question and option randomization on or off.
-- **🎛️ Resizable & Spacious Windows**: Flexible frame dimensions for Practice, Exam, and Flashcard views.
-- **🃏 3D Flashcard Flipping**: True 3D card rotation effect with upright text rendering.
-- **📊 Fixed Practice Mode Progress Bar**: Progress bar now advances strictly based on completed questions count.
-- **🚫 Exam Mode Anti-Cheating**: Removed Ask Gemini from Exam Mode to maintain test simulation integrity.
-- **📍 Question Navigator Pane**: Collapsible right-side sidebar for instant question jumping and status visualization.
-- **💾 Practice Checkpoint Resume**: Automatically save and resume at your exact question index.
+### 🌟 New Features & Bug Fixes in v1.1.1:
+- **🔀 Fixed Question & Option Shuffling**: Toggling \`🔀 Shuffle Questions & Options\` now randomizes both question order AND option positions (A, B, C, D) across Practice, Exam, and Flashcard modes with automatic correct answer index updating.
+- **🃏 Enhanced Flashcard Round Completion Screen**: Flashcard mode no longer auto-enters the next round upon completion. Instead, a summary card prompts users to continue with unmastered cards, study all cards again, or review all answers and detailed explanations.
+- **🔄 Automatic OTA In-App Update Engine**: One-click download, unzipping, self-replacing bundle installation, and relaunch directly within the app.
+- **🛡️ Gatekeeper & Security Setup Documentation**: Added detailed instructions for disabling Gatekeeper (\`sudo spctl --master-disable\`) and clearing quarantine flags (\`xattr -cr /Applications/QuizMaster.app\`).
+- **🌐 Complete Bilingual Documentation & English AI Responsibility Section**: Updated README and User Guides with baseline Vietnamese and English translations.
+- **🌐 Added Missing Localization Strings**: Added localization keys for \`roundCompleted\`, \`studyAgain\`, and \`continueNextRound\` in both Vietnamese and English.
 EOF
 
 echo "🎨 Generating AppIcon..."
