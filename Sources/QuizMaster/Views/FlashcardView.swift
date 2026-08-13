@@ -254,10 +254,21 @@ public struct FlashcardView: View {
     }
     
     private func setupFlashcards() {
-        var rawQuestions = quiz.questions
+        var rawQuestions: [Question]
         if storage.settings.isShuffleEnabled {
-            rawQuestions = rawQuestions.shuffled().map { $0.shuffledWithRelabeledOptions() }
+            if let existingShuffled = project.progressMap[quiz.id]?.shuffledQuestions, !existingShuffled.isEmpty {
+                rawQuestions = existingShuffled
+            } else {
+                let newShuffled = quiz.questions.shuffled().map { $0.shuffledWithRelabeledOptions() }
+                var prog = project.progressMap[quiz.id] ?? QuizProgress(quizId: quiz.id)
+                prog.shuffledQuestions = newShuffled
+                storage.saveProgress(projectId: project.id, progress: prog)
+                rawQuestions = newShuffled
+            }
+        } else {
+            rawQuestions = quiz.questions
         }
+        
         allQuestions = rawQuestions
         cardQueue = allQuestions
         masteredIds.removeAll()

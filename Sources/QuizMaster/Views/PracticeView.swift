@@ -403,17 +403,35 @@ public struct PracticeView: View {
     
     // MARK: - Logic & Checkpoint Progress Restore
     private func setupQuizQuestions() {
-        var rawQuestions: [Question]
-        if redoWrongOnly, let prog = project.progressMap[quiz.id], !prog.wrongQuestionIds.isEmpty {
-            rawQuestions = quiz.questions.filter { prog.wrongQuestionIds.contains($0.id) }
-        } else {
-            rawQuestions = quiz.questions
-        }
+        let wrongIds = project.progressMap[quiz.id]?.wrongQuestionIds ?? []
+        let hasWrongOnlyFilter = redoWrongOnly && !wrongIds.isEmpty
         
         if storage.settings.isShuffleEnabled {
-            rawQuestions = rawQuestions.shuffled().map { $0.shuffledWithRelabeledOptions() }
+            if let existingShuffled = project.progressMap[quiz.id]?.shuffledQuestions, !existingShuffled.isEmpty {
+                if hasWrongOnlyFilter {
+                    activeQuestions = existingShuffled.filter { wrongIds.contains($0.id) }
+                } else {
+                    activeQuestions = existingShuffled
+                }
+            } else {
+                let newShuffled = quiz.questions.shuffled().map { $0.shuffledWithRelabeledOptions() }
+                var prog = project.progressMap[quiz.id] ?? QuizProgress(quizId: quiz.id)
+                prog.shuffledQuestions = newShuffled
+                storage.saveProgress(projectId: project.id, progress: prog)
+                
+                if hasWrongOnlyFilter {
+                    activeQuestions = newShuffled.filter { wrongIds.contains($0.id) }
+                } else {
+                    activeQuestions = newShuffled
+                }
+            }
+        } else {
+            if hasWrongOnlyFilter {
+                activeQuestions = quiz.questions.filter { wrongIds.contains($0.id) }
+            } else {
+                activeQuestions = quiz.questions
+            }
         }
-        activeQuestions = rawQuestions
         
         // Restore checkpoint progress if exists!
         if let prog = project.progressMap[quiz.id] {

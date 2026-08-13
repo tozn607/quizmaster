@@ -143,7 +143,25 @@ public class LocalizationManager: ObservableObject {
         "setupGuideTitle": "Tóm tắt Hướng dẫn Sử dụng Quick Start",
         "setupFinishTitle": "Cấu hình Thành công! 😊",
         "setupFinishSubtitle": "Bạn đã sẵn sàng để tạo và làm bộ đề thi trắc nghiệm đầu tiên.",
-        "enterAppBtn": "Vào sử dụng QuizMaster ngay 🚀"
+        "enterAppBtn": "Vào sử dụng QuizMaster ngay 🚀",
+        "getApiKeyFromStudio": "Lấy API Key từ Google AI Studio ↗",
+        "testingKey": "Đang kiểm tra...",
+        "btnBack": "Quay lại",
+        "btnContinue": "Tiếp tục ➔",
+        "displayAndThemeHeader": "Giao diện & Cỡ chữ (Display & Theme)",
+        "fontSizeLabel": "Cỡ chữ hiển thị ứng dụng:",
+        "authorInfo": "Tác giả / Creator: @tozn607 (Anh Vinh)",
+        "appDescInfo": "Ứng dụng tự học & tạo đề thi trắc nghiệm bằng Gemini 3.5 Flash Lite trên macOS.",
+        "reopenSetupWizard": "Mở lại Màn hình Cấu hình Ban đầu (Setup Wizard)...",
+        "feature1Title": "Tạo Đề thi bằng Gemini AI",
+        "feature1Desc": "Tự động quét bài giảng PDF, Word, TXT thành câu hỏi & giải thích.",
+        "feature2Title": "3 Chế độ Ôn tập Thông minh",
+        "feature2Desc": "Luyện tập tức thì, Thi thử chống gian lận & Thẻ ghi nhớ 3D.",
+        "feature3Title": "Bảo mật & Mã nguồn mở",
+        "feature3Desc": "Dữ liệu lưu offline trên máy, dùng API Key cá nhân hoàn toàn miễn phí.",
+        "guideBullet1": "1. Bấm nút '+' ở Sidebar để tạo Dự án môn học mới.",
+        "guideBullet2": "2. Chọn 'Nhập Tài liệu / Bộ đề' để quét tự động với Gemini AI.",
+        "guideBullet3": "3. Phím tắt: Spacebar (Lật thẻ 3D) • 1,2,3,4 (Chọn phương án) • Enter (Next)."
     ]
     
     private let enDictionary: [String: String] = [
@@ -270,7 +288,25 @@ public class LocalizationManager: ObservableObject {
         "setupGuideTitle": "Quick Start User Guide Summary",
         "setupFinishTitle": "Setup Complete! 😊",
         "setupFinishSubtitle": "You are all set to create and practice your first quiz set.",
-        "enterAppBtn": "Get Started with QuizMaster 🚀"
+        "enterAppBtn": "Get Started with QuizMaster 🚀",
+        "getApiKeyFromStudio": "Get API Key from Google AI Studio ↗",
+        "testingKey": "Testing...",
+        "btnBack": "Back",
+        "btnContinue": "Continue ➔",
+        "displayAndThemeHeader": "Display & Theme",
+        "fontSizeLabel": "App Font Size:",
+        "authorInfo": "Author / Creator: @tozn607 (Anh Vinh)",
+        "appDescInfo": "Native macOS self-study & multiple-choice quiz generator using Gemini 3.5 Flash Lite.",
+        "reopenSetupWizard": "Re-open First-Time Setup Wizard...",
+        "feature1Title": "AI Quiz Generation",
+        "feature1Desc": "Automatically scan PDF, Word, and TXT lecture files into quizzes and explanations.",
+        "feature2Title": "3 Smart Study Modes",
+        "feature2Desc": "Instant Practice Mode, Anti-Cheating Exam Mode & 3D Flashcards.",
+        "feature3Title": "Private & Open-Source",
+        "feature3Desc": "Data stored locally, using your personal free API Key.",
+        "guideBullet1": "1. Click '+' on the Sidebar to create a new Study Project.",
+        "guideBullet2": "2. Select 'Import Document / Quiz' to scan automatically with Gemini AI.",
+        "guideBullet3": "3. Shortcuts: Spacebar (Flip 3D card) • 1,2,3,4 (Select Option) • Enter (Next)."
     ]
     
     public init() {}

@@ -62,7 +62,7 @@ public enum QuestionDepthMode: String, CaseIterable, Identifiable, Codable {
 }
 
 public struct AppVersionInfo {
-    public static let currentVersion = "v1.2.0"
+    public static let currentVersion = "v1.2.1"
     
     public static var buildNumber: String {
         if let path = Bundle.main.path(forResource: "build_number", ofType: "txt"),
@@ -214,8 +214,20 @@ public struct QuizProgress: Identifiable, Codable, Equatable, Hashable {
     public var isCompleted: Bool
     public var startTime: Date
     public var endTime: Date?
+    public var shuffledQuestions: [Question]?
     
-    public init(id: String = UUID().uuidString, quizId: String, currentIndex: Int = 0, userAnswers: [String: Int] = [:], wrongQuestionIds: Set<String> = [], flashcardMasteredIds: Set<String> = [], isCompleted: Bool = false, startTime: Date = Date(), endTime: Date? = nil) {
+    public init(
+        id: String = UUID().uuidString,
+        quizId: String,
+        currentIndex: Int = 0,
+        userAnswers: [String: Int] = [:],
+        wrongQuestionIds: Set<String> = [],
+        flashcardMasteredIds: Set<String> = [],
+        isCompleted: Bool = false,
+        startTime: Date = Date(),
+        endTime: Date? = nil,
+        shuffledQuestions: [Question]? = nil
+    ) {
         self.id = id
         self.quizId = quizId
         self.currentIndex = currentIndex
@@ -225,6 +237,7 @@ public struct QuizProgress: Identifiable, Codable, Equatable, Hashable {
         self.isCompleted = isCompleted
         self.startTime = startTime
         self.endTime = endTime
+        self.shuffledQuestions = shuffledQuestions
     }
 }
 

@@ -114,9 +114,9 @@ public struct FirstTimeSetupView: View {
             
             GlassCard {
                 VStack(alignment: .leading, spacing: 12 * fontScale) {
-                    featureRow(icon: "sparkles", color: LiquidGlassPalette.deepPurple, title: "Tạo Đề thi bằng Gemini AI", desc: "Tự động quét bài giảng PDF, Word, TXT thành câu hỏi & giải thích.")
-                    featureRow(icon: "doc.text.magnifyingglass", color: LiquidGlassPalette.oceanBlue, title: "3 Chế độ Ôn tập Thông minh", desc: "Luyện tập tức thì, Thi thử chống gian lận & Thẻ ghi nhớ 3D.")
-                    featureRow(icon: "lock.shield.fill", color: LiquidGlassPalette.emeraldMint, title: "Bảo mật & Mã nguồn mở", desc: "Dữ liệu lưu offline trên máy, dùng API Key cá nhân hoàn toàn miễn phí.")
+                    featureRow(icon: "sparkles", color: LiquidGlassPalette.deepPurple, title: loc.text("feature1Title"), desc: loc.text("feature1Desc"))
+                    featureRow(icon: "doc.text.magnifyingglass", color: LiquidGlassPalette.oceanBlue, title: loc.text("feature2Title"), desc: loc.text("feature2Desc"))
+                    featureRow(icon: "lock.shield.fill", color: LiquidGlassPalette.emeraldMint, title: loc.text("feature3Title"), desc: loc.text("feature3Desc"))
                 }
                 .padding(16 * fontScale)
             }
@@ -178,7 +178,7 @@ public struct FirstTimeSetupView: View {
                     }) {
                         HStack {
                             Image(systemName: "arrow.up.right.square")
-                            Text("Lấy API Key từ Google AI Studio ↗")
+                            Text(loc.text("getApiKeyFromStudio"))
                         }
                         .font(.system(size: 13 * fontScale, weight: .semibold))
                         .foregroundColor(LiquidGlassPalette.oceanBlue)
@@ -189,13 +189,13 @@ public struct FirstTimeSetupView: View {
                         Text("Google AI Studio Key (Gemini API)")
                             .font(.system(size: 12 * fontScale, weight: .bold))
                         
-                        SecureField("Dán API Key tại đây (AIzaSy...)", text: $apiKeyInput)
+                        SecureField(loc.text("apiKeyHint"), text: $apiKeyInput)
                             .textFieldStyle(.roundedBorder)
                             .font(.system(size: 13 * fontScale))
                     }
                     
                     HStack {
-                        PrimaryButton(title: isTestingKey ? "Đang kiểm tra..." : "Kiểm tra API Key", icon: "checkmark.shield", color: LiquidGlassPalette.deepPurple) {
+                        PrimaryButton(title: isTestingKey ? loc.text("testingKey") : loc.text("testApiKey"), icon: "checkmark.shield", color: LiquidGlassPalette.deepPurple) {
                             testKey()
                         }
                         .disabled(apiKeyInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isTestingKey)
@@ -217,11 +217,11 @@ public struct FirstTimeSetupView: View {
             
             // Bottom Bar
             HStack {
-                SecondaryButton(title: "Quay lại", icon: "arrow.left") {
+                SecondaryButton(title: loc.text("btnBack"), icon: "arrow.left") {
                     withAnimation { currentStep = 1 }
                 }
                 Spacer()
-                PrimaryButton(title: "Tiếp tục ➔", icon: "arrow.right", color: LiquidGlassPalette.oceanBlue) {
+                PrimaryButton(title: loc.text("btnContinue"), icon: "arrow.right", color: LiquidGlassPalette.oceanBlue) {
                     saveApiKeyAndNext()
                 }
             }
@@ -243,11 +243,11 @@ public struct FirstTimeSetupView: View {
                 isTestingKey = false
                 isKeyValid = success
                 if success {
-                    apiKeyTestResult = "✓ API Key hợp lệ!"
+                    apiKeyTestResult = "✓ \(loc.text("apiKeyValid"))"
                     storage.settings.apiKey = key
                     storage.saveSettings()
                 } else {
-                    apiKeyTestResult = "❌ API Key không hợp lệ."
+                    apiKeyTestResult = "❌ \(loc.text("apiKeyInvalid"))"
                 }
             }
         }
@@ -277,7 +277,7 @@ public struct FirstTimeSetupView: View {
                 VStack(spacing: 14 * fontScale) {
                     // Language
                     HStack {
-                        Text("Ngôn ngữ ứng dụng:")
+                        Text(loc.text("languageLabel"))
                             .font(.system(size: 13 * fontScale, weight: .semibold))
                         Spacer()
                         Picker("", selection: $loc.currentLanguage) {
@@ -292,13 +292,13 @@ public struct FirstTimeSetupView: View {
                     
                     // Theme
                     HStack {
-                        Text("Chủ đề Giao diện:")
+                        Text(loc.text("themeLabel"))
                             .font(.system(size: 13 * fontScale, weight: .semibold))
                         Spacer()
                         Picker("", selection: $storage.settings.theme) {
-                            Text("Mặc định").tag(AppTheme.system)
-                            Text("Sáng ☀️").tag(AppTheme.light)
-                            Text("Tối 🌙").tag(AppTheme.dark)
+                            Text(loc.text("themeSystem")).tag(AppTheme.system)
+                            Text(loc.text("themeLight")).tag(AppTheme.light)
+                            Text(loc.text("themeDark")).tag(AppTheme.dark)
                         }
                         .pickerStyle(.segmented)
                         .frame(width: 220 * fontScale)
@@ -308,14 +308,13 @@ public struct FirstTimeSetupView: View {
                     
                     // Font Size
                     HStack {
-                        Text("Cỡ chữ hiển thị:")
+                        Text(loc.text("fontSizeLabel"))
                             .font(.system(size: 13 * fontScale, weight: .semibold))
                         Spacer()
                         Picker("", selection: $storage.settings.fontSize) {
-                            Text("Nhỏ").tag(AppFontSize.small)
-                            Text("Vừa").tag(AppFontSize.medium)
-                            Text("Lớn").tag(AppFontSize.large)
-                            Text("Rất lớn").tag(AppFontSize.xLarge)
+                            ForEach(AppFontSize.allCases) { size in
+                                Text(size.displayName).tag(size)
+                            }
                         }
                         .pickerStyle(.segmented)
                         .frame(width: 240 * fontScale)
@@ -333,9 +332,9 @@ public struct FirstTimeSetupView: View {
                         .foregroundColor(LiquidGlassPalette.oceanBlue)
                     
                     VStack(alignment: .leading, spacing: 6 * fontScale) {
-                        guideBullet(text: "1. Bấm nút '+' ở Sidebar để tạo Dự án môn học mới.")
-                        guideBullet(text: "2. Chọn 'Nhập Tài liệu / Bộ đề' để quét tự động với Gemini AI.")
-                        guideBullet(text: "3. Phím tắt: Spacebar (Lật thẻ 3D) • 1,2,3,4 (Chọn phương án) • Enter (Next).")
+                        guideBullet(text: loc.text("guideBullet1"))
+                        guideBullet(text: loc.text("guideBullet2"))
+                        guideBullet(text: loc.text("guideBullet3"))
                     }
                 }
                 .padding(14 * fontScale)
@@ -346,11 +345,11 @@ public struct FirstTimeSetupView: View {
             
             // Bottom Bar
             HStack {
-                SecondaryButton(title: "Quay lại", icon: "arrow.left") {
+                SecondaryButton(title: loc.text("btnBack"), icon: "arrow.left") {
                     withAnimation { currentStep = 2 }
                 }
                 Spacer()
-                PrimaryButton(title: "Tiếp tục ➔", icon: "arrow.right", color: LiquidGlassPalette.oceanBlue) {
+                PrimaryButton(title: loc.text("btnContinue"), icon: "arrow.right", color: LiquidGlassPalette.oceanBlue) {
                     storage.saveSettings()
                     withAnimation { currentStep = 4 }
                 }

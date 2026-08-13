@@ -50,7 +50,7 @@ public struct SettingsView: View {
                                     HStack(spacing: 5) {
                                         Image(systemName: "key.fill")
                                             .foregroundColor(.accentColor)
-                                        Text("Lấy API Key từ Google AI Studio ↗")
+                                        Text(loc.text("getApiKeyFromStudio"))
                                             .font(.system(size: 12 * fontScale, weight: .semibold))
                                             .foregroundColor(.accentColor)
                                     }
@@ -64,7 +64,7 @@ public struct SettingsView: View {
                                     )
                                 }
                                 .buttonStyle(.plain)
-                                .help("Mở trang https://aistudio.google.com/api-keys để lấy API Key miễn phí")
+                                .help("https://aistudio.google.com/api-keys")
                             }
                             
                             HStack {
@@ -77,7 +77,7 @@ public struct SettingsView: View {
                                             ProgressView()
                                                 .scaleEffect(0.6)
                                         }
-                                        Text(loc.text("testApiKey"))
+                                        Text(isTestingKey ? loc.text("testingKey") : loc.text("testApiKey"))
                                             .font(.system(size: 13 * fontScale))
                                     }
                                 }
@@ -148,7 +148,7 @@ public struct SettingsView: View {
                     // Display, Theme & Font Size Section
                     GlassCard {
                         VStack(alignment: .leading, spacing: 14 * fontScale) {
-                            Text("Giao diện & Cỡ chữ (Display & Theme)")
+                            Text(loc.text("displayAndThemeHeader"))
                                 .font(.system(size: 16 * fontScale, weight: .bold))
                             
                             VStack(alignment: .leading, spacing: 6 * fontScale) {
@@ -164,7 +164,7 @@ public struct SettingsView: View {
                             }
                             
                             VStack(alignment: .leading, spacing: 6 * fontScale) {
-                                Text("Cỡ chữ hiển thị ứng dụng:")
+                                Text(loc.text("fontSizeLabel"))
                                     .font(.system(size: 13 * fontScale))
                                 
                                 Picker("", selection: $storage.settings.fontSize) {
@@ -196,7 +196,7 @@ public struct SettingsView: View {
                     // About & App Info Footer Section
                     GlassCard {
                         VStack(alignment: .leading, spacing: 12 * fontScale) {
-                            Text("Thông tin Ứng dụng / About QuizMaster")
+                            Text(loc.text("authorInfo"))
                                 .font(.system(size: 16 * fontScale, weight: .bold))
                             
                             Divider()
@@ -216,11 +216,11 @@ public struct SettingsView: View {
                                         BadgeView(text: "\(AppVersionInfo.currentVersion) (Build \(AppVersionInfo.buildNumber))", color: .accentColor)
                                     }
                                     
-                                    Text("Tác giả / Creator: @tozn607 (Anh Vinh)")
+                                    Text(loc.text("authorInfo"))
                                         .font(.system(size: 12 * fontScale, weight: .semibold))
                                         .foregroundColor(.accentColor)
                                     
-                                    Text("Ứng dụng tự học & tạo đề thi trắc nghiệm bằng Gemini 3.5 Flash Lite trên macOS.")
+                                    Text(loc.text("appDescInfo"))
                                         .font(.system(size: 11 * fontScale))
                                         .foregroundColor(.secondary)
                                 }
@@ -250,7 +250,7 @@ public struct SettingsView: View {
                                 }) {
                                     HStack(spacing: 6) {
                                         Image(systemName: "sparkles")
-                                        Text("Mở lại Màn hình Cấu hình Ban đầu (Setup Wizard)...")
+                                        Text(loc.text("reopenSetupWizard"))
                                     }
                                     .font(.system(size: 12 * fontScale, weight: .medium))
                                     .foregroundColor(LiquidGlassPalette.oceanBlue)

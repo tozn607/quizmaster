@@ -170,22 +170,33 @@ public struct MainView: View {
                 
                 Spacer()
                 
-                // Shuffle toggle button
+                // Shuffle toggle button (Visually prominent pill)
                 Button(action: {
-                    storage.settings.isShuffleEnabled.toggle()
-                    storage.saveSettings()
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                        storage.settings.isShuffleEnabled.toggle()
+                        storage.saveSettings()
+                    }
                 }) {
                     HStack(spacing: 6) {
-                        Image(systemName: storage.settings.isShuffleEnabled ? "arrow.triangle.2.circlepath.circle.fill" : "arrow.triangle.2.circlepath.circle")
-                            .foregroundColor(storage.settings.isShuffleEnabled ? .accentColor : .gray)
+                        Image(systemName: storage.settings.isShuffleEnabled ? "shuffle.circle.fill" : "shuffle.circle")
+                            .font(.system(size: 15, weight: .bold))
                         Text(loc.text("toggleShuffle"))
-                            .font(.subheadline)
-                            .fontWeight(.medium)
+                            .font(.system(size: 13, weight: .bold))
                     }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .background(storage.settings.isShuffleEnabled ? Color.accentColor.opacity(0.12) : Color.clear)
-                    .cornerRadius(8)
+                    .foregroundColor(storage.settings.isShuffleEnabled ? .white : .primary)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(
+                        storage.settings.isShuffleEnabled
+                        ? LiquidGlassPalette.oceanBlue
+                        : Color.secondary.opacity(0.12)
+                    )
+                    .cornerRadius(20)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(storage.settings.isShuffleEnabled ? LiquidGlassPalette.oceanBlue : Color.secondary.opacity(0.2), lineWidth: 1)
+                    )
+                    .shadow(color: storage.settings.isShuffleEnabled ? LiquidGlassPalette.oceanBlue.opacity(0.3) : Color.clear, radius: 4, x: 0, y: 2)
                 }
                 .buttonStyle(.plain)
                 .help("Bật/tắt xáo trộn vị trí câu hỏi và các phương án A/B/C/D")
