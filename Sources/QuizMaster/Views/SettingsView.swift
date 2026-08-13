@@ -239,6 +239,25 @@ public struct SettingsView: View {
                                 .buttonStyle(.plain)
                                 .foregroundColor(.accentColor)
                             }
+                            
+                            Divider()
+                            
+                            HStack {
+                                Button(action: {
+                                    storage.settings.hasCompletedFirstTimeSetup = false
+                                    storage.saveSettings()
+                                    dismiss()
+                                }) {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "sparkles")
+                                        Text("Mở lại Màn hình Cấu hình Ban đầu (Setup Wizard)...")
+                                    }
+                                    .font(.system(size: 12 * fontScale, weight: .medium))
+                                    .foregroundColor(LiquidGlassPalette.oceanBlue)
+                                }
+                                .buttonStyle(.plain)
+                                Spacer()
+                            }
                         }
                     }
                 }
@@ -258,7 +277,7 @@ public struct SettingsView: View {
             .background(.thinMaterial)
         }
         }
-        .frame(width: 620 * fontScale, height: 740 * fontScale)
+        .frame(width: 680 * fontScale, height: 760 * fontScale)
         .sheet(isPresented: $showUpdateModal) {
             SoftwareUpdateView()
         }

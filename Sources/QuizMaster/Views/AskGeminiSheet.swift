@@ -182,7 +182,7 @@ public struct AskGeminiSheet: View {
             .background(.thinMaterial)
         }
         }
-        .frame(width: 680 * fontScale, height: 680 * fontScale)
+        .frame(width: 720 * fontScale, height: 720 * fontScale)
         .onAppear {
             if !question.explanation.isEmpty && aiResponseText == nil {
                 aiResponseText = question.explanation

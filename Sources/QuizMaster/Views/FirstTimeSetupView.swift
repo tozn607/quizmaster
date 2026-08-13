@@ -48,7 +48,7 @@ public struct FirstTimeSetupView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .frame(width: 620 * fontScale, height: 580 * fontScale)
+        .frame(width: 740 * fontScale, height: 660 * fontScale)
         .onAppear {
             apiKeyInput = storage.settings.apiKey
             if !apiKeyInput.isEmpty {

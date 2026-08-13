@@ -170,7 +170,7 @@ public struct SoftwareUpdateView: View {
             .background(.thinMaterial)
         }
         }
-        .frame(width: 580 * fontScale, height: 600 * fontScale)
+        .frame(width: 680 * fontScale, height: 660 * fontScale)
         .onAppear {
             Task {
                 await updateChecker.checkForUpdates()

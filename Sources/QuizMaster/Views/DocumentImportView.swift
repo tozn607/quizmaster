@@ -254,7 +254,7 @@ public struct DocumentImportView: View {
             .background(.thinMaterial)
         }
         }
-        .frame(width: 680 * fontScale, height: 720 * fontScale)
+        .frame(width: 720 * fontScale, height: 740 * fontScale)
         .confirmationDialog(
             loc.text("confirmScanTitle"),
             isPresented: $showScanConfirmation,
