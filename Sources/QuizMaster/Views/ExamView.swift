@@ -60,12 +60,6 @@ public struct ExamView: View {
                     
                     // Togglable Exam Timer Control Menu
                     Menu {
-                        Button(isTimerEnabled ? loc.text("disableTimer") : loc.text("enableTimer")) {
-                            withAnimation { isTimerEnabled.toggle() }
-                        }
-                        
-                        Divider()
-                        
                         Button(loc.text("timer15m")) { setTimerDuration(minutes: 15) }
                         Button(loc.text("timer45m")) { setTimerDuration(minutes: 45) }
                         Button(loc.text("timerPomodoro")) { setTimerDuration(minutes: 25) }

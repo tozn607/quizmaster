@@ -312,157 +312,214 @@ public struct MainView: View {
          }
      }
      
-     // MARK: - Quiz Card Renderer
-     private func quizCard(quiz: Quiz, project: StudyProject) -> some View {
-         let isSelectedInMulti = selectedQuizIds.contains(quiz.id)
-         
-         return GlassCard {
-             VStack(alignment: .leading, spacing: 14) {
-                 // Header & Badges
-                 HStack {
-                     if isMultiSelectMode {
-                         Button(action: {
-                             if isSelectedInMulti {
-                                 selectedQuizIds.remove(quiz.id)
-                             } else {
-                                 selectedQuizIds.insert(quiz.id)
-                             }
-                         }) {
-                             Image(systemName: isSelectedInMulti ? "checkmark.square.fill" : "square")
-                                 .font(.title2)
-                                 .foregroundColor(isSelectedInMulti ? .accentColor : .gray)
-                         }
-                         .buttonStyle(.plain)
-                     }
-                     
-                     BadgeView(text: "\(quiz.questions.count) \(loc.text("questionsCount"))", color: .accentColor)
-                     Spacer()
-                     
-                     // Move Quiz Button
-                     Button(action: {
-                         quizToMove = quiz
-                         targetMoveProjectId = storage.projects.first(where: { $0.id != project.id })?.id ?? ""
-                         showMoveModal = true
-                     }) {
-                         Image(systemName: "folder.arrow.up")
-                             .font(.subheadline)
-                             .foregroundColor(.accentColor.opacity(0.8))
-                     }
-                     .buttonStyle(.plain)
-                     .help("Chuyển bộ đề sang Dự án khác")
-                     
-                     // Rename Quiz Button
-                     Button(action: {
-                         quizToRename = quiz
-                         renameTitleInput = quiz.title
-                     }) {
-                         Image(systemName: "pencil")
-                             .font(.subheadline)
-                             .foregroundColor(.accentColor.opacity(0.8))
-                     }
-                     .buttonStyle(.plain)
-                     .help(loc.text("renameQuiz"))
-                     
-                     // Delete Quiz Set Button
-                     Button(action: {
-                         storage.deleteQuiz(projectId: project.id, quizId: quiz.id)
-                     }) {
-                         Image(systemName: "trash")
-                             .font(.subheadline)
-                             .foregroundColor(.gray.opacity(0.7))
-                     }
-                     .buttonStyle(.plain)
-                     .help(loc.text("deleteQuiz"))
-                 }
-                 
-                 // Quiz Title
-                 Text(quiz.title)
-                     .font(.title3)
-                     .fontWeight(.bold)
-                     .lineLimit(2)
-                 
-                 // Progress Bar if taken
-                 if let prog = project.progressMap[quiz.id] {
-                     VStack(alignment: .leading, spacing: 4) {
-                         HStack {
-                             Text("Đã luyện tập (\(prog.userAnswers.count) / \(quiz.questions.count) câu)")
-                                 .font(.caption)
-                                 .foregroundColor(.secondary)
-                             Spacer()
-                             Text("\(prog.wrongQuestionIds.isEmpty ? 100 : Int(Double(quiz.questions.count - prog.wrongQuestionIds.count) / Double(quiz.questions.count) * 100))%")
-                                 .font(.caption)
-                                 .fontWeight(.bold)
-                                 .foregroundColor(.green)
-                         }
-                         ProgressBar(value: Double(prog.userAnswers.count) / Double(quiz.questions.count), height: 4, color: .green)
-                     }
-                 }
-                 
-                 Divider()
-                 
-                 // Action Buttons: 3 Study Modes
-                 VStack(spacing: 10) {
-                     HStack(spacing: 10) {
-                         PrimaryButton(title: loc.text("practiceMode"), icon: "pencil.and.outline", color: LiquidGlassPalette.oceanBlue) {
-                             activePracticeQuiz = quiz
-                         }
-                         
-                         PrimaryButton(title: loc.text("examMode"), icon: "timer", color: LiquidGlassPalette.sunsetOrange) {
-                             activeExamQuiz = quiz
-                         }
-                     }
-                     
-                     PrimaryButton(title: loc.text("flashcardMode"), icon: "rectangle.on.rectangle.angled", color: LiquidGlassPalette.deepPurple) {
-                         activeFlashcardQuiz = quiz
-                     }
-                 }
-             }
-         }
-         .contextMenu {
-             Button {
-                 exportToZip(quiz: quiz)
-             } label: {
-                 Label(loc.text("exportZip"), systemImage: "archivebox")
-             }
-             
-             Button {
-                 exportToWordDocx(quiz: quiz)
-             } label: {
-                 Label(loc.text("exportWordDocx"), systemImage: "doc.text")
-             }
-             
-             Divider()
-             
-             Button {
-                 quizToMove = quiz
-                 targetMoveProjectId = storage.projects.first(where: { $0.id != project.id })?.id ?? ""
-                 showMoveModal = true
-             } label: {
-                 Label("Chuyển sang Dự án khác...", systemImage: "folder.arrow.up")
-             }
-             
-             Button {
-                 quizToRename = quiz
-                 renameTitleInput = quiz.title
-             } label: {
-                 Label(loc.text("renameQuiz"), systemImage: "pencil")
-             }
-             
-             Button {
-                 storage.resetQuizProgress(projectId: project.id, quizId: quiz.id)
-             } label: {
-                 Label(loc.text("resetProgress"), systemImage: "arrow.counterclockwise")
-             }
-             
-             Divider()
-             
-             Button(role: .destructive) {
-                 storage.deleteQuiz(projectId: project.id, quizId: quiz.id)
-             } label: {
-                 Label(loc.text("deleteQuiz"), systemImage: "trash")
-             }
-         }
-     }
+    // MARK: - Quiz Card Renderer
+    private func quizCard(quiz: Quiz, project: StudyProject) -> some View {
+        let isSelectedInMulti = selectedQuizIds.contains(quiz.id)
+        let prog = project.progressMap[quiz.id]
+        let isFullyCompleted = (prog?.isCompleted == true) || ((prog?.userAnswers.count ?? 0) >= quiz.questions.count && quiz.questions.count > 0)
+        
+        let rainbowGradient = LinearGradient(
+            colors: [
+                Color.red.opacity(0.08),
+                Color.orange.opacity(0.08),
+                Color.yellow.opacity(0.08),
+                Color.green.opacity(0.08),
+                Color.blue.opacity(0.08),
+                Color.purple.opacity(0.08)
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        let rainbowStroke = LinearGradient(
+            colors: [
+                Color.red.opacity(0.4),
+                Color.orange.opacity(0.4),
+                Color.yellow.opacity(0.4),
+                Color.green.opacity(0.4),
+                Color.blue.opacity(0.4),
+                Color.purple.opacity(0.4)
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        
+        return GlassCard {
+            VStack(alignment: .leading, spacing: 12) {
+                // Header & Badges
+                HStack {
+                    if isMultiSelectMode {
+                        Button(action: {
+                            if isSelectedInMulti {
+                                selectedQuizIds.remove(quiz.id)
+                            } else {
+                                selectedQuizIds.insert(quiz.id)
+                            }
+                        }) {
+                            Image(systemName: isSelectedInMulti ? "checkmark.square.fill" : "square")
+                                .font(.title2)
+                                .foregroundColor(isSelectedInMulti ? .accentColor : .gray)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    
+                    BadgeView(text: "\(quiz.questions.count) \(loc.text("questionsCount"))", color: .accentColor)
+                    if isFullyCompleted {
+                        BadgeView(text: "Hoàn thành 100%", color: .green)
+                    }
+                    
+                    Spacer()
+                    
+                    // Move Quiz Button
+                    Button(action: {
+                        quizToMove = quiz
+                        targetMoveProjectId = storage.projects.first(where: { $0.id != project.id })?.id ?? ""
+                        showMoveModal = true
+                    }) {
+                        Image(systemName: "folder.arrow.up")
+                            .font(.subheadline)
+                            .foregroundColor(.accentColor.opacity(0.8))
+                    }
+                    .buttonStyle(.plain)
+                    .help("Chuyển bộ đề sang Dự án khác")
+                    
+                    // Rename Quiz Button
+                    Button(action: {
+                        quizToRename = quiz
+                        renameTitleInput = quiz.title
+                    }) {
+                        Image(systemName: "pencil")
+                            .font(.subheadline)
+                            .foregroundColor(.accentColor.opacity(0.8))
+                    }
+                    .buttonStyle(.plain)
+                    .help(loc.text("renameQuiz"))
+                    
+                    // Delete Quiz Set Button
+                    Button(action: {
+                        storage.deleteQuiz(projectId: project.id, quizId: quiz.id)
+                    }) {
+                        Image(systemName: "trash")
+                            .font(.subheadline)
+                            .foregroundColor(.gray.opacity(0.7))
+                    }
+                    .buttonStyle(.plain)
+                    .help(loc.text("deleteQuiz"))
+                }
+                
+                // Quiz Title (Fixed height for 2 lines so card height is uniform)
+                Text(quiz.title)
+                    .font(.title3)
+                    .fontWeight(.bold)
+                    .lineLimit(2)
+                    .frame(height: 48, alignment: .topLeading)
+                
+                // Uniform Progress Bar Slot (Same height for all cards)
+                VStack(alignment: .leading, spacing: 4) {
+                    if let prog = prog, !prog.userAnswers.isEmpty {
+                        HStack {
+                            Text("Đã luyện tập (\(prog.userAnswers.count) / \(quiz.questions.count) câu)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text("\(prog.wrongQuestionIds.isEmpty ? 100 : Int(Double(quiz.questions.count - prog.wrongQuestionIds.count) / Double(quiz.questions.count) * 100))%")
+                                .font(.caption)
+                                .fontWeight(.bold)
+                                .foregroundColor(.green)
+                        }
+                        ProgressBar(value: Double(prog.userAnswers.count) / Double(quiz.questions.count), height: 4, color: isFullyCompleted ? .green : .blue)
+                    } else {
+                        HStack {
+                            Text("Chưa bắt đầu ôn tập")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                        }
+                        ProgressBar(value: 0, height: 4, color: .gray.opacity(0.3))
+                    }
+                }
+                .frame(height: 28)
+                
+                Divider()
+                
+                // Centered Action Buttons: 3 Study Modes
+                HStack {
+                    Spacer(minLength: 0)
+                    
+                    VStack(spacing: 8) {
+                        HStack(spacing: 10) {
+                            PrimaryButton(title: loc.text("practiceMode"), icon: "pencil.and.outline", color: LiquidGlassPalette.oceanBlue) {
+                                activePracticeQuiz = quiz
+                            }
+                            
+                            PrimaryButton(title: loc.text("examMode"), icon: "timer", color: LiquidGlassPalette.sunsetOrange) {
+                                activeExamQuiz = quiz
+                            }
+                        }
+                        
+                        PrimaryButton(title: loc.text("flashcardMode"), icon: "rectangle.on.rectangle.angled", color: LiquidGlassPalette.deepPurple) {
+                            activeFlashcardQuiz = quiz
+                        }
+                    }
+                    .frame(maxWidth: 360)
+                    
+                    Spacer(minLength: 0)
+                }
+            }
+        }
+        .padding(14)
+        .background(
+            isFullyCompleted ? AnyView(rainbowGradient) : AnyView(Color.clear)
+        )
+        .cornerRadius(16)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(isFullyCompleted ? AnyShapeStyle(rainbowStroke) : AnyShapeStyle(Color.secondary.opacity(0.15)), lineWidth: isFullyCompleted ? 2 : 1)
+        )
+        .contextMenu {
+            Button {
+                exportToZip(quiz: quiz)
+            } label: {
+                Label(loc.text("exportZip"), systemImage: "archivebox")
+            }
+            
+            Button {
+                exportToWordDocx(quiz: quiz)
+            } label: {
+                Label(loc.text("exportWordDocx"), systemImage: "doc.text")
+            }
+            
+            Divider()
+            
+            Button {
+                quizToMove = quiz
+                targetMoveProjectId = storage.projects.first(where: { $0.id != project.id })?.id ?? ""
+                showMoveModal = true
+            } label: {
+                Label("Chuyển sang Dự án khác...", systemImage: "folder.arrow.up")
+            }
+            
+            Button {
+                quizToRename = quiz
+                renameTitleInput = quiz.title
+            } label: {
+                Label(loc.text("renameQuiz"), systemImage: "pencil")
+            }
+            
+            Button {
+                storage.resetQuizProgress(projectId: project.id, quizId: quiz.id)
+            } label: {
+                Label(loc.text("resetProgress"), systemImage: "arrow.counterclockwise")
+            }
+            
+            Divider()
+            
+            Button(role: .destructive) {
+                storage.deleteQuiz(projectId: project.id, quizId: quiz.id)
+            } label: {
+                Label(loc.text("deleteQuiz"), systemImage: "trash")
+            }
+        }
+    }
      
      // MARK: - Move Quiz Sheet Modal
      private var moveQuizSheet: some View {

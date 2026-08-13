@@ -97,16 +97,16 @@ public struct SoftwareUpdateView: View {
                                         RoundedRectangle(cornerRadius: 12)
                                             .stroke(Color.secondary.opacity(0.15), lineWidth: 1)
                                     )
-                                    .frame(height: 240 * fontScale)
+                                    .frame(maxHeight: 180 * fontScale)
                                 }
                             }
                         }
                     }
                 }
                 
-                // OTA Update Progress & Status Banner
-                if updateChecker.isDownloadingUpdate {
-                    VStack(spacing: 8 * fontScale) {
+                // OTA Update Progress & Status Banner (Fixed height container to prevent layout shifts)
+                VStack(spacing: 8 * fontScale) {
+                    if updateChecker.isDownloadingUpdate {
                         ProgressView(value: updateChecker.updateProgress)
                             .progressViewStyle(.linear)
                             .tint(LiquidGlassPalette.oceanBlue)
@@ -114,26 +114,28 @@ public struct SoftwareUpdateView: View {
                         Text(updateChecker.updateStatusText)
                             .font(.system(size: 13 * fontScale, weight: .semibold))
                             .foregroundColor(LiquidGlassPalette.oceanBlue)
-                    }
-                    .padding(.horizontal)
-                } else if let err = updateChecker.updateError {
-                    Text(err)
-                        .font(.system(size: 12 * fontScale, weight: .bold))
-                        .foregroundColor(LiquidGlassPalette.coralRed)
-                        .padding(.horizontal)
-                } else if updateChecker.isChecking {
-                    HStack(spacing: 8 * fontScale) {
-                        ProgressView()
-                            .scaleEffect(0.8)
-                        Text("Đang kiểm tra trên GitHub...")
-                            .font(.system(size: 13 * fontScale))
-                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    } else if let err = updateChecker.updateError {
+                        Text(err)
+                            .font(.system(size: 12 * fontScale, weight: .bold))
+                            .foregroundColor(LiquidGlassPalette.coralRed)
+                            .lineLimit(2)
+                    } else if updateChecker.isChecking {
+                        HStack(spacing: 8 * fontScale) {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                            Text("Đang kiểm tra trên GitHub...")
+                                .font(.system(size: 13 * fontScale))
+                                .foregroundColor(.secondary)
+                        }
                     }
                 }
+                .frame(height: 44 * fontScale)
+                .padding(.horizontal)
                 
-                Spacer()
+                Spacer(minLength: 8)
             }
-            .padding(24 * fontScale)
+            .padding(20 * fontScale)
             
             Divider()
             

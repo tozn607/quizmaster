@@ -8,7 +8,9 @@ Dành cho phiên bản: **v1.2.1**
 
 ## CHƯƠNG 1: MÀN HÌNH HƯỚNG DẪN CẤU HÌNH BAN ĐẦU & API KEY
 
-0. Tải bản dựng **QuizMaster** mới nhất bằng cách nhấn nút **"Tải trực tiếp QuizMaster.zip"** ngay tại đầu trang chủ README (hoặc đi tới [Releases ↗](https://github.com/tozn607/quizmaster/releases/latest)). Giải nén và di chuyển **QuizMaster.app** vào thư mục **Applications**.  
+[![](https://img.shields.io/badge/Tải_trực_tiếp_QuizMaster.zip-Bản_Mới_Nhất-blue?style=for-the-badge&logo=apple)](https://github.com/tozn607/quizmaster/releases/latest/download/QuizMaster.zip)
+
+0. Tải bản dựng **QuizMaster** mới nhất bằng cách nhấn nút **"Tải trực tiếp QuizMaster.zip"** (hoặc đi tới [Releases ↗](https://github.com/tozn607/quizmaster/releases/latest)). Giải nén và di chuyển **QuizMaster.app** vào thư mục **Applications**.  
 Khi mở **QuizMaster.app** lần đầu tiên, ứng dụng sẽ tự động hiển thị **Màn hình Cấu hình Ban đầu** gồm 4 bước:
 ![Screenshot](/DOCS/SCREENSHOTS/quizmaster0.png)
 
