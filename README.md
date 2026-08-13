@@ -48,6 +48,7 @@
 
 ### ✨ Các Tính năng Nổi bật của QuizMaster:
 - 🤖 **Quét Tài liệu & Tạo Đề bằng AI**: Tự động chuyển đổi tài liệu bài giảng PDF, Word (`.docx`), TXT thành bộ đề trắc nghiệm hoàn chỉnh kèm đáp án và lời giải chi tiết.
+- 🚀 **Giao diện Hướng dẫn Cấu hình 4 Bước (First-Time Setup Wizard)**: Hướng dẫn người dùng mới từ màn hình Chào mừng -> Cài đặt API Key Gemini AI -> Tùy chỉnh Giao diện/Ngôn ngữ & Hướng dẫn sử dụng -> Màn hình Hoàn tất 😊.
 - 🎚️ **Mức độ Chi tiết Câu hỏi (Depth Modes)**: 3 chế độ quét linh hoạt: **Mặc định (Normal)** (~12-20 câu), **Ý chính / Trọng tâm (Core)** (~8-15 câu), **Chi tiết toàn bộ (Thorough)** (~35-60+ câu).
 - 📝 **Định dạng Markdown Giải thích Gemini AI**: Lời giải AI trình bày chuẩn Markdown (`###`, `**bôi đậm**`, `---`, danh sách) trực tiếp trong hộp giải thích của màn hình Luyện tập.
 - 🔀 **Công tắc Xáo trộn (Shuffling Toggle)**: Nút **"🔀 Xáo trộn câu hỏi & đáp án"** bật/tắt xáo trộn vị trí câu hỏi và các phương án A/B/C/D linh hoạt.
@@ -87,6 +88,7 @@
 
 ### ✨ Key Features of QuizMaster:
 - 🤖 **AI Document Scanning & Quiz Generation**: Automatically converts PDF, Word (`.docx`), and TXT lecture documents into complete multiple-choice quizzes with answer keys and detailed explanations.
+- 🚀 **4-Step First-Time Setup Wizard**: Welcomes new users through Welcome -> Gemini AI API Key setup -> Appearance/Language & Quick User Guide -> Cheerful Completion Screen 😊.
 - 🎚️ **Question Depth Modes**: 3 flexible scanning modes: **Normal** (~12–20 questions), **Core** (~8–15 questions), and **Thorough** (~35–60+ in-depth questions).
 - 📝 **Markdown Formatted AI Explanations**: Gemini AI explanations render cleanly formatted headers (`###`), bold text (`**...**`), section dividers (`---`), and lists directly in the Practice Mode explanation box.
 - 🔀 **Question & Option Shuffling Toggle**: Dedicated toolbar button to toggle question and option (A/B/C/D) randomization on or off.

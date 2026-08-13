@@ -6,11 +6,23 @@ Ngày soạn: **13 Tháng 8 năm 2026**
 Dành cho phiên bản: **v1.1.0**
 
 
-## CHƯƠNG 1: CẤU HÌNH BAN ĐẦU & CÀI ĐẶT API KEY
+## CHƯƠNG 1: MÀN HÌNH HƯỚNG DẪN CẤU HÌNH BAN ĐẦU & API KEY (FIRST TIME SETUP)
 
-**Tại sao lại cần API Key cá nhân?:** Để đảm bảo quyền riêng tư và để ứng dụng dễ tiếp cận hơn với số đông, tác giả không tích hợp sẵn API Key mà để người dùng tự cấu hình bằng API Key miễn phí đến từ Google. Mỗi tài khoản Google của bạn được cấp một hạn mức sử dụng model Gemini 3.5 Flash Lite miễn phí, dư dả để tạo một lượng lớn đề thi và lời giải trong một ngày. Việc tự nhập API Key cá nhân giúp giữ ứng dụng miễn phí và có mã nguồn mở. Ngược lại, nếu tác giả đính kèm sẵn API Key thì lượng sử dụng từ cộng đồng sẽ vượt hạn mức và tác giả sẽ phải trả phí dịch vụ cho Google.
+Khi mở **QuizMaster.app** lần đầu tiên, ứng dụng sẽ tự động hiển thị **Màn hình Cấu hình Ban đầu (First Time Setup Wizard)** gồm 4 bước đơn giản:
 
-0. Tải bản dựng **QuizMaster** mới nhất bằng cách đi đến [Releases ↗](https://github.com/tozn607/quizmaster/releases/latest), kéo xuống mục Assets của Release mới nhất và tải file zip. Giải nén và di chuyển **QuizMaster.app** vào thư mục **Applications**.
+1. **Bước 1: Chào mừng (Welcome)**: Giới thiệu các tính năng chính của QuizMaster, nhấn nút **"Bắt đầu Cấu hình ➔"**.
+2. **Bước 2: Cài đặt API Key Gemini AI**: 
+   - Nhấn nút **"Lấy API Key từ Google AI Studio ↗"** để đăng ký API Key miễn phí từ Google.
+   - Dán API Key vào ô và nhấn **"Kiểm tra API Key"** (thông báo màu xanh `✓ API Key hợp lệ`).
+   - Nhấn **"Tiếp tục ➔"**.
+   - *Tại sao cần API Key cá nhân?:* Giúp đảm bảo quyền riêng tư, giữ ứng dụng hoàn toàn miễn phí và có mã nguồn mở mà không vượt hạn mức cộng đồng.
+3. **Bước 3: Tùy chỉnh Giao diện, Ngôn ngữ & Hướng dẫn Nhanh**:
+   - Chọn Ngôn ngữ (Tiếng Việt / English), Chủ đề (Sáng / Tối / Tự động) và Cỡ chữ hiển thị (Nhỏ, Vừa, Lớn, Rất lớn).
+   - Xem tóm tắt hướng dẫn sử dụng nhanh và phím tắt.
+4. **Bước 4: Hoàn tất Cấu hình 😊**:
+   - Màn hình thông báo hoàn tất với biểu tượng mặt cười `😊`. Bấm **"Vào sử dụng QuizMaster ngay 🚀"** để bắt đầu.
+
+*(Nếu muốn thay đổi lại API Key hoặc Giao diện sau này, bạn có thể vào biểu tượng **Cài đặt (⚙️)** ở Sidebar bất kỳ lúc nào).*
 1. Mở ứng dụng **QuizMaster** trên máy Mac của bạn.
 2. Nhấn vào biểu tượng **Cài đặt (⚙️)** ở thanh trên cùng hoặc ở Sidebar.
 3. Bấm nút **"Lấy API Key từ Google AI Studio ↗"** để mở trình duyệt đến [trang đăng ký API Key miễn phí của Google](`https://aistudio.google.com/api-keys`).

@@ -6,11 +6,23 @@ Date: **August 13, 2026**
 Target Version: **v1.1.1**
 
 
-## CHAPTER 1: INITIAL SETUP & API KEY CONFIGURATION
+## CHAPTER 1: FIRST-TIME SETUP WIZARD & API KEY CONFIGURATION
 
-**Why a personal API Key is required?:** To ensure user privacy and make the application accessible to everyone, the author does not pre-bundle an API key. Instead, users configure their own free API key provided by Google. Each Google account is granted a generous free tier for the Gemini 3.5 Flash Lite model, which is more than enough to generate a large number of quizzes and explanations daily. Self-entering a personal API key keeps the app free and open-source. Conversely, if a pre-bundled key were included, community usage would exceed free limits, incurring cloud service costs for the author.
+When launching **QuizMaster.app** for the first time, the app automatically presents a 4-step **First-Time Setup Wizard**:
 
-0. Download the latest **QuizMaster** build by going to [Releases ↗](https://github.com/tozn607/quizmaster/releases/latest), scroll down to the Assets section of the latest release and download the zip file. Extract it and move **QuizMaster.app** into your **Applications** folder.
+1. **Step 1: Welcome Screen**: Overview of QuizMaster's core features. Click **"Start Setup ➔"**.
+2. **Step 2: Gemini AI API Key Setup**: 
+   - Click **"Get API Key from Google AI Studio ↗"** to get a free Google API Key.
+   - Paste the API Key into the field and click **"Test API Key"** (green message `✓ API Key is valid` confirms success).
+   - Click **"Continue ➔"**.
+   - *Why a personal API Key?:* Ensures user privacy and keeps the app 100% free and open-source without exceeding shared usage quotas.
+3. **Step 3: Appearance, Language & Quick Guide**:
+   - Customize App Language (Vietnamese / English), Color Theme (Light / Dark / System Default), and Font Size (Small, Medium, Large, X-Large).
+   - Review the Quick Start guide summary and keyboard shortcuts.
+4. **Step 4: Completion Screen 😊**:
+   - Displays a cheerful completion screen with a smiley face `😊`. Click **"Get Started with QuizMaster 🚀"** to enter the main dashboard.
+
+*(You can modify your API Key or Appearance settings anytime later by clicking **Settings (⚙️)** in the sidebar).*
 1. Launch **QuizMaster** on your Mac.
 2. Click the **Settings (⚙️)** icon in the top header or sidebar.
 3. Click **"Get API Key from Google AI Studio ↗"** to open [Google's free API Key registration page](`https://aistudio.google.com/api-keys`).

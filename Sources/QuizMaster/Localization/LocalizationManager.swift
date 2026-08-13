@@ -129,7 +129,21 @@ public class LocalizationManager: ObservableObject {
         "noOtherProjectsMsg": "Chưa có dự án nào khác. Hãy tạo một dự án mới ở Sidebar trước khi chuyển.",
         "roundCompleted": "Hoàn thành Vòng Học Thẻ ghi nhớ!",
         "studyAgain": "Học lại từ đầu (Tất cả các thẻ)",
-        "continueNextRound": "Tiếp tục học Vòng tiếp theo"
+        "continueNextRound": "Tiếp tục học Vòng tiếp theo",
+        "welcomeTitle": "Chào mừng đến với QuizMaster!",
+        "welcomeSubtitle": "Ứng dụng tự học trắc nghiệm & tạo bộ đề thông minh bằng Gemini AI trên macOS",
+        "startSetupBtn": "Bắt đầu Cấu hình ➔",
+        "setupStep1": "1. Chào mừng",
+        "setupStep2": "2. API Key AI",
+        "setupStep3": "3. Giao diện & Hướng dẫn",
+        "setupStep4": "4. Hoàn tất",
+        "setupApiKeyPrompt": "Cài đặt API Key Google Gemini AI",
+        "setupApiKeyNotice": "Nhập API Key cá nhân từ Google AI Studio để sinh câu hỏi trắc nghiệm và xem giải thích AI chi tiết.",
+        "setupAppearanceTitle": "Tùy chỉnh Giao diện & Ngôn ngữ",
+        "setupGuideTitle": "Tóm tắt Hướng dẫn Sử dụng Quick Start",
+        "setupFinishTitle": "Cấu hình Thành công! 😊",
+        "setupFinishSubtitle": "Bạn đã sẵn sàng để tạo và làm bộ đề thi trắc nghiệm đầu tiên.",
+        "enterAppBtn": "Vào sử dụng QuizMaster ngay 🚀"
     ]
     
     private let enDictionary: [String: String] = [
@@ -242,7 +256,21 @@ public class LocalizationManager: ObservableObject {
         "noOtherProjectsMsg": "No other projects available. Create a new project in the sidebar first.",
         "roundCompleted": "Flashcard Round Completed!",
         "studyAgain": "Study All Cards Again",
-        "continueNextRound": "Continue to Next Round"
+        "continueNextRound": "Continue to Next Round",
+        "welcomeTitle": "Welcome to QuizMaster!",
+        "welcomeSubtitle": "Native macOS Self-Study & AI-Powered Multiple-Choice Quiz Generator",
+        "startSetupBtn": "Start Setup ➔",
+        "setupStep1": "1. Welcome",
+        "setupStep2": "2. AI API Key",
+        "setupStep3": "3. Appearance & Guide",
+        "setupStep4": "4. Finish",
+        "setupApiKeyPrompt": "Configure Google Gemini AI API Key",
+        "setupApiKeyNotice": "Enter your personal API Key from Google AI Studio to auto-generate quizzes and view detailed AI explanations.",
+        "setupAppearanceTitle": "Appearance & Language Settings",
+        "setupGuideTitle": "Quick Start User Guide Summary",
+        "setupFinishTitle": "Setup Complete! 😊",
+        "setupFinishSubtitle": "You are all set to create and practice your first quiz set.",
+        "enterAppBtn": "Get Started with QuizMaster 🚀"
     ]
     
     public init() {}

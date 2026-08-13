@@ -1,7 +1,7 @@
 {
   "version": "1.1.1",
-  "buildNumber": 144,
-  "releaseTag": "v1.1.1-b144",
-  "buildDate": "2026-08-13T05:38:47Z",
-  "releaseNotes": "QuizMaster v1.1.1 (Build 144):\n- Fixed Question & Option Shuffling in Practice, Exam, and Flashcard modes\n- Fixed Flashcard Mode completion screen to ask whether user wants to continue unmastered cards, redo all, or view answer explanations\n- Added missing localization strings (roundCompleted, studyAgain, continueNextRound)\n- Updated README with bilingual Vietnamese & English sections and notable app features\n- Updated documentation baseline"
+  "buildNumber": 145,
+  "releaseTag": "v1.1.1-b145",
+  "buildDate": "2026-08-13T05:45:00Z",
+  "releaseNotes": "QuizMaster v1.1.1 (Build 145):\n- Fixed Question & Option Shuffling in Practice, Exam, and Flashcard modes\n- Fixed Flashcard Mode completion screen to ask whether user wants to continue unmastered cards, redo all, or view answer explanations\n- Added missing localization strings (roundCompleted, studyAgain, continueNextRound)\n- Updated README with bilingual Vietnamese & English sections and notable app features\n- Updated documentation baseline"
 }

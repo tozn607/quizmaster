@@ -108,6 +108,7 @@ public struct AppSettings: Codable, Equatable {
     public var theme: AppTheme
     public var fontSize: AppFontSize
     public var isShuffleEnabled: Bool
+    public var hasCompletedFirstTimeSetup: Bool
     
     public init(
         apiKey: String = "",
@@ -115,7 +116,8 @@ public struct AppSettings: Codable, Equatable {
         defaultOutputDirectory: String = (FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first?.path ?? ""),
         theme: AppTheme = .system,
         fontSize: AppFontSize = .medium,
-        isShuffleEnabled: Bool = true
+        isShuffleEnabled: Bool = true,
+        hasCompletedFirstTimeSetup: Bool = false
     ) {
         self.apiKey = apiKey
         self.defaultInputDirectory = defaultInputDirectory
@@ -123,6 +125,7 @@ public struct AppSettings: Codable, Equatable {
         self.theme = theme
         self.fontSize = fontSize
         self.isShuffleEnabled = isShuffleEnabled
+        self.hasCompletedFirstTimeSetup = hasCompletedFirstTimeSetup
     }
     
     public static var defaultSettings: AppSettings {

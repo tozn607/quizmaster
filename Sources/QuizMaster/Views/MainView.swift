@@ -8,6 +8,7 @@ public struct MainView: View {
     @State private var selectedProject: StudyProject?
     @State private var showSettingsSheet: Bool = false
     @State private var showSoftwareUpdateSheet: Bool = false
+    @State private var showFirstTimeSetupSheet: Bool = false
     @State private var showImportSheet: Bool = false
     
     @State private var activePracticeQuiz: Quiz? = nil
@@ -82,11 +83,18 @@ public struct MainView: View {
             }
         }
         .task {
+            // Check for First Time Setup
+            if !storage.settings.hasCompletedFirstTimeSetup {
+                showFirstTimeSetupSheet = true
+            }
             // Automatically check for updates on launch
             await updateChecker.checkForUpdates()
         }
         .environment(\.appFontScale, storage.settings.fontSize.scaleFactor)
 
+        .sheet(isPresented: $showFirstTimeSetupSheet) {
+            FirstTimeSetupView()
+        }
         .sheet(isPresented: $showSoftwareUpdateSheet) {
             SoftwareUpdateView()
         }
