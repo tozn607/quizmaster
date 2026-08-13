@@ -62,9 +62,28 @@ public struct DocumentImportView: View {
                                     .foregroundColor(.purple)
                             }
                             
-                            Text("Khuyên dùng cho người dùng tải lên tài liệu bài giảng, sách giáo khoa hoặc tệp câu hỏi có sẵn (Word/PDF/TXT).")
-                                .font(.system(size: 12 * fontScale))
-                                .foregroundColor(.secondary)
+                            VStack(alignment: .leading, spacing: 8 * fontScale) {
+                                Text("Khuyên dùng cho người dùng tải lên tài liệu bài giảng, sách giáo khoa hoặc tệp câu hỏi có sẵn (Word/PDF/TXT).")
+                                    .font(.system(size: 12 * fontScale))
+                                    .foregroundColor(.secondary)
+                                
+                                HStack(alignment: .top, spacing: 8 * fontScale) {
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .foregroundColor(LiquidGlassPalette.sunsetOrange)
+                                        .font(.system(size: 13 * fontScale))
+                                    
+                                    Text(loc.text("documentLengthWarningNote"))
+                                        .font(.system(size: 12 * fontScale, weight: .bold))
+                                        .foregroundColor(LiquidGlassPalette.sunsetOrange)
+                                }
+                                .padding(10 * fontScale)
+                                .background(LiquidGlassPalette.sunsetOrange.opacity(0.12))
+                                .cornerRadius(8)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(LiquidGlassPalette.sunsetOrange.opacity(0.3), lineWidth: 1)
+                                )
+                            }
                             
                             Divider()
                             

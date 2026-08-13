@@ -163,6 +163,7 @@ public struct MainView: View {
                     Text(project.name)
                         .font(.title)
                         .fontWeight(.bold)
+                    
                     Text("\(project.quizzes.count) bộ đề thi • \(project.totalQuestions) câu hỏi trắc nghiệm")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
@@ -170,7 +171,7 @@ public struct MainView: View {
                 
                 Spacer()
                 
-                // Shuffle toggle button (Visually prominent pill)
+                // Shuffle toggle button (Visually prominent pill - 36pt height)
                 Button(action: {
                     withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
                         storage.settings.isShuffleEnabled.toggle()
@@ -180,20 +181,21 @@ public struct MainView: View {
                     HStack(spacing: 6) {
                         Image(systemName: storage.settings.isShuffleEnabled ? "shuffle.circle.fill" : "shuffle.circle")
                             .font(.system(size: 15, weight: .bold))
+                            .frame(width: 18, height: 18)
                         Text(loc.text("toggleShuffle"))
                             .font(.system(size: 13, weight: .bold))
                     }
                     .foregroundColor(storage.settings.isShuffleEnabled ? .white : .primary)
                     .padding(.horizontal, 14)
-                    .padding(.vertical, 8)
+                    .frame(height: 36)
                     .background(
                         storage.settings.isShuffleEnabled
                         ? LiquidGlassPalette.oceanBlue
                         : Color.secondary.opacity(0.12)
                     )
-                    .cornerRadius(20)
+                    .cornerRadius(18)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 20)
+                        RoundedRectangle(cornerRadius: 18)
                             .stroke(storage.settings.isShuffleEnabled ? LiquidGlassPalette.oceanBlue : Color.secondary.opacity(0.2), lineWidth: 1)
                     )
                     .shadow(color: storage.settings.isShuffleEnabled ? LiquidGlassPalette.oceanBlue.opacity(0.3) : Color.clear, radius: 4, x: 0, y: 2)
@@ -201,7 +203,7 @@ public struct MainView: View {
                 .buttonStyle(.plain)
                 .help("Bật/tắt xáo trộn vị trí câu hỏi và các phương án A/B/C/D")
                 
-                // Multi-select toggle button
+                // Multi-select toggle button (Visually prominent pill - 36pt height)
                 Button(action: {
                     isMultiSelectMode.toggle()
                     if !isMultiSelectMode {
@@ -210,15 +212,25 @@ public struct MainView: View {
                 }) {
                     HStack(spacing: 6) {
                         Image(systemName: isMultiSelectMode ? "checkmark.circle.fill" : "checklist")
-                        Text(isMultiSelectMode ? "Thoát Chọn nhiều" : "Chọn nhiều bộ đề")
+                            .font(.system(size: 15, weight: .bold))
+                            .frame(width: 18, height: 18)
+                        Text(isMultiSelectMode ? loc.text("exitMultiSelect") : loc.text("multiSelectQuizzes"))
+                            .font(.system(size: 13, weight: .bold))
                     }
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(isMultiSelectMode ? .accentColor : .primary)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(isMultiSelectMode ? Color.accentColor.opacity(0.15) : Color.clear)
-                    .cornerRadius(8)
+                    .foregroundColor(isMultiSelectMode ? .white : .primary)
+                    .padding(.horizontal, 14)
+                    .frame(height: 36)
+                    .background(
+                        isMultiSelectMode
+                        ? LiquidGlassPalette.deepPurple
+                        : Color.secondary.opacity(0.12)
+                    )
+                    .cornerRadius(18)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 18)
+                            .stroke(isMultiSelectMode ? LiquidGlassPalette.deepPurple : Color.secondary.opacity(0.2), lineWidth: 1)
+                    )
+                    .shadow(color: isMultiSelectMode ? LiquidGlassPalette.deepPurple.opacity(0.3) : Color.clear, radius: 4, x: 0, y: 2)
                 }
                 .buttonStyle(.plain)
                 
@@ -324,9 +336,6 @@ public struct MainView: View {
                      }
                      
                      BadgeView(text: "\(quiz.questions.count) \(loc.text("questionsCount"))", color: .accentColor)
-                     if quiz.isPreMade {
-                         BadgeView(text: "Bộ đề có sẵn", color: .gray)
-                     }
                      Spacer()
                      
                      // Move Quiz Button

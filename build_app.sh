@@ -15,7 +15,7 @@ else
 fi
 echo "$BUILD_NUMBER" > "$BUILD_FILE"
 
-VERSION="1.2.1"
+VERSION="1.2.2"
 RELEASE_TAG="v${VERSION}-b${BUILD_NUMBER}"
 
 echo "🔢 Building QuizMaster v${VERSION} (Build ${BUILD_NUMBER})...."
@@ -23,26 +23,29 @@ echo "🔢 Building QuizMaster v${VERSION} (Build ${BUILD_NUMBER})...."
 # Create build_info.json in source repository
 cat <<EOF > "build_info.json"
 {
-  "version": "1.2.1",
+  "version": "1.2.2",
   "buildNumber": ${BUILD_NUMBER},
-  "releaseTag": "v1.2.1-b${BUILD_NUMBER}",
+  "releaseTag": "v1.2.2-b${BUILD_NUMBER}",
   "buildDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "releaseNotes": "QuizMaster v1.2.1 (Build ${BUILD_NUMBER}):\n- Visually prominent shuffle button with single-shuffle persistence (reshuffles only upon progress reset)\n- Complete English localization coverage for Settings and First-Time Setup Wizard\n- Updated bilingual User Guides with screenshots and detailed setup steps"
+  "releaseNotes": "QuizMaster v1.2.2 (Build ${BUILD_NUMBER}):\n- Togglable Exam Timer (15m, 45m, Pomodoro 25m, Custom minutes with number input fix)\n- Time-of-day emoji badge & cheeky greetings on top of Sidebar project list\n- Document length processing time warning callout banner in Document Import\n- Coherent equal button sizing for Shuffle and Multi-Select buttons across all window sizes\n- Permanent GitHub Release direct download URL support"
 }
 EOF
 
 # Create release_notes.txt
 cat <<EOF > "release_notes.txt"
-# 🚀 QuizMaster v1.2.1 Release Notes
+# 🚀 QuizMaster v1.2.2 Release Notes
 
-### 🌟 New Features & Enhancements in v1.2.1:
-- 🔀 **Prominent Shuffle Button & Single-Shuffle Persistence**:
-  - Upgraded the shuffle toggle button on the main toolbar to a prominent pill badge with vibrant Ocean Blue color and subtle drop shadow.
-  - Enabling shuffle randomizes question & option (A/B/C/D) order **once** and persists it in quiz progress. The deck will only reshuffle when progress is reset.
-- 🌐 **100% Complete English Localization Coverage**:
-  - Replaced all remaining hardcoded strings in Settings and the First-Time Setup Wizard with dynamic localization calls (\`loc.text(...)\`).
-- 📖 **Updated Bilingual Documentation with Screenshots**:
-  - Adapted the English User Guide (\`DOCS/USER_GUIDE_EN.md\`) to match the Vietnamese baseline (\`DOCS/HUONG_DAN_SU_DUNG_VI.md\`) 1-to-1, including all screenshots and detailed instructions.
+### 🌟 New Features & Enhancements in v1.2.2:
+- ⏱️ **Togglable Exam Timer (15m, 45m, Pomodoro & Custom)**:
+  - Added a countdown timer in Exam mode with preset options (15m, 45m, Pomodoro 25m) and Custom minute input.
+  - Features live countdown display (`⏱️ 29:54`), color warning when <5 minutes remain, and auto-submission upon time expiry.
+- 🌅 **Time-of-Day Emoji & Cheeky Greetings**:
+  - Sidebar header badge detecting local time (morning 🌅, noon ☀️, afternoon 🌤️, night 🌙, midnight 🌌) with cheeky randomized study encouragement messages.
+- 💡 **Document Length Processing Warning Callout**:
+  - Prominent duration warning banner positioned at the top of Document Import advising users that longer documents require more AI scanning time.
+- 🔀 **Coherent Button Design & Permanent Direct Downloads**:
+  - Equalized Shuffle and Multi-Select button sizing across all window dimensions.
+  - Added direct release download support with permanent redirect links on GitHub.
 EOF
 
 echo "🎨 Generating AppIcon..."
@@ -115,7 +118,7 @@ echo "✅ App bundle created successfully: '${BUNDLE_DIR}' v${VERSION} (Build ${
 echo "📦 Packaged Release Zip: '${ZIP_NAME}' (and permanent asset 'QuizMaster.zip')"
 
 # GitHub Release & Strict Single Same-Version Release Enforcement
-if command -v gh &> /dev/null; then
+if [ -z "$SKIP_GH" ] && command -v gh &> /dev/null; then
     echo "🔍 Finding all existing GitHub releases for version v${VERSION}..."
     
     SAME_VERSION_RELEASES=$(gh release list --limit 100 --json tagName -q '.[].tagName' | grep "^v${VERSION}-" || true)

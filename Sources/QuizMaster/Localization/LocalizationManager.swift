@@ -161,7 +161,19 @@ public class LocalizationManager: ObservableObject {
         "feature3Desc": "Dữ liệu lưu offline trên máy, dùng API Key cá nhân hoàn toàn miễn phí.",
         "guideBullet1": "1. Bấm nút '+' ở Sidebar để tạo Dự án môn học mới.",
         "guideBullet2": "2. Chọn 'Nhập Tài liệu / Bộ đề' để quét tự động với Gemini AI.",
-        "guideBullet3": "3. Phím tắt: Spacebar (Lật thẻ 3D) • 1,2,3,4 (Chọn phương án) • Enter (Next)."
+        "guideBullet3": "3. Phím tắt: Spacebar (Lật thẻ 3D) • 1,2,3,4 (Chọn phương án) • Enter (Next).",
+        "documentLengthWarningNote": "💡 Lưu ý: Tài liệu càng dài thì Gemini AI phân tích và xử lý sẽ càng lâu. Bạn nên kiểm tra và rút gọn bớt trước khi quét.",
+        "examTimerLabel": "Đồng hồ",
+        "examTimerHelp": "Bật/Tắt đồng hồ đếm giờ làm bài thi thử",
+        "enableTimer": "Bật Đồng hồ Đếm giờ",
+        "disableTimer": "Tắt Đồng hồ Đếm giờ",
+        "timer15m": "⏱️ 15 Phút",
+        "timer45m": "⏱️ 45 Phút",
+        "timerPomodoro": "🍅 Pomodoro (25 Phút)",
+        "timerCustom": "⚙️ Tùy chỉnh...",
+        "customTimerTitle": "Cài đặt Thời gian Thi thử",
+        "customTimerSubtitle": "Nhập số phút làm bài bạn muốn đặt:",
+        "multiSelectQuizzes": "Chọn nhiều bộ đề"
     ]
     
     private let enDictionary: [String: String] = [
@@ -306,7 +318,19 @@ public class LocalizationManager: ObservableObject {
         "feature3Desc": "Data stored locally, using your personal free API Key.",
         "guideBullet1": "1. Click '+' on the Sidebar to create a new Study Project.",
         "guideBullet2": "2. Select 'Import Document / Quiz' to scan automatically with Gemini AI.",
-        "guideBullet3": "3. Shortcuts: Spacebar (Flip 3D card) • 1,2,3,4 (Select Option) • Enter (Next)."
+        "guideBullet3": "3. Shortcuts: Spacebar (Flip 3D card) • 1,2,3,4 (Select Option) • Enter (Next).",
+        "documentLengthWarningNote": "💡 Note: The longer the document, the longer Gemini AI will take to analyze and generate questions. Please review your file beforehand.",
+        "examTimerLabel": "Timer",
+        "examTimerHelp": "Enable/Disable exam countdown timer",
+        "enableTimer": "Enable Countdown Timer",
+        "disableTimer": "Disable Countdown Timer",
+        "timer15m": "⏱️ 15 Minutes",
+        "timer45m": "⏱️ 45 Minutes",
+        "timerPomodoro": "🍅 Pomodoro (25 Mins)",
+        "timerCustom": "⚙️ Custom...",
+        "customTimerTitle": "Set Custom Exam Timer",
+        "customTimerSubtitle": "Enter custom duration in minutes:",
+        "multiSelectQuizzes": "Multi-Select Quizzes"
     ]
     
     public init() {}

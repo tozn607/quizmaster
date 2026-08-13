@@ -20,6 +20,13 @@ public struct ExamView: View {
     @State private var askingGeminiQuestion: Question? = nil
     @State private var eventMonitor: Any? = nil
     
+    @State private var isTimerEnabled: Bool = false
+    @State private var timeRemainingSeconds: Int = 1800 // default 30 mins
+    @State private var isTimeUp: Bool = false
+    @State private var showCustomTimerSheet: Bool = false
+    @State private var customTimerInputMinutes: String = "20"
+    @State private var timerPublisher = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
     public var body: some View {
         LiquidGlassWindowBackdrop {
             VStack(spacing: 0) {
@@ -50,6 +57,42 @@ public struct ExamView: View {
                     }
                     
                     Spacer()
+                    
+                    // Togglable Exam Timer Control Menu
+                    Menu {
+                        Button(isTimerEnabled ? loc.text("disableTimer") : loc.text("enableTimer")) {
+                            withAnimation { isTimerEnabled.toggle() }
+                        }
+                        
+                        Divider()
+                        
+                        Button(loc.text("timer15m")) { setTimerDuration(minutes: 15) }
+                        Button(loc.text("timer45m")) { setTimerDuration(minutes: 45) }
+                        Button(loc.text("timerPomodoro")) { setTimerDuration(minutes: 25) }
+                        Button(loc.text("timerCustom")) { showCustomTimerSheet = true }
+                    } label: {
+                        HStack(spacing: 4 * fontScale) {
+                            Image(systemName: isTimerEnabled ? "timer.circle.fill" : "timer")
+                                .font(.system(size: 14 * fontScale))
+                                .foregroundColor(isTimerEnabled ? (timeRemainingSeconds <= 300 ? LiquidGlassPalette.coralRed : LiquidGlassPalette.sunsetOrange) : .secondary)
+                            
+                            if isTimerEnabled {
+                                Text(formattedTimeString)
+                                    .font(.system(size: 13 * fontScale, weight: .bold))
+                                    .foregroundColor(timeRemainingSeconds <= 300 ? LiquidGlassPalette.coralRed : LiquidGlassPalette.sunsetOrange)
+                            } else {
+                                Text(loc.text("examTimerLabel"))
+                                    .font(.system(size: 12 * fontScale, weight: .medium))
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding(.horizontal, 8 * fontScale)
+                        .padding(.vertical, 4 * fontScale)
+                        .background(isTimerEnabled ? (timeRemainingSeconds <= 300 ? LiquidGlassPalette.coralRed.opacity(0.12) : LiquidGlassPalette.sunsetOrange.opacity(0.12)) : Color.clear)
+                        .cornerRadius(6)
+                    }
+                    .menuStyle(.borderlessButton)
+                    .help(loc.text("examTimerHelp"))
                     
                     // Toggle Question Navigator Sidebar
                     Button(action: { withAnimation { showNavPane.toggle() } }) {
@@ -179,6 +222,40 @@ public struct ExamView: View {
         .sheet(item: $askingGeminiQuestion) { q in
             AskGeminiSheet(question: q)
         }
+        .sheet(isPresented: $showCustomTimerSheet) {
+            VStack(spacing: 16 * fontScale) {
+                Text(loc.text("customTimerTitle"))
+                    .font(.system(size: 16 * fontScale, weight: .bold))
+                
+                Text(loc.text("customTimerSubtitle"))
+                    .font(.system(size: 12 * fontScale))
+                    .foregroundColor(.secondary)
+                
+                HStack {
+                    TextField("20", text: $customTimerInputMinutes)
+                        .textFieldStyle(.roundedBorder)
+                        .multilineTextAlignment(.center)
+                        .frame(width: 80)
+                    Text("phút")
+                        .font(.system(size: 13 * fontScale))
+                }
+                
+                HStack(spacing: 12 * fontScale) {
+                    SecondaryButton(title: loc.text("cancel"), icon: "xmark") {
+                        showCustomTimerSheet = false
+                    }
+                    
+                    PrimaryButton(title: loc.text("confirm"), icon: "checkmark", color: LiquidGlassPalette.sunsetOrange) {
+                        if let mins = Int(customTimerInputMinutes.trimmingCharacters(in: .whitespacesAndNewlines)), mins > 0 {
+                            setTimerDuration(minutes: mins)
+                        }
+                        showCustomTimerSheet = false
+                    }
+                }
+            }
+            .padding(20 * fontScale)
+            .frame(width: 320)
+        }
         .onAppear {
             setupExamQuestions()
             setupKeyboardMonitor()
@@ -186,6 +263,33 @@ public struct ExamView: View {
         .onDisappear {
             removeKeyboardMonitor()
         }
+        .onChange(of: showCustomTimerSheet) { isShowing in
+            if isShowing {
+                removeKeyboardMonitor()
+            } else {
+                setupKeyboardMonitor()
+            }
+        }
+        .onReceive(timerPublisher) { _ in
+            guard isTimerEnabled && !showEndingView else { return }
+            if timeRemainingSeconds > 0 {
+                timeRemainingSeconds -= 1
+            } else if !isTimeUp {
+                isTimeUp = true
+                submitExam()
+            }
+        }
+    }
+    
+    private var formattedTimeString: String {
+        let minutes = timeRemainingSeconds / 60
+        let seconds = timeRemainingSeconds % 60
+        return String(format: "%02d:%02d", minutes, seconds)
+    }
+
+    private func setTimerDuration(minutes: Int) {
+        timeRemainingSeconds = minutes * 60
+        isTimerEnabled = true
     }
     
     private func setupExamQuestions() {
@@ -315,7 +419,13 @@ public struct ExamView: View {
     private func setupKeyboardMonitor() {
         removeKeyboardMonitor()
         eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-            guard askingGeminiQuestion == nil && !showEndingView else { return event }
+            // Immediately bypass keyboard shortcuts if user is typing in ANY textfield/editor!
+            if let responder = event.window?.firstResponder,
+               (responder is NSTextView || responder is NSTextField || responder is NSText) {
+                return event
+            }
+            
+            guard askingGeminiQuestion == nil && !showEndingView && !showCustomTimerSheet else { return event }
             
             let chars = event.charactersIgnoringModifiers?.lowercased() ?? ""
             

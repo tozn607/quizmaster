@@ -1,7 +1,7 @@
 {
-  "version": "1.2.1",
-  "buildNumber": 148,
-  "releaseTag": "v1.2.1-b148",
-  "buildDate": "2026-08-13T06:45:54Z",
-  "releaseNotes": "QuizMaster v1.2.1 (Build 148):\n- Visually prominent shuffle button with single-shuffle persistence (reshuffles only upon progress reset)\n- Complete English localization coverage for Settings and First-Time Setup Wizard\n- Updated bilingual User Guides with screenshots and detailed setup steps"
+  "version": "1.2.2",
+  "buildNumber": 155,
+  "releaseTag": "v1.2.2-b155",
+  "buildDate": "2026-08-13T09:42:42Z",
+  "releaseNotes": "QuizMaster v1.2.2 (Build 155):\n- Togglable Exam Timer (15m, 45m, Pomodoro 25m, Custom minutes with number input fix)\n- Time-of-day emoji badge & cheeky greetings on top of Sidebar project list\n- Document length processing time warning callout banner in Document Import\n- Coherent equal button sizing for Shuffle and Multi-Select buttons across all window sizes\n- Permanent GitHub Release direct download URL support"
 }

@@ -72,6 +72,7 @@ Khi mở **QuizMaster.app** lần đầu trên macOS, nếu gặp thông báo l�
 
 1. Bấm nút **"Nhập Tài liệu / Bộ đề"**.
 2. Chọn tệp bài giảng PDF, Word (`.docx`) hoặc văn bản TXT.
+   - *💡 Lưu ý thời lượng quét:* Tài liệu càng dài thì Gemini AI phân tích và xử lý sẽ càng lâu. Bạn nên kiểm tra và rút gọn bớt các phần không cần thiết trước khi quét.
 3. Nếu là tệp bài giảng thường: Bật toggle **"Tạo câu hỏi trắc nghiệm tự động"** và chọn chế độ phủ:
    - **Mặc định**: Cân đối theo độ dài tài liệu (~12-20 câu).
    - **Ý chính / Trọng tâm**: Tập trung vào chủ đề chính (~8-15 câu).
@@ -97,6 +98,7 @@ Khi mở **QuizMaster.app** lần đầu trên macOS, nếu gặp thông báo l�
 
 2. **Chế độ Thi thử**:
    - Môi trường thi thật không hiện đáp án đúng/sai và ẩn nút Hỏi AI để đảm bảo chống gian lận.
+   - **Đồng hồ đếm giờ làm bài (Togglable Timer)**: Nhấn vào menu **"Đồng hồ"** ở góc phải thanh trên cùng để bật/tắt đếm ngược (tùy chọn 15, 30, 45, 60 phút). Khi hết giờ, bài thi sẽ tự động nộp.
    ![Screenshot](/DOCS/SCREENSHOTS/quizmaster14.png)
    - Bấm **"Nộp bài thi"** để xem tổng kết điểm số và bảng phân tích đáp án chi tiết.
 ![Screenshot](/DOCS/SCREENSHOTS/quizmaster15.png)

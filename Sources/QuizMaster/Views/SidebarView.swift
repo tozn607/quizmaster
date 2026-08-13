@@ -14,18 +14,22 @@ public struct SidebarView: View {
     public var body: some View {
         VStack(spacing: 0) {
             // Header Title & Settings
-            HStack {
-                Text(loc.text("projects"))
-                    .font(.headline)
-                    .fontWeight(.bold)
-                Spacer()
-                Button(action: { showSettingsSheet = true }) {
-                    Image(systemName: "gearshape")
-                        .font(.title3)
-                        .foregroundColor(.secondary)
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text(loc.text("projects"))
+                        .font(.headline)
+                        .fontWeight(.bold)
+                    Spacer()
+                    Button(action: { showSettingsSheet = true }) {
+                        Image(systemName: "gearshape")
+                            .font(.title3)
+                            .foregroundColor(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .help(loc.text("settings"))
                 }
-                .buttonStyle(.plain)
-                .help(loc.text("settings"))
+                
+                timeBasedGreetingBadge
             }
             .padding()
             
@@ -187,5 +191,69 @@ public struct SidebarView: View {
             storage.deleteProject(id: id)
         }
         selectedProject = storage.projects.first
+    }
+    
+    // MARK: - Time-Based Emoji & Cheeky Greetings
+    private var timeBasedGreetingBadge: some View {
+        let hour = Calendar.current.component(.hour, from: Date())
+        let (emoji, greeting) = timeGreeting(for: hour)
+        
+        return HStack(spacing: 6) {
+            Text(emoji)
+                .font(.system(size: 13))
+            Text(greeting)
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundColor(LiquidGlassPalette.oceanBlue)
+                .lineLimit(2)
+                .multilineTextAlignment(.leading)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(LiquidGlassPalette.oceanBlue.opacity(0.1))
+        .cornerRadius(10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(LiquidGlassPalette.oceanBlue.opacity(0.2), lineWidth: 1)
+        )
+    }
+
+    private func timeGreeting(for hour: Int) -> (emoji: String, greeting: String) {
+        if hour >= 5 && hour < 11 {
+            let options = [
+                "Chào buổi sáng! Làm tách cà phê rồi vào cày đề nào ☕",
+                "Sáng sớm tinh mơ, bộ não đang ở đỉnh cao phong độ! 🧠",
+                "Dậy sớm để thành công... hoặc để giải nốt bộ đề này! 🚀"
+            ]
+            return ("🌅", options[abs(hour) % options.count])
+        } else if hour >= 11 && hour < 14 {
+            let options = [
+                "Chào giữa trưa! Vừa nghỉ trưa vừa nạp thêm vài câu trắc nghiệm 🍱",
+                "Nắng đã lên cao, điểm số cũng phải lên theo! ☀️",
+                "Nghỉ trưa ôn bài, chiều thi bao đậu! 🚀"
+            ]
+            return ("☀️", options[abs(hour) % options.count])
+        } else if hour >= 14 && hour < 18 {
+            let options = [
+                "Chào buổi chiều! Làm ly trà sữa cho tỉnh táo rồi ôn tập tiếp 🧋",
+                "Chiều rồi, làm vài câu trắc nghiệm xả stress nào! ⚡",
+                "Năng lượng buổi chiều cực sung, cày nốt bài giảng nào! 📚"
+            ]
+            return ("🌤️", options[abs(hour) % options.count])
+        } else if hour >= 18 && hour < 23 {
+            let options = [
+                "Chào buổi tối! Đèn sách ban đêm luôn mang lại điểm cao 🌙",
+                "Cú đêm học bài! Quyết tâm không thua đứa bạn cùng lớp 🦉",
+                "Tối mát mẻ, làm vài đề luyện tập rồi thư giãn nào 🚀"
+            ]
+            return ("🌙", options[abs(hour) % options.count])
+        } else {
+            let options = [
+                "Nửa đêm rồi! Học muộn thế này là thi chắc chắn 10 điểm! 🌌",
+                "Ngủ sớm đi bạn ơi... thôi làm nốt câu này rồi ngủ! 😴",
+                "Học đêm yên tĩnh, kiến thức ngấm cực sâu! 🕯️"
+            ]
+            return ("🌌", options[abs(hour) % options.count])
+        }
     }
 }
