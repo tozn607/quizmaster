@@ -1,41 +1,42 @@
-# 📖 HƯỚNG DẪN SỬ DỤNG CHI TIẾT QUIZMASTER (v1.1.0)
+# 📖 HƯỚNG DẪN SỬ DỤNG CHI TIẾT QUIZMASTER (v1.2.0)
 
 Tác giả: **@tozn607**  
 Nền tảng: macOS (Swift / SwiftUI Native)  
 Ngày soạn: **13 Tháng 8 năm 2026**  
-Dành cho phiên bản: **v1.1.0**
+Dành cho phiên bản: **v1.2.0**
 
 
 ## CHƯƠNG 1: MÀN HÌNH HƯỚNG DẪN CẤU HÌNH BAN ĐẦU & API KEY (FIRST TIME SETUP)
 
-Khi mở **QuizMaster.app** lần đầu tiên, ứng dụng sẽ tự động hiển thị **Màn hình Cấu hình Ban đầu (First Time Setup Wizard)** gồm 4 bước đơn giản:
-
-1. **Bước 1: Chào mừng (Welcome)**: Giới thiệu các tính năng chính của QuizMaster, nhấn nút **"Bắt đầu Cấu hình ➔"**.
-2. **Bước 2: Cài đặt API Key Gemini AI**: 
+0. Tải bản dựng **QuizMaster** mới nhất bằng cách đi đến [Releases ↗](https://github.com/tozn607/quizmaster/releases/latest), kéo xuống mục Assets của Release mới nhất và tải file zip. Giải nén và di chuyển **QuizMaster.app** vào thư mục **Applications**.  
+Khi mở **QuizMaster.app** lần đầu tiên, ứng dụng sẽ tự động hiển thị **Màn hình Cấu hình Ban đầu** gồm 4 bước:
+1. **Bước 1:** Giới thiệu các tính năng chính của QuizMaster, nhấn nút **"Bắt đầu Cấu hình ➔"**.
+2. **Bước 2: Cài đặt API Key Gemini AI**:    
+   **Tại sao lại cần API Key cá nhân?:** Để đảm bảo quyền riêng tư và để ứng dụng dễ tiếp cận hơn với số đông, tác giả không tích hợp sẵn API Key mà để người dùng tự cấu hình bằng API Key miễn phí đến từ Google. Mỗi tài khoản Google của bạn được cấp một hạn mức sử dụng model Gemini 3.5 Flash Lite miễn phí, dư dả để tạo một lượng lớn đề thi và lời giải trong một ngày. Việc tự nhập API Key cá nhân giúp giữ ứng dụng miễn phí và có mã nguồn mở. Ngược lại, nếu tác giả đính kèm sẵn API Key thì lượng sử dụng từ cộng đồng sẽ vượt hạn mức và tác giả sẽ phải trả phí dịch vụ cho Google.
    - Nhấn nút **"Lấy API Key từ Google AI Studio ↗"** để đăng ký API Key miễn phí từ Google.
    - Dán API Key vào ô và nhấn **"Kiểm tra API Key"** (thông báo màu xanh `✓ API Key hợp lệ`).
    - Nhấn **"Tiếp tục ➔"**.
-   - *Tại sao cần API Key cá nhân?:* Giúp đảm bảo quyền riêng tư, giữ ứng dụng hoàn toàn miễn phí và có mã nguồn mở mà không vượt hạn mức cộng đồng.
 3. **Bước 3: Tùy chỉnh Giao diện, Ngôn ngữ & Hướng dẫn Nhanh**:
    - Chọn Ngôn ngữ (Tiếng Việt / English), Chủ đề (Sáng / Tối / Tự động) và Cỡ chữ hiển thị (Nhỏ, Vừa, Lớn, Rất lớn).
    - Xem tóm tắt hướng dẫn sử dụng nhanh và phím tắt.
-4. **Bước 4: Hoàn tất Cấu hình 😊**:
-   - Màn hình thông báo hoàn tất với biểu tượng mặt cười `😊`. Bấm **"Vào sử dụng QuizMaster ngay 🚀"** để bắt đầu.
+4. **Bước 4: Hoàn tất Cấu hình**:
+   - Bấm **"Vào sử dụng QuizMaster ngay 🚀"** để bắt đầu.
+
 
 *(Nếu muốn thay đổi lại API Key hoặc Giao diện sau này, bạn có thể vào biểu tượng **Cài đặt (⚙️)** ở Sidebar bất kỳ lúc nào).*
-1. Mở ứng dụng **QuizMaster** trên máy Mac của bạn.
-2. Nhấn vào biểu tượng **Cài đặt (⚙️)** ở thanh trên cùng hoặc ở Sidebar.
-3. Bấm nút **"Lấy API Key từ Google AI Studio ↗"** để mở trình duyệt đến [trang đăng ký API Key miễn phí của Google](`https://aistudio.google.com/api-keys`).
-4. Ở góc phía trên bên phải, ấn **Create API Key**, đặt tên cho Key và chọn **Default Gemini Project**, sau đó sao chép API Key và dán vào ô **"Google AI Studio Key (Gemini API)"** của ứng dụng.
-5. Nhấn **"Kiểm tra API Key"** để chắc chắn kết nối thành công (hiển thị thông báo màu xanh `✓ API Key hợp lệ`).
-6. Tùy chỉnh Cỡ chữ (Nhỏ, Vừa, Lớn, Rất lớn), Chủ đề giao diện (Sáng / Tối / Tự động) và Ngôn ngữ ứng dụng (Tiếng Việt / English).
-   - *💡 Lưu ý: Thay đổi ngôn ngữ ứng dụng sang Tiếng Anh cũng sẽ tự động yêu cầu Gemini AI sinh câu hỏi, đáp án và giải thích bằng Tiếng Anh.*
+   1. Mở ứng dụng **QuizMaster** trên máy Mac của bạn.
+   2. Nhấn vào biểu tượng **Cài đặt (⚙️)** ở thanh trên cùng hoặc ở Sidebar.
+   3. Bấm nút **"Lấy API Key từ Google AI Studio ↗"** để mở trình duyệt đến [trang đăng ký API Key miễn phí của Google](`https://aistudio.google.com/api-keys`).
+   4. Ở góc phía trên bên phải, ấn **Create API Key**, đặt tên cho Key và chọn **Default Gemini Project**, sau đó sao chép API Key và dán vào ô **"Google AI Studio Key (Gemini API)"** của ứng dụng.
+   5. Nhấn **"Kiểm tra API Key"** để chắc chắn kết nối thành công (hiển thị thông báo màu xanh `✓ API Key hợp lệ`).
+   6. Tùy chỉnh Cỡ chữ (Nhỏ, Vừa, Lớn, Rất lớn), Chủ đề giao diện (Sáng / Tối / Tự động) và Ngôn ngữ ứng dụng (Tiếng Việt / English).
+      - *💡 Lưu ý: Thay đổi ngôn ngữ ứng dụng sang Tiếng Anh cũng sẽ tự động yêu cầu Gemini AI sinh câu hỏi, đáp án và giải thích bằng Tiếng Anh.*
 
 ### 🛡️ Hướng dẫn Khắc phục Lỗi Gatekeeper & Cho phép Mở ứng dụng từ Mọi nơi (Anywhere):
 
 Khi mở **QuizMaster.app** lần đầu trên macOS, nếu gặp thông báo lỗi *“QuizMaster.app bị hỏng và không thể mở”* hoặc *“Ứng dụng không thể mở vì không xác minh được nhà phát triển”*, bạn hãy thực hiện theo các bước sau:
 
-1. **Cho phép ứng dụng từ "Mọi nơi" (Anywhere)**:
+1. **Cho phép ứng dụng từ Mọi nơi (Anywhere)**:
    - Mở ứng dụng **Terminal** trên Mac (`Command ⌘ + Space` -> gõ `Terminal`).
    - Nhập lệnh sau và nhấn `Enter`:
      ```bash
@@ -44,16 +45,12 @@ Khi mở **QuizMaster.app** lần đầu trên macOS, nếu gặp thông báo l�
    - Nhập mật khẩu máy Mac của bạn (khi gõ mật khẩu sẽ không hiển thị ký tự) và nhấn `Enter`.
    - Mở **Cài đặt Hệ thống (System Settings)** -> **Quyền riêng tư & Bảo mật (Privacy & Security)** -> cuộn xuống phần **Bảo mật (Security)**, bạn sẽ thấy tùy chọn **"Mọi nơi" (Anywhere)** đã được bật.
 
-2. **[NẾU VẪN CHƯA MỞ ĐƯỢC ỨNG DỤNG] Xóa cờ Cách ly Quarantine (Cho phép chạy ứng dụng trực tiếp)**:
+2. **[NẾU VẪN CHƯA MỞ ĐƯỢC ỨNG DỤNG] Xóa cờ Cách ly Quarantine**:
    - Trong **Terminal**, gõ lệnh sau để gỡ cờ bảo vệ cách ly của macOS đối với QuizMaster:
      ```bash
      xattr -cr /Applications/QuizMaster.app
      ```
-   - *Nếu file QuizMaster.app nằm ở thư mục Tải về (Downloads)*:
-     ```bash
-     xattr -cr ~/Downloads/QuizMaster.app
-     ```
-3. Sau khi chạy lệnh trên, bạn có thể nhấp đúp chuột để mở và sử dụng **QuizMaster.app** bình thường mà không gặp bất kỳ thông báo lỗi nào!
+3. Sau khi chạy lệnh trên, bạn có thể nhấp đúp chuột để mở và sử dụng **QuizMaster.app** bình thường.
 
 ## CHƯƠNG 2: QUÉT TÀI LIỆU & TẠO BỘ ĐỀ BẰNG GEMINI AI
 
