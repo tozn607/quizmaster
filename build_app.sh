@@ -15,7 +15,7 @@ else
 fi
 echo "$BUILD_NUMBER" > "$BUILD_FILE"
 
-VERSION="1.1.1"
+VERSION="1.2.0"
 RELEASE_TAG="v${VERSION}-b${BUILD_NUMBER}"
 
 echo "🔢 Building QuizMaster v${VERSION} (Build ${BUILD_NUMBER})...."
@@ -23,25 +23,27 @@ echo "🔢 Building QuizMaster v${VERSION} (Build ${BUILD_NUMBER})...."
 # Create build_info.json in source repository
 cat <<EOF > "build_info.json"
 {
-  "version": "1.1.1",
+  "version": "1.2.0",
   "buildNumber": ${BUILD_NUMBER},
-  "releaseTag": "v1.1.1-b${BUILD_NUMBER}",
+  "releaseTag": "v1.2.0-b${BUILD_NUMBER}",
   "buildDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "releaseNotes": "QuizMaster v1.1.1 (Build ${BUILD_NUMBER}):\n- Fixed Question & Option Shuffling in Practice, Exam, and Flashcard modes\n- Fixed Flashcard Mode completion screen to ask whether user wants to continue unmastered cards, redo all, or view answer explanations\n- Added missing localization strings (roundCompleted, studyAgain, continueNextRound)\n- Updated README with bilingual Vietnamese & English sections and notable app features\n- Updated documentation baseline"
+  "releaseNotes": "QuizMaster v1.2.0 (Build ${BUILD_NUMBER}):\n- Added 4-Step First-Time Setup Wizard (Welcome, API Key Setup, Appearance/Language & Guide, Smiley Completion Screen)\n- Enlarged Windowed Modal Dialogs across the app (740x660 Setup, 680x660 Updates, 680x760 Settings, 720x740 Import, 720x720 AI Sheet)\n- Automatic In-App OTA Update Engine with detached background self-replacement & relaunch\n- Rendered Markdown Formatted Update Release Notes\n- Fixed Question & Option (A/B/C/D) Shuffling in Practice, Exam, and Flashcard modes\n- Fixed Flashcard Mode Completion Screen with round summary options\n- Added Gatekeeper & Security Setup Documentation in VI and EN\n- Added In-App Setup Wizard Re-trigger button in Settings"
 }
 EOF
 
 # Create release_notes.txt
 cat <<EOF > "release_notes.txt"
-# 🚀 QuizMaster v1.1.1 Release Notes
+# 🚀 QuizMaster v1.2.0 Release Notes
 
-### 🌟 New Features & Bug Fixes in v1.1.1:
-- **🔀 Fixed Question & Option Shuffling**: Toggling \`🔀 Shuffle Questions & Options\` now randomizes both question order AND option positions (A, B, C, D) across Practice, Exam, and Flashcard modes with automatic correct answer index updating.
-- **🃏 Enhanced Flashcard Round Completion Screen**: Flashcard mode no longer auto-enters the next round upon completion. Instead, a summary card prompts users to continue with unmastered cards, study all cards again, or review all answers and detailed explanations.
-- **🔄 Automatic OTA In-App Update Engine**: One-click download, unzipping, self-replacing bundle installation, and relaunch directly within the app.
-- **🛡️ Gatekeeper & Security Setup Documentation**: Added detailed instructions for disabling Gatekeeper (\`sudo spctl --master-disable\`) and clearing quarantine flags (\`xattr -cr /Applications/QuizMaster.app\`).
-- **🌐 Complete Bilingual Documentation & English AI Responsibility Section**: Updated README and User Guides with baseline Vietnamese and English translations.
-- **🌐 Added Missing Localization Strings**: Added localization keys for \`roundCompleted\`, \`studyAgain\`, and \`continueNextRound\` in both Vietnamese and English.
+### 🌟 Major Features & Improvements in v1.2.0:
+- 🚀 **4-Step First-Time Setup Wizard (\`FirstTimeSetupView\`)**: Welcomes new users through Welcome -> Gemini AI API Key setup (with live key testing) -> Appearance/Language & Quick User Guide -> Cheerful Completion Screen (\`😊\`).
+- 📐 **Enlarged Windowed Modal Dialogs**: Increased frame dimensions across all modals (\`740x660\` Setup, \`680x660\` Updates, \`680x760\` Settings, \`720x740\` Import, \`720x720\` Ask Gemini Sheet).
+- 🔄 **Automatic In-App OTA Update Engine**: One-click download, unzipping, detached background process self-replacement, and relaunch.
+- 📝 **Markdown Formatted Update Release Notes**: Rendered update release notes with native SwiftUI Markdown (\`LocalizedStringKey\`).
+- 🔀 **Fixed Question & Option Shuffling**: Toggling \`🔀 Shuffle Questions & Options\` randomizes both question order AND option positions (A, B, C, D) across Practice, Exam, and Flashcard modes.
+- 🃏 **Enhanced Flashcard Completion Screen**: Displays round summary card with options to continue unmastered cards, study all cards again, or review all answers & explanations.
+- 🛡️ **Gatekeeper & Security Setup Documentation**: Added detailed instructions for disabling Gatekeeper (\`sudo spctl --master-disable\`) and clearing quarantine flags (\`xattr -cr /Applications/QuizMaster.app\`).
+- ⚙️ **In-App Setup Wizard Re-trigger**: Added button in Settings to re-open the Setup Wizard anytime.
 EOF
 
 echo "🎨 Generating AppIcon..."

@@ -1,7 +1,7 @@
 {
-  "version": "1.1.1",
-  "buildNumber": 146,
-  "releaseTag": "v1.1.1-b146",
-  "buildDate": "2026-08-13T05:54:23Z",
-  "releaseNotes": "QuizMaster v1.1.1 (Build 146):\n- Fixed Question & Option Shuffling in Practice, Exam, and Flashcard modes\n- Fixed Flashcard Mode completion screen to ask whether user wants to continue unmastered cards, redo all, or view answer explanations\n- Added missing localization strings (roundCompleted, studyAgain, continueNextRound)\n- Updated README with bilingual Vietnamese & English sections and notable app features\n- Updated documentation baseline"
+  "version": "1.2.0",
+  "buildNumber": 147,
+  "releaseTag": "v1.2.0-b147",
+  "buildDate": "2026-08-13T06:06:03Z",
+  "releaseNotes": "QuizMaster v1.2.0 (Build 147):\n- Added 4-Step First-Time Setup Wizard (Welcome, API Key Setup, Appearance/Language & Guide, Smiley Completion Screen)\n- Enlarged Windowed Modal Dialogs across the app (740x660 Setup, 680x660 Updates, 680x760 Settings, 720x740 Import, 720x720 AI Sheet)\n- Automatic In-App OTA Update Engine with detached background self-replacement & relaunch\n- Rendered Markdown Formatted Update Release Notes\n- Fixed Question & Option (A/B/C/D) Shuffling in Practice, Exam, and Flashcard modes\n- Fixed Flashcard Mode Completion Screen with round summary options\n- Added Gatekeeper & Security Setup Documentation in VI and EN\n- Added In-App Setup Wizard Re-trigger button in Settings"
 }
