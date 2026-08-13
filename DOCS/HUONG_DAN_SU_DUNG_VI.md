@@ -1,4 +1,4 @@
-# 📖 HƯỚNG DẪN SỬ DỤNG CHI TIẾT QUIZMASTER (v1.2.1)
+# HƯỚNG DẪN SỬ DỤNG CHI TIẾT QUIZMASTER (v1.2.1)
 
 Tác giả: **@tozn607**  
 Nền tảng: macOS (Swift / SwiftUI Native)  
@@ -6,9 +6,9 @@ Ngày soạn: **13 Tháng 8 năm 2026**
 Dành cho phiên bản: **v1.2.1**
 
 
-## CHƯƠNG 1: MÀN HÌNH HƯỚNG DẪN CẤU HÌNH BAN ĐẦU & API KEY (FIRST TIME SETUP)
+## CHƯƠNG 1: MÀN HÌNH HƯỚNG DẪN CẤU HÌNH BAN ĐẦU & API KEY
 
-0. Tải bản dựng **QuizMaster** mới nhất bằng cách đi đến [Releases ↗](https://github.com/tozn607/quizmaster/releases/latest), kéo xuống mục Assets của Release mới nhất và tải file zip. Giải nén và di chuyển **QuizMaster.app** vào thư mục **Applications**.  
+0. Tải bản dựng **QuizMaster** mới nhất bằng cách nhấn nút **"Tải trực tiếp QuizMaster.zip"** ngay tại đầu trang chủ README (hoặc đi tới [Releases ↗](https://github.com/tozn607/quizmaster/releases/latest)). Giải nén và di chuyển **QuizMaster.app** vào thư mục **Applications**.  
 Khi mở **QuizMaster.app** lần đầu tiên, ứng dụng sẽ tự động hiển thị **Màn hình Cấu hình Ban đầu** gồm 4 bước:
 ![Screenshot](/DOCS/SCREENSHOTS/quizmaster0.png)
 
@@ -37,7 +37,7 @@ Khi mở **QuizMaster.app** lần đầu tiên, ứng dụng sẽ tự động h
 
    1. Mở ứng dụng **QuizMaster** trên máy Mac của bạn.
    2. Nhấn vào biểu tượng **Cài đặt (⚙️)** ở thanh trên cùng hoặc ở Sidebar.
-   3. Bấm nút **"Lấy API Key từ Google AI Studio ↗"** để mở trình duyệt đến [trang đăng ký API Key miễn phí của Google](`https://aistudio.google.com/api-keys`).
+   3. Bấm nút **"Lấy API Key từ Google AI Studio ↗"** để mở trình duyệt đến trang đăng ký API Key miễn phí của Google.
    4. Ở góc phía trên bên phải, ấn **Create API Key**, đặt tên cho Key và chọn **Default Gemini Project**, sau đó sao chép API Key và dán vào ô **"Google AI Studio Key (Gemini API)"** của ứng dụng.
    5. Nhấn **"Kiểm tra API Key"** để chắc chắn kết nối thành công (hiển thị thông báo màu xanh `✓ API Key hợp lệ`).
    6. Tùy chỉnh Cỡ chữ (Nhỏ, Vừa, Lớn, Rất lớn), Chủ đề giao diện (Sáng / Tối / Tự động) và Ngôn ngữ ứng dụng (Tiếng Việt / English).
@@ -45,11 +45,11 @@ Khi mở **QuizMaster.app** lần đầu tiên, ứng dụng sẽ tự động h
       ![Screenshot](/DOCS/SCREENSHOTS/quizmaster7.png)
 </details>
 
-### 🛡️ Hướng dẫn Khắc phục Lỗi Gatekeeper & Cho phép Mở ứng dụng từ Mọi nơi (Anywhere):
+### Hướng dẫn Khắc phục Lỗi Gatekeeper & Cho phép Mở ứng dụng từ Mọi nơi:
 
 Khi mở **QuizMaster.app** lần đầu trên macOS, nếu gặp thông báo lỗi *“QuizMaster.app bị hỏng và không thể mở”* hoặc *“Ứng dụng không thể mở vì không xác minh được nhà phát triển”*, bạn hãy thực hiện theo các bước sau:
 
-1. **Cho phép ứng dụng từ Mọi nơi (Anywhere)**:
+1. **Cho phép ứng dụng từ Mọi nơi**:
    - Mở ứng dụng **Terminal** trên Mac (`Command ⌘ + Space` -> gõ `Terminal`).
    - Nhập lệnh sau và nhấn `Enter`:
      ```bash
@@ -58,7 +58,7 @@ Khi mở **QuizMaster.app** lần đầu trên macOS, nếu gặp thông báo l�
    - Nhập mật khẩu máy Mac của bạn (khi gõ mật khẩu sẽ không hiển thị ký tự) và nhấn `Enter`.
    ![Screenshot](/DOCS/SCREENSHOTS/help0.png)
 
-   - Mở **Cài đặt Hệ thống (System Settings)** -> **Quyền riêng tư & Bảo mật (Privacy & Security)** -> cuộn xuống phần **Bảo mật (Security)**, bạn sẽ thấy tùy chọn **"Mọi nơi" (Anywhere)** đã được bật.
+   - Mở **Cài đặt Hệ thống (System Settings)** -> **Quyền riêng tư & Bảo mật** -> cuộn xuống phần **Bảo mật**, bạn sẽ thấy tùy chọn **"Mọi nơi"** đã được bật.
    ![Screenshot](/DOCS/SCREENSHOTS/help4.png)
 
 2. **[NẾU VẪN CHƯA MỞ ĐƯỢC ỨNG DỤNG] Xóa cờ Cách ly Quarantine**:
@@ -72,12 +72,12 @@ Khi mở **QuizMaster.app** lần đầu trên macOS, nếu gặp thông báo l�
 
 1. Bấm nút **"Nhập Tài liệu / Bộ đề"**.
 2. Chọn tệp bài giảng PDF, Word (`.docx`) hoặc văn bản TXT.
-3. Nếu là tệp bài giảng thường: Bật toggle **"Tạo câu hỏi trắc nghiệm tự động"** và chọn **Depth Mode**:
-   - **Mặc định (Normal)**: Cân đối theo độ dài tài liệu (~12-20 câu).
-   - **Ý chính / Trọng tâm (Core)**: Tập trung vào chủ đề chính (~8-15 câu).
-   - **Chi tiết toàn bộ (Thorough)**: Quét chuyên sâu từng định nghĩa, quy tắc và chi tiết (~35-60+ câu).   
+3. Nếu là tệp bài giảng thường: Bật toggle **"Tạo câu hỏi trắc nghiệm tự động"** và chọn chế độ phủ:
+   - **Mặc định**: Cân đối theo độ dài tài liệu (~12-20 câu).
+   - **Ý chính / Trọng tâm**: Tập trung vào chủ đề chính (~8-15 câu).
+   - **Chi tiết toàn bộ**: Quét chuyên sâu từng định nghĩa, quy tắc và chi tiết (~35-60+ câu).   
 ![Screenshot](/DOCS/SCREENSHOTS/quizmaster6.png)
-   **Warning:** Nếu là tệp đề trắc nghiệm có sẵn: Không cần bật chế độ **"Tạo câu hỏi trắc nghiệm tự động"**, mà ứng dụng sẽ tự động trích xuất câu hỏi, câu trả lời, lời giải thích (nếu có) ở trong tài liệu.
+   **Lưu ý:** Nếu là tệp đề trắc nghiệm có sẵn: Không cần bật chế độ **"Tạo câu hỏi trắc nghiệm tự động"**, mà ứng dụng sẽ tự động trích xuất câu hỏi, câu trả lời, lời giải thích (nếu có) ở trong tài liệu.
 
 4. Bấm **"Bắt đầu Quét với Gemini AI"** (Xác nhận trên hộp thoại kiểm tra chế độ quét).
 ![Screenshot](/DOCS/SCREENSHOTS/quizmaster8.png)
@@ -88,7 +88,7 @@ Khi mở **QuizMaster.app** lần đầu trên macOS, nếu gặp thông báo l�
 ![Screenshot](/DOCS/SCREENSHOTS/quizmaster9.png)
 1. **Chế độ Luyện tập**:
    - Làm trắc nghiệm có phản hồi đúng/sai tức thì.
-   - **Lưu điểm Checkpoint**: Tiến độ làm bài và vị trí câu đang làm được tự động lưu lại. Khi thoát ra và vào lại, bạn sẽ tiếp tục từ đúng câu dở dang.
+   - **Lưu tiến độ tự động**: Tiến độ làm bài và vị trí câu đang làm được tự động lưu lại. Khi thoát ra và vào lại, bạn sẽ tiếp tục từ đúng câu dở dang.
    - **Thanh Điều hướng Câu hỏi**: Bảng bên phải hiển thị màu sắc câu hỏi (Xanh lá = Đúng, Đỏ = Sai, Xám = Chưa làm), bấm vào số câu để chuyển nhanh.
    ![Screenshot](/DOCS/SCREENSHOTS/quizmaster11.png)
    - **Hỏi Gemini AI**: Bấm nút **"Hỏi Gemini AI về câu này"** để yêu cầu AI giải thích chi tiết đáp án.
@@ -102,7 +102,7 @@ Khi mở **QuizMaster.app** lần đầu trên macOS, nếu gặp thông báo l�
 ![Screenshot](/DOCS/SCREENSHOTS/quizmaster15.png)
 ![Screenshot](/DOCS/SCREENSHOTS/quizmaster16.png)
 3. **Chế độ Thẻ ghi nhớ**:
-   - Thẻ lật 3D đánh dấu V (Thuộc) & X (Chưa thuộc).
+   - Thẻ lật đánh dấu V (Thuộc) & X (Chưa thuộc).
    ![Screenshot](/DOCS/SCREENSHOTS/quizmaster17.png)
    ![Screenshot](/DOCS/SCREENSHOTS/quizmaster18.png)
    - Nút **"Thẻ trước"** cho phép quay lại thẻ vừa duyệt.
@@ -127,7 +127,7 @@ Khi mở **QuizMaster.app** lần đầu trên macOS, nếu gặp thông báo l�
 | **Luyện tập & Thi thử** | `A`, `B`, `C`, `D` (hoặc `1`, `2`, `3`, `4`) | Chọn phương án A, B, C, D |
 | **Luyện tập & Thi thử** | `Enter (↵)` | Sang câu tiếp theo / Nộp bài |
 | **Thi thử** | `Mũi tên Trái / Phải (← →)` | Di chuyển qua lại giữa các câu |
-| **Thẻ ghi nhớ**| `Phím Cách (Spacebar ␣)` | Lật mặt trước / mặt sau của thẻ 3D |
+| **Thẻ ghi nhớ**| `Phím Cách (Spacebar ␣)` | Lật mặt trước / mặt sau của thẻ |
 | **Thẻ ghi nhớ**| `Mũi tên Trái (←)` | Quay lại thẻ trước |
 | **Thẻ ghi nhớ**| `Phím V` (hoặc `1`) | Đánh dấu thẻ **V - Đã thuộc** |
 | **Thẻ ghi nhớ**| `Phím X` (hoặc `2`) | Đánh dấu thẻ **X - Chưa thuộc** |
@@ -137,7 +137,7 @@ Khi mở **QuizMaster.app** lần đầu trên macOS, nếu gặp thông báo l�
 ## CHƯƠNG PHỤ: XUẤT ĐỀ VÀ KIỂM TRA CẬP NHẬT
 
 1. **Xuất Đề thi**: Nhấp chuột phải vào thẻ bộ đề thi để chọn:
-   - **Xuất gói Zip Bundle (Mặc định - Hỗ trợ nhập lại)**: Xuất file zip chứa RTF và JSON có thể nạp lại vào ứng dụng.
+   - **Xuất gói Zip (Mặc định - Hỗ trợ nhập lại)**: Xuất file zip chứa RTF và JSON có thể nạp lại vào ứng dụng.
    - **Xuất tệp Word (.docx)**: Xuất file Word chuẩn để in ấn ra giấy.
    ![Screenshot](/DOCS/SCREENSHOTS/quizmaster21.png)
 2. **Kiểm tra Cập nhật**: Vào Cài đặt ⚙️ bấm **"Kiểm tra Cập nhật"** để xem thông tin phiên bản mới nhất và tải về trực tiếp từ GitHub.

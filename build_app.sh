@@ -107,11 +107,12 @@ touch -c "${BUNDLE_DIR}"
 
 # Create Zip Archive for Release Asset
 ZIP_NAME="QuizMaster-v${VERSION}-b${BUILD_NUMBER}.zip"
-rm -f "${ZIP_NAME}"
+rm -f "${ZIP_NAME}" "QuizMaster.zip"
 zip -r -q "${ZIP_NAME}" "${BUNDLE_DIR}"
+cp "${ZIP_NAME}" "QuizMaster.zip"
 
 echo "✅ App bundle created successfully: '${BUNDLE_DIR}' v${VERSION} (Build ${BUILD_NUMBER})!"
-echo "📦 Packaged Release Zip: '${ZIP_NAME}'"
+echo "📦 Packaged Release Zip: '${ZIP_NAME}' (and permanent asset 'QuizMaster.zip')"
 
 # GitHub Release & Strict Single Same-Version Release Enforcement
 if command -v gh &> /dev/null; then
@@ -130,5 +131,5 @@ if command -v gh &> /dev/null; then
     fi
 
     echo "🚀 Publishing single GitHub Release ${RELEASE_TAG}..."
-    gh release create "${RELEASE_TAG}" "${ZIP_NAME}" --title "QuizMaster v${VERSION} (Build ${BUILD_NUMBER})" --notes-file "release_notes.txt" || true
+    gh release create "${RELEASE_TAG}" "${ZIP_NAME}" "QuizMaster.zip" --title "QuizMaster v${VERSION} (Build ${BUILD_NUMBER})" --notes-file "release_notes.txt" || true
 fi
