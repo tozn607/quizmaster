@@ -19,6 +19,29 @@ Dành cho phiên bản: **v1.1.0**
 6. Tùy chỉnh Cỡ chữ (Nhỏ, Vừa, Lớn, Rất lớn), Chủ đề giao diện (Sáng / Tối / Tự động) và Ngôn ngữ ứng dụng (Tiếng Việt / English).
    - *💡 Lưu ý: Thay đổi ngôn ngữ ứng dụng sang Tiếng Anh cũng sẽ tự động yêu cầu Gemini AI sinh câu hỏi, đáp án và giải thích bằng Tiếng Anh.*
 
+### 🛡️ Hướng dẫn Khắc phục Lỗi Gatekeeper & Cho phép Mở ứng dụng từ "Mọi nơi" (Anywhere):
+
+Khi mở **QuizMaster.app** lần đầu trên macOS, nếu gặp thông báo lỗi *“QuizMaster.app bị hỏng và không thể mở”* hoặc *“Ứng dụng không thể mở vì không xác minh được nhà phát triển”*, bạn hãy thực hiện theo các bước sau:
+
+1. **Cho phép ứng dụng từ "Mọi nơi" (Anywhere)**:
+   - Mở ứng dụng **Terminal** trên Mac (`Command ⌘ + Space` -> gõ `Terminal`).
+   - Nhập lệnh sau và nhấn `Enter`:
+     ```bash
+     sudo spctl --master-disable
+     ```
+   - Nhập mật khẩu máy Mac của bạn (khi gõ mật khẩu sẽ không hiển thị ký tự) và nhấn `Enter`.
+   - Mở **Cài đặt Hệ thống (System Settings)** -> **Quyền riêng tư & Bảo mật (Privacy & Security)** -> cuộn xuống phần **Bảo mật (Security)**, bạn sẽ thấy tùy chọn **"Mọi nơi" (Anywhere)** đã được bật.
+
+2. **[NẾU VẪN CHƯA MỞ ĐƯỢC ỨNG DỤNG] Xóa cờ Cách ly Quarantine (Cho phép chạy ứng dụng trực tiếp)**:
+   - Trong **Terminal**, gõ lệnh sau để gỡ cờ bảo vệ cách ly của macOS đối với QuizMaster:
+     ```bash
+     xattr -cr /Applications/QuizMaster.app
+     ```
+   - *Nếu file QuizMaster.app nằm ở thư mục Tải về (Downloads)*:
+     ```bash
+     xattr -cr ~/Downloads/QuizMaster.app
+     ```
+3. Sau khi chạy lệnh trên, bạn có thể nhấp đúp chuột để mở và sử dụng **QuizMaster.app** bình thường mà không gặp bất kỳ thông báo lỗi nào!
 
 ## CHƯƠNG 2: QUÉT TÀI LIỆU & TẠO BỘ ĐỀ BẰNG GEMINI AI
 

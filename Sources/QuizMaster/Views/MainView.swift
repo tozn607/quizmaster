@@ -7,6 +7,7 @@ public struct MainView: View {
     
     @State private var selectedProject: StudyProject?
     @State private var showSettingsSheet: Bool = false
+    @State private var showSoftwareUpdateSheet: Bool = false
     @State private var showImportSheet: Bool = false
     
     @State private var activePracticeQuiz: Quiz? = nil
@@ -58,8 +59,8 @@ public struct MainView: View {
                             
                             Spacer()
                             
-                            PrimaryButton(title: "Cập nhật ngay ↗", icon: "square.and.arrow.up", color: .accentColor) {
-                                updateChecker.openReleasePage()
+                            PrimaryButton(title: "Cập nhật ngay ↗", icon: "arrow.down.circle.fill", color: LiquidGlassPalette.oceanBlue) {
+                                showSoftwareUpdateSheet = true
                             }
                         }
                         .padding()
@@ -86,6 +87,9 @@ public struct MainView: View {
         }
         .environment(\.appFontScale, storage.settings.fontSize.scaleFactor)
 
+        .sheet(isPresented: $showSoftwareUpdateSheet) {
+            SoftwareUpdateView()
+        }
         .sheet(isPresented: $showSettingsSheet) {
             SettingsView()
         }

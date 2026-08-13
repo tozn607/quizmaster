@@ -10,7 +10,32 @@ Target Version: **v1.1.1**
 
 **Why a personal API Key is required?:** To ensure user privacy and make the application accessible to everyone, the author does not pre-bundle an API key. Instead, users configure their own free API key provided by Google. Each Google account is granted a generous free tier for the Gemini 3.5 Flash Lite model, which is more than enough to generate a large number of quizzes and explanations daily. Self-entering a personal API key keeps the app free and open-source. Conversely, if a pre-bundled key were included, community usage would exceed free limits, incurring cloud service costs for the author.
 
-0. Download the latest **QuizMaster** build by going to [Releases ↗](https://github.com/tozn607/quizmaster/releases/latest), scroll down to the Assets section of the latest release and download the zip file. Extract it and move **QuizMaster.app** into your **Applications** folder.
+0. Download the latest **QuizMaster.zip** release build from [Releases ↗](https://github.com/tozn607/quizmaster/releases/latest). Extract and move **QuizMaster.app** into your **Applications** folder.
+
+### 🛡️ Gatekeeper Setup & Allowing Apps from "Anywhere":
+
+When launching **QuizMaster.app** for the first time on macOS, if you encounter Gatekeeper warnings such as *“QuizMaster.app is damaged and can’t be opened”* or *“App cannot be opened because it is from an unidentified developer”*, follow these steps:
+
+1. **Enable "Anywhere" in System Privacy Settings**:
+   - Open **Terminal** on your Mac (`Command ⌘ + Space` -> type `Terminal`).
+   - Run the following command and press `Enter`:
+     ```bash
+     sudo spctl --master-disable
+     ```
+   - Enter your macOS admin password (characters will not appear as you type) and press `Enter`.
+   - Go to **System Settings** -> **Privacy & Security** -> scroll down to **Security**, and confirm that **"Anywhere"** is now enabled under *Allow applications downloaded from*.
+
+2. **Clear Quarantine Flags**:
+   - In **Terminal**, run the following command to clear macOS quarantine restrictions for QuizMaster:
+     ```bash
+     xattr -cr /Applications/QuizMaster.app
+     ```
+   - *If QuizMaster.app is located in your Downloads folder*:
+     ```bash
+     xattr -cr ~/Downloads/QuizMaster.app
+     ```
+3. After executing the command above, double-click **QuizMaster.app** to launch and run the app normally!
+
 1. Launch **QuizMaster** on your Mac.
 2. Click the **Settings (⚙️)** icon in the top header or sidebar.
 3. Click **"Get API Key from Google AI Studio ↗"** to open [Google's free API Key registration page](https://aistudio.google.com/api-keys).

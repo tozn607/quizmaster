@@ -18,6 +18,11 @@
 
 [![](https://img.shields.io/badge/⬇️_Download_Latest_macOS_Release-v1.1.1-brightgreen?style=for-the-badge&logo=apple)](https://github.com/tozn607/quizmaster/releases/latest)
 
+> 💡 **Khắc phục lỗi Mở ứng dụng lần đầu / Fix Gatekeeper Launch Warnings**:
+> Mở **Terminal** và chạy 2 lệnh sau nếu macOS báo lỗi *"QuizMaster.app bị hỏng / damaged"*:
+> 1. Bật tùy chọn Anywhere trong Quyền riêng tư & Bảo mật: `sudo spctl --master-disable`
+> 2. Gỡ cờ cách ly: `xattr -cr /Applications/QuizMaster.app` (hoặc `xattr -cr QuizMaster.app`)
+
 ---
 
 ## 📚 Complete Documentation Links / Tài liệu Hướng dẫn
