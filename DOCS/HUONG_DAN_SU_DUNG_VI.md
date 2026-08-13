@@ -79,11 +79,10 @@ Khi mở **QuizMaster.app** lần đầu trên macOS, nếu gặp thông báo l�
    - **Mặc định**: Cân đối theo độ dài tài liệu (~12-20 câu).
    - **Ý chính / Trọng tâm**: Tập trung vào chủ đề chính (~8-15 câu).
    - **Chi tiết toàn bộ**: Quét chuyên sâu từng định nghĩa, quy tắc và chi tiết (~35-60+ câu).   
-![Screenshot](/DOCS/SCREENSHOTS/quizmaster6.png)
    **Lưu ý:** Nếu là tệp đề trắc nghiệm có sẵn: Không cần bật chế độ **"Tạo câu hỏi trắc nghiệm tự động"**, mà ứng dụng sẽ tự động trích xuất câu hỏi, câu trả lời, lời giải thích (nếu có) ở trong tài liệu.
 
 4. Bấm **"Bắt đầu Quét với Gemini AI"** (Xác nhận trên hộp thoại kiểm tra chế độ quét).
-![Screenshot](/DOCS/SCREENSHOTS/quizmaster8.png)
+![Screenshot](/DOCS/SCREENSHOTS/quizmaster6.png)
 
 ## CHƯƠNG 3: BA CHẾ ĐỘ ÔN TẬP VÀ THANH ĐIỀU HƯỚNG CÂU HỎI
 
@@ -100,7 +99,7 @@ Khi mở **QuizMaster.app** lần đầu trên macOS, nếu gặp thông báo l�
 
 2. **Chế độ Thi thử**:
    - Môi trường thi thật không hiện đáp án đúng/sai và ẩn nút Hỏi AI để đảm bảo chống gian lận.
-   - **Đồng hồ đếm giờ làm bài (Togglable Timer)**: Nhấn vào menu **"Đồng hồ"** ở góc phải thanh trên cùng để bật/tắt đếm ngược (tùy chọn 15, 30, 45, 60 phút). Khi hết giờ, bài thi sẽ tự động nộp.
+   - **Đồng hồ đếm giờ làm bài**: Nhấn vào menu **"Đồng hồ"** ở góc phải thanh trên cùng để bật/tắt đếm ngược (tùy chọn 15, 30, 45, 60 phút). Khi hết giờ, bài thi sẽ tự động nộp.
    ![Screenshot](/DOCS/SCREENSHOTS/quizmaster14.png)
    - Bấm **"Nộp bài thi"** để xem tổng kết điểm số và bảng phân tích đáp án chi tiết.
 ![Screenshot](/DOCS/SCREENSHOTS/quizmaster15.png)
