@@ -7,6 +7,12 @@ public struct SoftwareUpdateView: View {
     @Environment(\.appFontScale) var fontScale
     @Environment(\.dismiss) var dismiss
     
+    private func cleanMarkdownForSwiftUI(_ rawText: String) -> String {
+        var text = rawText
+        text = text.replacingOccurrences(of: "\r\n", with: "\n")
+        return text
+    }
+    
     public var body: some View {
         LiquidGlassWindowBackdrop {
             VStack(spacing: 0) {
@@ -30,21 +36,24 @@ public struct SoftwareUpdateView: View {
                 
                 Divider()
             
-            VStack(spacing: 20 * fontScale) {
+            VStack(spacing: 18 * fontScale) {
                 // Hero Icon
-                Image(systemName: updateChecker.hasUpdateAvailable ? "sparkles.tv.fill" : "checkmark.seal.fill")
-                    .font(.system(size: 54 * fontScale))
-                    .foregroundColor(updateChecker.hasUpdateAvailable ? LiquidGlassPalette.oceanBlue : LiquidGlassPalette.emeraldMint)
-                    .padding(.top, 12 * fontScale)
-                
-                VStack(spacing: 6 * fontScale) {
-                    Text(updateChecker.hasUpdateAvailable ? loc.text("updateAvailableTitle") : loc.text("youAreUpToDate"))
-                        .font(.system(size: 20 * fontScale, weight: .bold))
+                HStack(spacing: 16 * fontScale) {
+                    Image(systemName: updateChecker.hasUpdateAvailable ? "sparkles.tv.fill" : "checkmark.seal.fill")
+                        .font(.system(size: 46 * fontScale))
+                        .foregroundColor(updateChecker.hasUpdateAvailable ? LiquidGlassPalette.oceanBlue : LiquidGlassPalette.emeraldMint)
                     
-                    Text("QuizMaster \(AppVersionInfo.currentVersion) (Build \(AppVersionInfo.buildNumber))")
-                        .font(.system(size: 14 * fontScale))
-                        .foregroundColor(.secondary)
+                    VStack(alignment: .leading, spacing: 4 * fontScale) {
+                        Text(updateChecker.hasUpdateAvailable ? loc.text("updateAvailableTitle") : loc.text("youAreUpToDate"))
+                            .font(.system(size: 20 * fontScale, weight: .bold))
+                        
+                        Text("QuizMaster \(AppVersionInfo.currentVersion) (Build \(AppVersionInfo.buildNumber))")
+                            .font(.system(size: 13 * fontScale))
+                            .foregroundColor(.secondary)
+                    }
+                    Spacer()
                 }
+                .padding(.top, 8 * fontScale)
                 
                 GlassCard {
                     VStack(alignment: .leading, spacing: 12 * fontScale) {
@@ -65,17 +74,30 @@ public struct SoftwareUpdateView: View {
                             
                             if !updateChecker.releaseNotes.isEmpty {
                                 Divider()
-                                VStack(alignment: .leading, spacing: 4 * fontScale) {
+                                
+                                VStack(alignment: .leading, spacing: 8 * fontScale) {
                                     Text(loc.text("releaseNotesLabel"))
-                                        .font(.system(size: 12 * fontScale, weight: .bold))
+                                        .font(.system(size: 13 * fontScale, weight: .bold))
                                         .foregroundColor(LiquidGlassPalette.oceanBlue)
+                                    
                                     ScrollView {
-                                        Text(updateChecker.releaseNotes)
-                                            .font(.system(size: 12 * fontScale))
-                                            .foregroundColor(.secondary)
-                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                        VStack(alignment: .leading, spacing: 8 * fontScale) {
+                                            Text(LocalizedStringKey(cleanMarkdownForSwiftUI(updateChecker.releaseNotes)))
+                                                .font(.system(size: 13 * fontScale))
+                                                .foregroundColor(.primary)
+                                                .lineSpacing(4)
+                                                .textSelection(.enabled)
+                                        }
+                                        .padding(14 * fontScale)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
                                     }
-                                    .frame(maxHeight: 110 * fontScale)
+                                    .background(Color.secondary.opacity(0.08))
+                                    .cornerRadius(12)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(Color.secondary.opacity(0.15), lineWidth: 1)
+                                    )
+                                    .frame(height: 240 * fontScale)
                                 }
                             }
                         }
@@ -148,7 +170,7 @@ public struct SoftwareUpdateView: View {
             .background(.thinMaterial)
         }
         }
-        .frame(width: 520 * fontScale, height: 520 * fontScale)
+        .frame(width: 580 * fontScale, height: 600 * fontScale)
         .onAppear {
             Task {
                 await updateChecker.checkForUpdates()

@@ -121,8 +121,7 @@ public class UpdateChecker: ObservableObject {
     /// Download latest release zip and perform automatic OTA update
     public func startAutomaticOTAUpdate() {
         guard !latestZipDownloadURL.isEmpty, let downloadURL = URL(string: latestZipDownloadURL) else {
-            // Fallback if URL empty: construct default GitHub release asset URL
-            let fallbackTag = latestVersionTag.isEmpty ? "v1.1.1-b140" : latestVersionTag
+            let fallbackTag = latestVersionTag.isEmpty ? "v1.1.1-b142" : latestVersionTag
             let fallbackStr = "https://github.com/tozn607/quizmaster/releases/download/\(fallbackTag)/QuizMaster-\(fallbackTag).zip"
             guard let fallbackURL = URL(string: fallbackStr) else {
                 updateError = "Không tìm thấy đường dẫn tải về bản cập nhật."
@@ -138,7 +137,7 @@ public class UpdateChecker: ObservableObject {
     private func performDownloadAndInstall(url: URL) {
         DispatchQueue.main.async {
             self.isDownloadingUpdate = true
-            self.updateProgress = 0.05
+            self.updateProgress = 0.10
             self.updateStatusText = "Đang kết nối và tải bản cập nhật..."
             self.updateError = nil
         }
@@ -164,7 +163,7 @@ public class UpdateChecker: ObservableObject {
             }
             
             DispatchQueue.main.async {
-                self.updateProgress = 0.60
+                self.updateProgress = 0.70
                 self.updateStatusText = "Đang giải nén & chuẩn bị cài đặt..."
             }
             
@@ -199,19 +198,23 @@ public class UpdateChecker: ObservableObject {
                 }
                 
                 DispatchQueue.main.async {
-                    self.updateProgress = 0.95
-                    self.updateStatusText = "Đang cài đặt và khởi động lại QuizMaster..."
+                    self.updateProgress = 1.00
+                    self.updateStatusText = "Hoàn tất! Đang khởi động lại QuizMaster..."
                 }
                 
                 let currentAppPath = Bundle.main.bundlePath
+                let currentPid = ProcessInfo.processInfo.processIdentifier
                 
-                // Self-replacing OTA bash script
+                // Detached self-replacing OTA background script
                 let script = """
-                sleep 0.8
+                nohup bash -c '
+                pid=\(currentPid)
+                while kill -0 $pid 2>/dev/null; do sleep 0.1; done
                 rm -rf "\(currentAppPath)"
                 cp -R "\(extractedAppPath)" "\(currentAppPath)"
                 xattr -cr "\(currentAppPath)" || true
                 open "\(currentAppPath)"
+                ' >/dev/null 2>&1 &
                 """
                 
                 let installerProcess = Process()
@@ -219,8 +222,8 @@ public class UpdateChecker: ObservableObject {
                 installerProcess.arguments = ["-c", script]
                 try installerProcess.run()
                 
-                DispatchQueue.main.async {
-                    NSApplication.shared.terminate(nil)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    exit(0)
                 }
                 
             } catch {
