@@ -32,7 +32,7 @@ cat <<EOF > "build_info.json"
 EOF
 
 # Create release_notes.txt
-cat <<EOF > "release_notes.txt"
+cat <<'EOF' > "release_notes.txt"
 # 🚀 QuizMaster v1.2.2 Release Notes
 
 ### 🌟 New Features & Enhancements in v1.2.2:
