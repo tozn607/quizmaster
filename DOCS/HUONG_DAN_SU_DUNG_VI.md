@@ -31,8 +31,10 @@ Khi mở **QuizMaster.app** lần đầu tiên, ứng dụng sẽ tự động h
    - Bấm **"Vào sử dụng QuizMaster ngay 🚀"** để bắt đầu.
    ![Screenshot](/DOCS/SCREENSHOTS/quizmaster3.png)
 
-
 *(Nếu muốn thay đổi lại API Key hoặc Giao diện sau này, bạn có thể vào biểu tượng **Cài đặt (⚙️)** ở Sidebar bất kỳ lúc nào).*
+<details>
+  <summary>Nhấn vào đây để hiển thị</summary>
+
    1. Mở ứng dụng **QuizMaster** trên máy Mac của bạn.
    2. Nhấn vào biểu tượng **Cài đặt (⚙️)** ở thanh trên cùng hoặc ở Sidebar.
    3. Bấm nút **"Lấy API Key từ Google AI Studio ↗"** để mở trình duyệt đến [trang đăng ký API Key miễn phí của Google](`https://aistudio.google.com/api-keys`).
@@ -41,6 +43,7 @@ Khi mở **QuizMaster.app** lần đầu tiên, ứng dụng sẽ tự động h
    6. Tùy chỉnh Cỡ chữ (Nhỏ, Vừa, Lớn, Rất lớn), Chủ đề giao diện (Sáng / Tối / Tự động) và Ngôn ngữ ứng dụng (Tiếng Việt / English).
       - *💡 Lưu ý: Thay đổi ngôn ngữ ứng dụng sang Tiếng Anh cũng sẽ tự động yêu cầu Gemini AI sinh câu hỏi, đáp án và giải thích bằng Tiếng Anh.*
       ![Screenshot](/DOCS/SCREENSHOTS/quizmaster7.png)
+</details>
 
 ### 🛡️ Hướng dẫn Khắc phục Lỗi Gatekeeper & Cho phép Mở ứng dụng từ Mọi nơi (Anywhere):
 
