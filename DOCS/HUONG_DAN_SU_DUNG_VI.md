@@ -10,7 +10,7 @@ Dành cho phiên bản: **v1.1.0**
 
 **Tại sao lại cần API Key cá nhân?:** Để đảm bảo quyền riêng tư và để ứng dụng dễ tiếp cận hơn với số đông, tác giả không tích hợp sẵn API Key mà để người dùng tự cấu hình bằng API Key miễn phí đến từ Google. Mỗi tài khoản Google của bạn được cấp một hạn mức sử dụng model Gemini 3.5 Flash Lite miễn phí, dư dả để tạo một lượng lớn đề thi và lời giải trong một ngày. Việc tự nhập API Key cá nhân giúp giữ ứng dụng miễn phí và có mã nguồn mở. Ngược lại, nếu tác giả đính kèm sẵn API Key thì lượng sử dụng từ cộng đồng sẽ vượt hạn mức và tác giả sẽ phải trả phí dịch vụ cho Google.
 
-0. Tải bản dựng **QuizMaster.zip** mới nhất từ [Releases ↗](https://github.com/tozn607/quizmaster/releases/latest). Giải nén và di chuyển **QuizMaster.app** vào thư mục **Applications**.
+0. Tải bản dựng **QuizMaster** mới nhất bằng cách đi đến [Releases ↗](https://github.com/tozn607/quizmaster/releases/latest), kéo xuống mục Assets của Release mới nhất và tải file zip. Giải nén và di chuyển **QuizMaster.app** vào thư mục **Applications**.
 1. Mở ứng dụng **QuizMaster** trên máy Mac của bạn.
 2. Nhấn vào biểu tượng **Cài đặt (⚙️)** ở thanh trên cùng hoặc ở Sidebar.
 3. Bấm nút **"Lấy API Key từ Google AI Studio ↗"** để mở trình duyệt đến [trang đăng ký API Key miễn phí của Google](`https://aistudio.google.com/api-keys`).

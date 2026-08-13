@@ -10,7 +10,7 @@ Target Version: **v1.1.1**
 
 **Why a personal API Key is required?:** To ensure user privacy and make the application accessible to everyone, the author does not pre-bundle an API key. Instead, users configure their own free API key provided by Google. Each Google account is granted a generous free tier for the Gemini 3.5 Flash Lite model, which is more than enough to generate a large number of quizzes and explanations daily. Self-entering a personal API key keeps the app free and open-source. Conversely, if a pre-bundled key were included, community usage would exceed free limits, incurring cloud service costs for the author.
 
-0. Download the latest **QuizMaster.zip** release build from [Releases ↗](https://github.com/tozn607/quizmaster/releases/latest). Extract and move **QuizMaster.app** into your **Applications** folder.
+0. Download the latest **QuizMaster** build by going to [Releases ↗](https://github.com/tozn607/quizmaster/releases/latest), scroll down to the Assets section of the latest release and download the zip file. Extract it and move **QuizMaster.app** into your **Applications** folder.
 1. Launch **QuizMaster** on your Mac.
 2. Click the **Settings (⚙️)** icon in the top header or sidebar.
 3. Click **"Get API Key from Google AI Studio ↗"** to open [Google's free API Key registration page](https://aistudio.google.com/api-keys).
