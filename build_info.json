@@ -1,7 +1,7 @@
 {
-  "version": "1.1.0",
-  "buildNumber": 139,
-  "releaseTag": "v1.1.0-b139",
-  "buildDate": "2026-08-12T16:28:41Z",
-  "releaseNotes": "QuizMaster v1.1.0 (Build 139):\n- Markdown Formatted Explanations for Saved Ask Gemini Answers\n- Guaranteed Light Mode Readability with Solid Card Backings & High-Contrast Dark Typography\n- 100% Solid, Saturated & Vibrant LiquidGlassPalette Colors (Ocean Blue, Sunset Orange, Deep Purple, Emerald Mint, Coral Red, Cyan Teal)\n- Authentic macOS Liquid Glass Translucent Backdrop (NSVisualEffectView fullScreenUI)\n- 6-Color Rainbow Gradient App Icon with Pure White Graduation Cap Main Icon\n- Strict Single Release Enforcement per Version Number on GitHub\n- Persistent Ask Gemini AI Answers\n- Gatekeeper Quarantine & Ad-hoc Code-signing Fix\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation\n- Practice Checkpoint Progress Save & Resume"
+  "version": "1.1.1",
+  "buildNumber": 141,
+  "releaseTag": "v1.1.1-b141",
+  "buildDate": "2026-08-13T05:19:34Z",
+  "releaseNotes": "QuizMaster v1.1.1 (Build 141):\n- Fixed Question & Option Shuffling in Practice, Exam, and Flashcard modes\n- Fixed Flashcard Mode completion screen to ask whether user wants to continue unmastered cards, redo all, or view answer explanations\n- Added missing localization strings (roundCompleted, studyAgain, continueNextRound)\n- Updated README with bilingual Vietnamese & English sections and notable app features\n- Updated documentation baseline"
 }

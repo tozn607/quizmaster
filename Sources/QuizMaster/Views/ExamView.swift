@@ -189,11 +189,17 @@ public struct ExamView: View {
     }
     
     private func setupExamQuestions() {
+        var rawQuestions: [Question]
         if redoWrongOnly, let prog = project.progressMap[quiz.id], !prog.wrongQuestionIds.isEmpty {
-            activeQuestions = quiz.questions.filter { prog.wrongQuestionIds.contains($0.id) }
+            rawQuestions = quiz.questions.filter { prog.wrongQuestionIds.contains($0.id) }
         } else {
-            activeQuestions = quiz.questions
+            rawQuestions = quiz.questions
         }
+        
+        if storage.settings.isShuffleEnabled {
+            rawQuestions = rawQuestions.shuffled().map { $0.shuffledWithRelabeledOptions() }
+        }
+        activeQuestions = rawQuestions
     }
     
     // MARK: - Navigation Button Renderer

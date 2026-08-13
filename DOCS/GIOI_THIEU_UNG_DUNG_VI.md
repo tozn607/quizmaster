@@ -1,17 +1,16 @@
 # 💡 GIỚI THIỆU ỨNG DỤNG QUIZMASTER (v1.1.0)
 
 Tác giả: **@tozn607**  
-Nền tảng: macOS Native App (Swift & SwiftUI)
-
----
+Nền tảng: macOS (Swift / SwiftUI Native)  
+Ngày soạn: **13 Tháng 8 năm 2026**  
+Dành cho phiên bản: **v1.1.0**
 
 ## 1. Tổng quan Ứng dụng
 
-**QuizMaster** là phần mềm tự học và tạo đề thi trắc nghiệm chuyên nghiệp dành cho hệ điều hành macOS. Được thiết kế theo phong cách giao diện Apple hiện đại (macOS Liquid Glass Translucent Backdrop & Solid Vibrant UI), QuizMaster hỗ trợ sinh viên, học sinh và giảng viên chuyển đổi các tài liệu học tập phức tạp thành bài thi tương tác sống động.
+**QuizMaster** là phần mềm tự học và tạo đề thi trắc nghiệm chuyên nghiệp dành cho hệ điều hành macOS. Được thiết kế theo phong cách giao diện **Liquid Glass** và được biên dịch 100% bằng ngôn ngữ **Swift** của Apple, QuizMaster hỗ trợ sinh viên, học sinh và giảng viên chuyển đổi các tài liệu học tập thành bài thi, bài kiểm tra tương tác sống động với độ mượt mà vượt trội.
 
----
 
-## 2. Công nghệ AI & Thuật toán Nổi bật trong v1.1.0
+## 2. Tính năng mới trong v1.1.0
 
 - **Định dạng Markdown Lời giải Gemini AI**: Trình bày đẹp mắt các tiêu đề (`###`), văn bản bôi đậm (`**...**`), dải ngăn (`---`) và danh sách ghi chú trong hộp giải thích của màn hình Luyện tập.
 - **Tối ưu Độ tương phản Light Mode**: Nền thẻ 100% trắng mịn kết hợp chữ tối rõ nét, loại bỏ triệt để hiện tượng chữ trắng trên nền sáng.
@@ -23,7 +22,6 @@ Nền tảng: macOS Native App (Swift & SwiftUI)
 - **Lưu Checkpoint Tự động**: Tự động lưu vết tiến độ học tập trong chế độ Luyện tập để tiếp tục khi quay lại.
 - **Chế độ Thi thử Chống gian lận**: Ẩn đáp án và tính năng Hỏi AI trong môi trường thi thử.
 
----
 
 ## 3. Các Định dạng Xuất / Nhập
 

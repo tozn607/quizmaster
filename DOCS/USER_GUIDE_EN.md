@@ -1,82 +1,85 @@
-# 📖 QUIZMASTER DETAILED USER GUIDE (v1.1.0)
+# 📖 QUIZMASTER DETAILED USER GUIDE (v1.1.1)
 
 Author: **@tozn607**  
-Platform: macOS (Native Swift / SwiftUI)
+Platform: macOS (Native Swift / SwiftUI)  
+Date: **August 13, 2026**  
+Target Version: **v1.1.1**
 
----
 
 ## CHAPTER 1: INITIAL SETUP & API KEY CONFIGURATION
 
+**Why a personal API Key is required?:** To ensure user privacy and make the application accessible to everyone, the author does not pre-bundle an API key. Instead, users configure their own free API key provided by Google. Each Google account is granted a generous free tier for the Gemini 3.5 Flash Lite model, which is more than enough to generate a large number of quizzes and explanations daily. Self-entering a personal API key keeps the app free and open-source. Conversely, if a pre-bundled key were included, community usage would exceed free limits, incurring cloud service costs for the author.
+
+0. Download the latest **QuizMaster.zip** release build from [Releases ↗](https://github.com/tozn607/quizmaster/releases/latest). Extract and move **QuizMaster.app** into your **Applications** folder.
 1. Launch **QuizMaster** on your Mac.
-2. Click the **Settings (⚙️)** icon on the top header or sidebar.
-3. Click **"Get API Key from Google AI Studio ↗"** to open your browser and generate a free API key (`https://aistudio.google.com/api-keys`).
-4. Copy the API Key and paste it into **"Google AI Studio Key (Gemini API)"**.
-5. Click **"Test API Key"** to verify connection (displays `✓ API Key is valid and active!`).
-6. Customize App Font Size (Small, Medium, Large, X-Large), Color Theme (Light / Dark / System), and App Language (Vietnamese / English).
-   - *💡 Note: Changing the app language to English will automatically instruct Gemini AI to generate all future quiz questions, options, and explanations in English.*
+2. Click the **Settings (⚙️)** icon in the top header or sidebar.
+3. Click **"Get API Key from Google AI Studio ↗"** to open [Google's free API Key registration page](https://aistudio.google.com/api-keys).
+4. In the top right corner, click **Create API Key**, name your key, select **Default Gemini Project**, copy the generated API Key, and paste it into **"Google AI Studio Key (Gemini API)"** inside the app.
+5. Click **"Test API Key"** to verify connection (a green message `✓ API Key is valid` will appear).
+6. Customize Font Size (Small, Medium, Large, X-Large), Color Theme (Light / Dark / System Default), and App Language (Vietnamese / English).
+   - *💡 Note: Switching the app language to English will automatically instruct Gemini AI to generate all future quiz questions, options, and explanations in English.*
 
----
 
-## CHAPTER 2: PHYSICAL KEYBOARD SHORTCUTS
+## CHAPTER 2: DOCUMENT SCANNING & QUIZ CREATION WITH GEMINI AI
+
+1. Click **"Import Document / Quiz"**.
+2. Select lecture files in PDF, Word (`.docx`), or plain text (`TXT`) format.
+3. For regular lecture files: Turn ON **"Auto-generate Multiple-Choice Quizzes"** and select a **Depth Mode**:
+   - **Normal**: Balanced coverage based on document length (~12–20 questions).
+   - **Core**: Focuses strictly on main topics and key concepts (~8–15 questions).
+   - **Thorough**: In-depth scanning covering every definition, rule, and detail (~35–60+ questions).   
+
+   **Warning:** For pre-existing quiz files: Keep **"Auto-generate Multiple-Choice Quizzes"** turned OFF. The app will automatically extract existing questions, answer keys, and explanations directly from the document.
+
+4. Click **"Start Scanning with Gemini AI"** (Confirm on the scanning mode check dialog).
+
+
+## CHAPTER 3: THREE STUDY MODES & QUESTION NAVIGATOR
+
+0. Once created, the quiz set appears on your project dashboard.
+1. **Practice Mode**:
+   - Multiple-choice questions with instant correct/incorrect feedback.
+   - **Checkpoint Progress Save**: Your progress and current question index are saved automatically. Returning later resumes at your exact spot.
+   - **Ask Gemini AI**: Click **"Ask Gemini AI about this question"** for detailed AI explanations.
+   - **Question Navigator**: The right sidebar displays question color statuses (Green = Correct, Red = Wrong, Gray = Unanswered); click any number to jump instantly.
+
+2. **Exam Mode**:
+   - Real test environment suppressing correct answers and hiding AI assistance to prevent cheating.
+   - Click **"Submit Exam"** to view score summary and detailed answer breakdown.
+
+3. **Flashcard Mode**:
+   - 3D flip cards marked with V (Mastered) & X (Needs Review).
+   - **"Previous Card"** button allows reviewing recently flipped cards.
+   - Unmastered cards (X) are kept for review in round 2, 3 until 100% mastered.
+
+
+## CHAPTER 4: PROJECT MANAGEMENT, QUIZ SETS & SHUFFLE TOGGLE
+
+1. **Create New Project**: Click `+` on the sidebar, type project name (e.g., *History Prep*, *English B1*).
+2. **Rename Quiz Set**: Click the pencil icon (✏️) on the quiz card or right-click and select **"Rename Quiz"**.
+3. **Move Quiz Set**: Click the folder icon (`folder.arrow.up`) or right-click and select **"Move to Another Project..."**.
+4. **Select Multiple Quizzes**: Click **"Select Multiple Quizzes"** on the main dashboard to check boxes and delete or move in bulk.
+5. **Shuffle Toggle**: Click **"🔀 Shuffle Questions & Options"** on the main toolbar to turn question and option randomization ON or OFF.
+6. **Reset Progress**: Right-click any Project or Quiz Set and select **"Reset Progress"** to restart learning from scratch.
+
+
+## CHAPTER 5: KEYBOARD SHORTCUTS
 
 | Study Mode | Keyboard Shortcut | Action |
 | :--- | :--- | :--- |
 | **Practice & Exam Mode** | `A`, `B`, `C`, `D` (or `1`, `2`, `3`, `4`) | Select option A, B, C, or D |
-| **Practice & Exam Mode** | `Enter (↵)` | Advance to next question / Submit exam |
-| **Exam Mode** | `Left / Right Arrows (← →)` | Navigate between questions |
-| **Flashcard Mode** | `Spacebar (␣)` | Flip 3D flashcard front / back |
-| **Flashcard Mode** | `Left Arrow (←)` | Navigate to previous card (Previous Card) |
-| **Flashcard Mode** | `Key V` (or `1`) | Mark card as **V - Mastered** |
-| **Flashcard Mode** | `Key X` (or `2`) | Mark card as **X - Need Review** |
-| **All Modes** | `Delete (⌫)` | Exit study mode back to dashboard |
+| **Practice & Exam Mode** | `Enter (↵)` | Next question / Submit exam |
+| **Exam Mode** | `Left / Right Arrow (← →)` | Navigate between questions |
+| **Flashcard Mode** | `Spacebar (␣)` | Flip front / back of 3D card |
+| **Flashcard Mode** | `Left Arrow (←)` | Go back to previous card |
+| **Flashcard Mode** | `V Key` (or `1`) | Mark card as **V - Mastered** |
+| **Flashcard Mode** | `X Key` (or `2`) | Mark card as **X - Needs Review** |
+| **All Modes** | `Delete (⌫)` | Exit study mode to dashboard |
 
----
 
-## CHAPTER 3: MANAGING PROJECTS, QUIZZES & SHUFFLING TOGGLE
+## APPENDIX: EXPORTING & UPDATES
 
-1. **New Project**: Click `+` on the sidebar and enter a project name.
-2. **Rename Quiz Set**: Click the pencil icon (✏️) on a quiz card or right-click and select **"Rename Quiz"**.
-3. **Move Quiz Set**: Click the folder icon (`folder.arrow.up`) or right-click and select **"Move Quiz..."**.
-4. **Select Multiple Quizzes (Multi-select)**: Click **"Select Multiple"** on the dashboard to select checkboxes and perform bulk delete or bulk move operations.
-5. **Shuffling Toggle**: Click **"🔀 Shuffle Questions & Options"** on the main top toolbar to toggle question and option randomization on or off.
-6. **Reset Progress**: Right-click any Project or Quiz set and choose **"Reset Progress"** to restart learning from zero.
-
----
-
-## CHAPTER 4: DOCUMENT SCANNING WITH GEMINI AI
-
-1. Click **"Import Document / Quiz"**.
-2. Select a PDF, Word (`.docx`), or TXT file.
-3. For regular lecture materials: Enable **"Auto-generate Multiple-Choice Quizzes"** and select **Depth Mode**:
-   - **Normal**: Balanced question count (~12–20 questions).
-   - **Core**: Focuses on main key ideas (~8–15 questions).
-   - **Thorough**: In-depth coverage of every detail, rule, and definition (~35–60+ questions).
-4. Click **"Start Scanning with Gemini AI"**.
-
----
-
-## CHAPTER 5: THREE STUDY MODES & QUESTION NAVIGATOR
-
-1. **Practice Mode**:
-   - Multiple-choice testing with instant correct/incorrect feedback.
-   - **Checkpoint Progress Save**: Your question index and answers are continuously saved. Exiting and returning resumes at your exact question checkpoint.
-   - **Ask Gemini AI**: Click **"Ask Gemini AI about this question"** to get detailed AI explanations in clean formatted Markdown.
-   - **Question Navigator**: The right-side sidebar displays color-coded status buttons (Green = Correct, Red = Wrong, Gray = Unanswered) for instant question jumping.
-
-2. **Exam Mode**:
-   - Real test environment with zero immediate feedback and AI assistance hidden to prevent cheating.
-   - Click **"Submit Exam"** to view overall score breakdown and detailed answer review.
-
-3. **Flashcard Mode**:
-   - Smooth 3D flip cards with Mastered (V) and Need Review (X) tracking.
-   - Click **"Previous Card"** (`Left Arrow ←`) to navigate backward through reviewed card history.
-   - Un-mastered cards are recycled into study rounds 2 and 3 until 100% mastery is achieved.
-
----
-
-## CHAPTER 6: EXPORTING & SOFTWARE UPDATES
-
-1. **Exporting Quizzes**: Right-click any quiz set card to choose:
-   - **Export Zip Bundle (Default - Importable)**: Exports a zip archive containing RTF and JSON files that can be imported back into QuizMaster.
-   - **Export Word (.docx)**: Exports a formatted Microsoft Word document for paper printing.
-2. **Software Updates**: Go to Settings ⚙️ and click **"Check for Updates"** to view release notes and download new releases directly from GitHub.
+1. **Export Quiz**: Right-click a quiz card and select:
+   - **Export Zip Bundle (Default - Importable)**: Exports a zip archive containing RTF and JSON files that can be re-imported into the app.
+   - **Export Word (.docx)**: Exports a standard Word document suitable for printing.
+2. **Check for Updates**: Go to Settings ⚙️ and click **"Check for Updates"** to view the latest version info and download directly from GitHub.

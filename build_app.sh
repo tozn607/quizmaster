@@ -11,11 +11,11 @@ if [ -f "$BUILD_FILE" ]; then
     BUILD_NUMBER=$(cat "$BUILD_FILE")
     BUILD_NUMBER=$((BUILD_NUMBER + 1))
 else
-    BUILD_NUMBER=139
+    BUILD_NUMBER=140
 fi
 echo "$BUILD_NUMBER" > "$BUILD_FILE"
 
-VERSION="1.1.0"
+VERSION="1.1.1"
 RELEASE_TAG="v${VERSION}-b${BUILD_NUMBER}"
 
 echo "🔢 Building QuizMaster v${VERSION} (Build ${BUILD_NUMBER})...."
@@ -23,11 +23,11 @@ echo "🔢 Building QuizMaster v${VERSION} (Build ${BUILD_NUMBER})...."
 # Create build_info.json in source repository
 cat <<EOF > "build_info.json"
 {
-  "version": "1.1.0",
+  "version": "1.1.1",
   "buildNumber": ${BUILD_NUMBER},
-  "releaseTag": "v1.1.0-b${BUILD_NUMBER}",
+  "releaseTag": "v1.1.1-b${BUILD_NUMBER}",
   "buildDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "releaseNotes": "QuizMaster v1.1.0 (Build ${BUILD_NUMBER}):\n- Markdown Formatted Explanations for Saved Ask Gemini Answers\n- Guaranteed Light Mode Readability with Solid Card Backings & High-Contrast Dark Typography\n- 100% Solid, Saturated & Vibrant LiquidGlassPalette Colors (Ocean Blue, Sunset Orange, Deep Purple, Emerald Mint, Coral Red, Cyan Teal)\n- Authentic macOS Liquid Glass Translucent Backdrop (NSVisualEffectView fullScreenUI)\n- 6-Color Rainbow Gradient App Icon with Pure White Graduation Cap Main Icon\n- Strict Single Release Enforcement per Version Number on GitHub\n- Persistent Ask Gemini AI Answers\n- Gatekeeper Quarantine & Ad-hoc Code-signing Fix\n- Question & Option Shuffling Toggle\n- Resizable & Spacious Study Mode Windows\n- 3D Flashcard Flipping Animation\n- Practice Checkpoint Progress Save & Resume"
+  "releaseNotes": "QuizMaster v1.1.1 (Build ${BUILD_NUMBER}):\n- Fixed Question & Option Shuffling in Practice, Exam, and Flashcard modes\n- Fixed Flashcard Mode completion screen to ask whether user wants to continue unmastered cards, redo all, or view answer explanations\n- Added missing localization strings (roundCompleted, studyAgain, continueNextRound)\n- Updated README with bilingual Vietnamese & English sections and notable app features\n- Updated documentation baseline"
 }
 EOF
 

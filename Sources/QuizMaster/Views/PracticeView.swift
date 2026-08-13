@@ -403,7 +403,17 @@ public struct PracticeView: View {
     
     // MARK: - Logic & Checkpoint Progress Restore
     private func setupQuizQuestions() {
-        activeQuestions = quiz.questions
+        var rawQuestions: [Question]
+        if redoWrongOnly, let prog = project.progressMap[quiz.id], !prog.wrongQuestionIds.isEmpty {
+            rawQuestions = quiz.questions.filter { prog.wrongQuestionIds.contains($0.id) }
+        } else {
+            rawQuestions = quiz.questions
+        }
+        
+        if storage.settings.isShuffleEnabled {
+            rawQuestions = rawQuestions.shuffled().map { $0.shuffledWithRelabeledOptions() }
+        }
+        activeQuestions = rawQuestions
         
         // Restore checkpoint progress if exists!
         if let prog = project.progressMap[quiz.id] {

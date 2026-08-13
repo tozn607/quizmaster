@@ -21,6 +21,7 @@ public struct FlashcardView: View {
     @State private var needReviewIds: Set<String> = []
     @State private var isCompleted: Bool = false
     @State private var showNavPane: Bool = true
+    @State private var showReviewView: Bool = false
     
     @State private var eventMonitor: Any? = nil
     
@@ -214,6 +215,9 @@ public struct FlashcardView: View {
                 .background(.thinMaterial)
             }
         }
+        .sheet(isPresented: $showReviewView) {
+            ReviewView(quiz: quiz, questions: allQuestions, userAnswers: [:], wrongIds: needReviewIds)
+        }
         .onAppear {
             setupFlashcards()
             setupKeyboardMonitor()
@@ -250,22 +254,28 @@ public struct FlashcardView: View {
     }
     
     private func setupFlashcards() {
-        allQuestions = quiz.questions
-        cardQueue = quiz.questions
-        historyStack.removeAll()
+        var rawQuestions = quiz.questions
+        if storage.settings.isShuffleEnabled {
+            rawQuestions = rawQuestions.shuffled().map { $0.shuffledWithRelabeledOptions() }
+        }
+        allQuestions = rawQuestions
+        cardQueue = allQuestions
         masteredIds.removeAll()
         needReviewIds.removeAll()
+        historyStack.removeAll()
         studyRound = 1
         isCompleted = false
-        currentCard = cardQueue.first
+        
         if !cardQueue.isEmpty {
-            cardQueue.removeFirst()
+            currentCard = cardQueue.removeFirst()
+        } else {
+            currentCard = nil
         }
     }
     
     private func jumpToCard(question: Question) {
-        if let card = currentCard {
-            historyStack.append(card)
+        if let curr = currentCard {
+            historyStack.append(curr)
         }
         currentCard = question
         cardQueue.removeAll(where: { $0.id == question.id })
@@ -298,39 +308,81 @@ public struct FlashcardView: View {
         if !cardQueue.isEmpty {
             currentCard = cardQueue.removeFirst()
         } else {
-            if needReviewIds.isEmpty {
-                isCompleted = true
-                currentCard = nil
-            } else {
-                studyRound += 1
-                cardQueue = allQuestions.filter { needReviewIds.contains($0.id) }
-                if storage.settings.isShuffleEnabled {
-                    cardQueue.shuffle()
-                }
-                currentCard = cardQueue.removeFirst()
-            }
+            isCompleted = true
+            currentCard = nil
         }
     }
     
     private var completionView: some View {
         GlassCard {
             VStack(spacing: 20 * fontScale) {
-                Image(systemName: "checkmark.seal.fill")
-                    .font(.system(size: 64 * fontScale))
-                    .foregroundColor(.green)
+                Image(systemName: needReviewIds.isEmpty ? "checkmark.seal.fill" : "exclamationmark.triangle.fill")
+                    .font(.system(size: 56 * fontScale))
+                    .foregroundColor(needReviewIds.isEmpty ? LiquidGlassPalette.emeraldMint : LiquidGlassPalette.sunsetOrange)
                 
-                Text(loc.text("roundCompleted"))
-                    .font(.system(size: 24 * fontScale, weight: .bold))
+                VStack(spacing: 6 * fontScale) {
+                    Text(loc.text("roundCompleted"))
+                        .font(.system(size: 22 * fontScale, weight: .bold))
+                    
+                    if needReviewIds.isEmpty {
+                        Text("Chúc mừng! Bạn đã ghi nhớ 100% (\(allQuestions.count)/\(allQuestions.count) câu hỏi) trong bộ đề thi!")
+                            .font(.system(size: 14 * fontScale))
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    } else {
+                        Text("Kết thúc Vòng \(studyRound): Thuộc \(masteredIds.count)/\(allQuestions.count) thẻ. Còn lại \(needReviewIds.count) thẻ chưa thuộc.")
+                            .font(.system(size: 14 * fontScale))
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                }
                 
-                Text("Bạn đã ghi nhớ toàn bộ \(allQuestions.count) câu hỏi trong bộ đề!")
-                    .font(.system(size: 15 * fontScale))
+                VStack(spacing: 12 * fontScale) {
+                    if !needReviewIds.isEmpty {
+                        PrimaryButton(
+                            title: "Tiếp tục học Vòng \(studyRound + 1) (\(needReviewIds.count) thẻ chưa thuộc)",
+                            icon: "arrow.right.circle.fill",
+                            color: LiquidGlassPalette.sunsetOrange
+                        ) {
+                            studyRound += 1
+                            var nextQueue = allQuestions.filter { needReviewIds.contains($0.id) }
+                            if storage.settings.isShuffleEnabled {
+                                nextQueue.shuffle()
+                            }
+                            cardQueue = nextQueue
+                            isCompleted = false
+                            if !cardQueue.isEmpty {
+                                currentCard = cardQueue.removeFirst()
+                            }
+                        }
+                    }
+                    
+                    PrimaryButton(
+                        title: loc.text("studyAgain"),
+                        icon: "arrow.clockwise",
+                        color: LiquidGlassPalette.oceanBlue
+                    ) {
+                        setupFlashcards()
+                    }
+                    
+                    SecondaryButton(
+                        title: loc.text("btnReviewWithAnswers"),
+                        icon: "doc.text.magnifyingglass"
+                    ) {
+                        showReviewView = true
+                    }
+                    
+                    Button(loc.text("backToDashboard")) {
+                        dismiss()
+                    }
+                    .buttonStyle(.plain)
                     .foregroundColor(.secondary)
-                
-                PrimaryButton(title: loc.text("studyAgain"), icon: "arrow.clockwise", color: .accentColor) {
-                    setupFlashcards()
+                    .font(.system(size: 13 * fontScale))
+                    .padding(.top, 4)
                 }
             }
-            .padding(32 * fontScale)
+            .padding(28 * fontScale)
+            .frame(width: 460 * fontScale)
         }
     }
     

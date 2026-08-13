@@ -126,7 +126,10 @@ public class LocalizationManager: ObservableObject {
         "moveQuizTitle": "Chuyển Bộ đề thi",
         "selectTargetProject": "Chọn Dự án đích muốn chuyển bộ đề tới:",
         "confirmMove": "Xác nhận Chuyển",
-        "noOtherProjectsMsg": "Chưa có dự án nào khác. Hãy tạo một dự án mới ở Sidebar trước khi chuyển."
+        "noOtherProjectsMsg": "Chưa có dự án nào khác. Hãy tạo một dự án mới ở Sidebar trước khi chuyển.",
+        "roundCompleted": "Hoàn thành Vòng Học Thẻ ghi nhớ!",
+        "studyAgain": "Học lại từ đầu (Tất cả các thẻ)",
+        "continueNextRound": "Tiếp tục học Vòng tiếp theo"
     ]
     
     private let enDictionary: [String: String] = [
@@ -236,7 +239,10 @@ public class LocalizationManager: ObservableObject {
         "moveQuizTitle": "Move Quiz Set",
         "selectTargetProject": "Select target project to move quiz to:",
         "confirmMove": "Confirm Move",
-        "noOtherProjectsMsg": "No other projects available. Create a new project in the sidebar first."
+        "noOtherProjectsMsg": "No other projects available. Create a new project in the sidebar first.",
+        "roundCompleted": "Flashcard Round Completed!",
+        "studyAgain": "Study All Cards Again",
+        "continueNextRound": "Continue to Next Round"
     ]
     
     public init() {}

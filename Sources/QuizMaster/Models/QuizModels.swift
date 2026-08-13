@@ -62,7 +62,7 @@ public enum QuestionDepthMode: String, CaseIterable, Identifiable, Codable {
 }
 
 public struct AppVersionInfo {
-    public static let currentVersion = "v1.0.3"
+    public static let currentVersion = "v1.1.1"
     
     public static var buildNumber: String {
         if let path = Bundle.main.path(forResource: "build_number", ofType: "txt"),
@@ -165,6 +165,21 @@ public struct Question: Identifiable, Codable, Equatable, Hashable {
     public var correctAnswerText: String {
         guard correctAnswerIndex >= 0 && correctAnswerIndex < options.count else { return "" }
         return options[correctAnswerIndex].text
+    }
+    
+    public func shuffledWithRelabeledOptions() -> Question {
+        guard options.count > 1 else { return self }
+        let correctOpt = options[correctAnswerIndex]
+        let shuffledOpts = options.shuffled()
+        let newIndex = shuffledOpts.firstIndex(where: { $0.id == correctOpt.id }) ?? 0
+        let relabeled = shuffledOpts.enumerated().map { idx, opt in
+            let label = String(UnicodeScalar(65 + idx)!)
+            return QuestionOption(id: opt.id, label: label, text: opt.text)
+        }
+        var copy = self
+        copy.options = relabeled
+        copy.correctAnswerIndex = newIndex
+        return copy
     }
 }
 
