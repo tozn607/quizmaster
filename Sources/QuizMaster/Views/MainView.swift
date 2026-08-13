@@ -3,6 +3,7 @@ import SwiftUI
 public struct MainView: View {
     @EnvironmentObject var storage: StorageManager
     @EnvironmentObject var loc: LocalizationManager
+    @Environment(\.appFontScale) var fontScale
     @ObservedObject var updateChecker = UpdateChecker.shared
     
     @State private var selectedProject: StudyProject?

@@ -6,6 +6,7 @@ public struct SidebarView: View {
     
     @EnvironmentObject var storage: StorageManager
     @EnvironmentObject var loc: LocalizationManager
+    @Environment(\.appFontScale) var fontScale
     
     @State private var showNewProjectSheet: Bool = false
     @State private var newProjectName: String = ""

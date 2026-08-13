@@ -1,7 +1,7 @@
 {
   "version": "1.2.2",
-  "buildNumber": 158,
-  "releaseTag": "v1.2.2-b158",
-  "buildDate": "2026-08-13T10:16:20Z",
-  "releaseNotes": "QuizMaster v1.2.2 (Build 158):\n- Togglable Exam Timer (15m, 45m, Pomodoro 25m, Custom minutes with number input fix)\n- Time-of-day emoji badge & cheeky greetings on top of Sidebar project list\n- Document length processing time warning callout banner in Document Import\n- Coherent equal button sizing for Shuffle and Multi-Select buttons across all window sizes\n- Permanent GitHub Release direct download URL support"
+  "buildNumber": 159,
+  "releaseTag": "v1.2.2-b159",
+  "buildDate": "2026-08-13T10:20:55Z",
+  "releaseNotes": "QuizMaster v1.2.2 (Build 159):\n- Togglable Exam Timer (15m, 45m, Pomodoro 25m, Custom minutes with number input fix)\n- Time-of-day emoji badge & cheeky greetings on top of Sidebar project list\n- Document length processing time warning callout banner in Document Import\n- Coherent equal button sizing for Shuffle and Multi-Select buttons across all window sizes\n- Permanent GitHub Release direct download URL support"
 }
