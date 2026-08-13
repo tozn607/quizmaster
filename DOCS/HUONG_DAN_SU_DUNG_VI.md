@@ -19,7 +19,7 @@ Dành cho phiên bản: **v1.1.0**
 6. Tùy chỉnh Cỡ chữ (Nhỏ, Vừa, Lớn, Rất lớn), Chủ đề giao diện (Sáng / Tối / Tự động) và Ngôn ngữ ứng dụng (Tiếng Việt / English).
    - *💡 Lưu ý: Thay đổi ngôn ngữ ứng dụng sang Tiếng Anh cũng sẽ tự động yêu cầu Gemini AI sinh câu hỏi, đáp án và giải thích bằng Tiếng Anh.*
 
-### 🛡️ Hướng dẫn Khắc phục Lỗi Gatekeeper & Cho phép Mở ứng dụng từ "Mọi nơi" (Anywhere):
+### 🛡️ Hướng dẫn Khắc phục Lỗi Gatekeeper & Cho phép Mở ứng dụng từ Mọi nơi (Anywhere):
 
 Khi mở **QuizMaster.app** lần đầu trên macOS, nếu gặp thông báo lỗi *“QuizMaster.app bị hỏng và không thể mở”* hoặc *“Ứng dụng không thể mở vì không xác minh được nhà phát triển”*, bạn hãy thực hiện theo các bước sau:
 
