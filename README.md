@@ -15,7 +15,8 @@
 ---
 
 ### Tải ứng dụng ngay:
-
+Bấm vào nút bên dưới 👇   
+  
 [![](https://img.shields.io/badge/Tải_trực_tiếp_QuizMaster.zip-Bản_Mới_Nhất-blue?style=for-the-badge&logo=apple)](https://github.com/tozn607/quizmaster/releases/latest/download/QuizMaster.zip)
 
 > **Khắc phục lỗi mở ứng dụng lần đầu (Gatekeeper)**:  
