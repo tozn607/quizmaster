@@ -1,7 +1,7 @@
 {
-  "version": "1.3.0",
-  "buildNumber": 177,
-  "releaseTag": "v1.3.0-b177",
-  "buildDate": "2026-08-14T05:45:06Z",
-  "releaseNotes": "QuizMaster v1.3.0:\n- Hỗ trợ chuyên sâu cho môn Ngoại ngữ với các dạng bài đọc hiểu, trắc nghiệm từ vựng, ngữ pháp và phát âm\n- Tách biệt hoàn toàn dự án Ôn tập chung và Ngoại ngữ\n- Chế độ thẻ ghi nhớ từ vựng tự động trích xuất từ đề thi kèm phiên âm IPA, nghĩa tiếng Việt và câu ví dụ minh họa\n- Giao diện bài thi thông minh hiển thị bài đọc bên trái và khóa phần thi khi chuyển tiếp"
+  "version": "2.0.0",
+  "buildNumber": 178,
+  "releaseTag": "v2.0.0-b178",
+  "buildDate": "2026-08-14T05:47:30Z",
+  "releaseNotes": "QuizMaster v2.0.0:\n- Kiến trúc cửa sổ độc lập, tự do thay đổi kích thước\n- Thuật toán xáo trộn câu hỏi và đáp án chuẩn xác\n- Tối ưu hệ thống phím tắt và trải nghiệm ôn tập\n- Thử nghiệm Chế độ Học Ngoại ngữ (WIP)"
 }

@@ -23,29 +23,36 @@ echo "🔢 Building QuizMaster v${VERSION} (Build ${BUILD_NUMBER})...."
 # Create build_info.json in source repository
 cat <<EOF > "build_info.json"
 {
-  "version": "1.3.0",
+  "version": "${VERSION}",
   "buildNumber": ${BUILD_NUMBER},
-  "releaseTag": "v1.3.0-b${BUILD_NUMBER}",
+  "releaseTag": "v${VERSION}-b${BUILD_NUMBER}",
   "buildDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "releaseNotes": "QuizMaster v1.3.0:\n- Hỗ trợ chuyên sâu cho môn Ngoại ngữ với các dạng bài đọc hiểu, trắc nghiệm từ vựng, ngữ pháp và phát âm\n- Tách biệt hoàn toàn dự án Ôn tập chung và Ngoại ngữ\n- Chế độ thẻ ghi nhớ từ vựng tự động trích xuất từ đề thi kèm phiên âm IPA, nghĩa tiếng Việt và câu ví dụ minh họa\n- Giao diện bài thi thông minh hiển thị bài đọc bên trái và khóa phần thi khi chuyển tiếp"
+  "releaseNotes": "QuizMaster v${VERSION}:\n- Kiến trúc cửa sổ độc lập, tự do thay đổi kích thước\n- Thuật toán xáo trộn câu hỏi và đáp án chuẩn xác\n- Tối ưu hệ thống phím tắt và trải nghiệm ôn tập\n- Thử nghiệm Chế độ Học Ngoại ngữ (WIP)"
 }
 EOF
 
 # Create release_notes.txt
-cat <<'EOF' > "release_notes.txt"
-# QuizMaster v1.3.0 - Bản cập nhật Học & Thi Ngoại ngữ
+cat <<EOF > "release_notes.txt"
+# QuizMaster v${VERSION} - Bản phát hành Thế hệ Mới (Major Update)
 
-### Các điểm mới trong phiên bản 1.3.0:
-- **Hỗ trợ chuyên biệt cho đề thi Ngoại ngữ**:
-  - Nhập và xử lý hoàn chỉnh các đề thi tiếng Anh (như đề thi tốt nghiệp THPT, đề luyện thi chứng chỉ) bao gồm bài đọc hiểu, điền từ, bài tập ngữ pháp và ngữ âm.
-- **Phân loại dự án độc lập**:
-  - Cho phép tạo dự án chuyên môn 'Học & Thi Ngoại ngữ' riêng biệt với dự án thông thường, đảm bảo quản lý bộ đề trực quan và không bị nhầm lẫn.
-- **Thẻ ghi nhớ từ vựng theo khung CEFR**:
-  - Chế độ Flashcard cho đề thi ngoại ngữ tự động tổng hợp danh sách từ vựng theo khung tham chiếu CEFR. Mặt trước hiển thị từ kèm loại từ và phiên âm quốc tế IPA; mặt sau hiển thị nghĩa tiếng Việt chuẩn cùng câu văn ví dụ có từ vựng được làm nổi bật.
-- **Trải nghiệm làm bài đọc hiểu tiện lợi**:
-  - Chế độ Luyện tập và Thi thử tự động tách khung bài đọc ở cột bên trái với cỡ chữ tối ưu, giúp theo dõi nội dung bài luận song song cùng câu hỏi và đáp án bên phải.
-- **Bộ đếm thời gian và quy chế chuyển phần thi**:
-  - Thi thử yêu cầu thiết lập đồng hồ đếm ngược trước khi bắt đầu và có thông báo xác nhận khi chuyển sang kỹ năng tiếp theo.
+Bản cập nhật lớn v${VERSION} mang đến nhiều cải tiến vượt bậc về độ ổn định, giao diện và các chế độ học tập chuyên biệt:
+
+### 1. Kiến trúc Cửa sổ Độc lập và Tối ưu Hiển thị
+- Mọi chế độ học tập (Luyện tập, Thi thử, Thẻ ghi nhớ và Trình chỉnh sửa đề thi) được mở trong các cửa sổ macOS độc lập, tự do thay đổi kích thước và tự động ghi nhớ không gian làm việc.
+- Đồng nhất thiết kế bo góc, phông chữ và dải màu kính lỏng hiện đại trên toàn ứng dụng.
+
+### 2. Thuật toán Xáo trộn Câu hỏi và Đáp án Chuẩn xác
+- Tái cấu trúc cơ chế lưu trữ kết quả và tiến độ học theo định danh câu hỏi, khắc phục triệt để hiện tượng lệch đáp án khi bật tắt chế độ xáo trộn trước, trong hoặc sau khi làm bài.
+
+### 3. Tối ưu Hệ thống Phím tắt và Trải nghiệm
+- Nhận diện nhạy bén toàn bộ các phím số, phím chữ cái, phím xóa và phím chuyển câu trong suốt quá trình làm bài.
+- Bổ sung hộp thoại xác nhận an toàn khi xóa bộ đề thi.
+
+### 4. Thử nghiệm Chế độ Học Ngoại ngữ (Bản thử nghiệm WIP)
+- Bổ sung phân loại Dự án Học Ngoại ngữ dành riêng cho các đề thi tiếng Anh (như đề thi THPT, chứng chỉ quốc tế).
+- Tách biệt khung đọc bài hiểu ở cột bên trái với thanh tùy chỉnh kiểu chữ, màu nền giấy và giãn cách dòng.
+- Tự động trích xuất bộ thẻ ghi nhớ từ vựng theo khung trình độ CEFR kèm phiên âm quốc tế và câu ví dụ minh họa.
+- Lưu ý: Chế độ Học Ngoại ngữ đang trong giai đoạn hoàn thiện và tối ưu hóa xử lý văn bản chuyên sâu. Người dùng có thể trải nghiệm thử nghiệm ngay trong phiên bản này.
 EOF
 
 echo "🎨 Generating AppIcon..."
