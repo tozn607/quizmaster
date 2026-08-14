@@ -15,6 +15,10 @@ public struct EndingView: View {
         let totalQuestions = quiz.questions.count
         let correctFirstTry = progress.userAnswers.filter { qId, ansIdx in
             if let q = quiz.questions.first(where: { $0.id == qId }) {
+                let correctOptId = (q.correctAnswerIndex >= 0 && q.correctAnswerIndex < q.options.count) ? q.options[q.correctAnswerIndex].id : ""
+                if let chosenOptId = progress.userSelectedOptionIds[qId] {
+                    return chosenOptId == correctOptId
+                }
                 return q.correctAnswerIndex == ansIdx
             }
             return false
@@ -99,7 +103,7 @@ public struct EndingView: View {
         }
         .frame(width: 540 * fontScale, height: 600 * fontScale)
         .sheet(isPresented: $showReviewSheet) {
-            ReviewView(quiz: quiz, questions: quiz.questions, userAnswers: progress.userAnswers, wrongIds: progress.wrongQuestionIds)
+            ReviewView(quiz: quiz, questions: quiz.questions, userAnswers: progress.userAnswers, userSelectedOptionIds: progress.userSelectedOptionIds, wrongIds: progress.wrongQuestionIds)
         }
     }
     

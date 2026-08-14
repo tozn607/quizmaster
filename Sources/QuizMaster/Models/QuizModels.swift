@@ -61,15 +61,135 @@ public enum QuestionDepthMode: String, CaseIterable, Identifiable, Codable {
     }
 }
 
+public enum ProjectType: String, CaseIterable, Identifiable, Codable {
+    case general = "general"
+    case languageLearning = "languageLearning"
+    
+    public var id: String { rawValue }
+    
+    public var displayName: String {
+        switch self {
+        case .general: return "Dự án Ôn tập Chung"
+        case .languageLearning: return "Dự án Học Ngoại ngữ"
+        }
+    }
+    
+    public var iconName: String {
+        switch self {
+        case .general: return "folder.fill"
+        case .languageLearning: return "character.book.closed.fill"
+        }
+    }
+}
+
+public enum QuizType: String, CaseIterable, Identifiable, Codable {
+    case general = "general"
+    case languageLearning = "languageLearning"
+    
+    public var id: String { rawValue }
+}
+
+public enum CEFRLevel: String, CaseIterable, Identifiable, Codable {
+    case all = "ALL"
+    case a1 = "A1"
+    case a2 = "A2"
+    case b1 = "B1"
+    case b2 = "B2"
+    case c1 = "C1"
+    case c2 = "C2"
+    
+    public var id: String { rawValue }
+    
+    public var displayName: String {
+        switch self {
+        case .all: return "Tất cả trình độ (A1 - C2)"
+        case .a1: return "A1 - Căn bản (Beginner)"
+        case .a2: return "A2 - Sơ cấp (Elementary)"
+        case .b1: return "B1 - Trung cấp (Intermediate)"
+        case .b2: return "B2 - Trung cấp trên (Upper Intermediate)"
+        case .c1: return "C1 - Cao cấp (Advanced)"
+        case .c2: return "C2 - Thành thạo (Proficiency)"
+        }
+    }
+    
+    public var badgeLabel: String {
+        switch self {
+        case .all: return "CEFR All"
+        default: return "CEFR \(rawValue)"
+        }
+    }
+}
+
+public enum LanguageSkill: String, CaseIterable, Identifiable, Codable {
+    case reading = "reading"
+    case listening = "listening"
+    case lexical = "lexical" // Grammar, Vocabulary, Pronunciation, Stress
+    case general = "general"
+    
+    public var id: String { rawValue }
+    
+    public var displayName: String {
+        switch self {
+        case .reading: return "Đọc hiểu (Reading)"
+        case .listening: return "Nghe hiểu (Listening)"
+        case .lexical: return "Ngữ pháp & Từ vựng (Lexical)"
+        case .general: return "Tổng hợp"
+        }
+    }
+    
+    public var iconName: String {
+        switch self {
+        case .reading: return "book.closed.fill"
+        case .listening: return "headphones"
+        case .lexical: return "character.cursor.ibeam"
+        case .general: return "pencil.and.outline"
+        }
+    }
+}
+
+public struct VocabularyCard: Identifiable, Codable, Equatable, Hashable {
+    public var id: String
+    public var word: String
+    public var wordType: String // e.g. "n", "v", "adj", "adv", "idiom", "phr v"
+    public var phonetic: String // IPA pronunciation e.g. "/ˈæp.əl/"
+    public var vietnameseMeaning: String
+    public var exampleSentence: String // sentence with target word in bold: **word**
+    public var cefrLevel: CEFRLevel
+    
+    public init(
+        id: String = UUID().uuidString,
+        word: String,
+        wordType: String = "",
+        phonetic: String = "",
+        vietnameseMeaning: String,
+        exampleSentence: String = "",
+        cefrLevel: CEFRLevel = .b1
+    ) {
+        self.id = id
+        self.word = word
+        self.wordType = wordType
+        self.phonetic = phonetic
+        self.vietnameseMeaning = vietnameseMeaning
+        self.exampleSentence = exampleSentence
+        self.cefrLevel = cefrLevel
+    }
+    
+    public var frontText: String {
+        let typeFormatted = wordType.isEmpty ? "" : " (\(wordType))"
+        let ipaFormatted = phonetic.isEmpty ? "" : " \(phonetic)"
+        return "\(word)\(typeFormatted)\(ipaFormatted)"
+    }
+}
+
 public struct AppVersionInfo {
-    public static let currentVersion = "v1.2.3"
+    public static let currentVersion = "v2.0.0"
     
     public static var buildNumber: String {
         if let path = Bundle.main.path(forResource: "build_number", ofType: "txt"),
            let str = try? String(contentsOfFile: path, encoding: .utf8) {
             return str.trimmingCharacters(in: .whitespacesAndNewlines)
         }
-        return "101"
+        return "174"
     }
 }
 
@@ -152,12 +272,32 @@ public struct Question: Identifiable, Codable, Equatable, Hashable {
     public var correctAnswerIndex: Int
     public var explanation: String
     
-    public init(id: String = UUID().uuidString, text: String, options: [QuestionOption], correctAnswerIndex: Int, explanation: String = "") {
+    // Language Learning Attributes
+    public var skill: LanguageSkill?
+    public var readingPassage: String?
+    public var subTopic: String? // e.g. "Phát âm", "Trọng âm", "Điền từ", "Đọc hiểu", "Tìm lỗi sai"
+    public var sectionIndex: Int? // 0, 1, 2 for section sequencing
+    
+    public init(
+        id: String = UUID().uuidString,
+        text: String,
+        options: [QuestionOption],
+        correctAnswerIndex: Int,
+        explanation: String = "",
+        skill: LanguageSkill? = nil,
+        readingPassage: String? = nil,
+        subTopic: String? = nil,
+        sectionIndex: Int? = nil
+    ) {
         self.id = id
         self.text = text
         self.options = options
         self.correctAnswerIndex = correctAnswerIndex
         self.explanation = explanation
+        self.skill = skill
+        self.readingPassage = readingPassage
+        self.subTopic = subTopic
+        self.sectionIndex = sectionIndex
     }
     
     public var correctAnswerLabel: String {
@@ -193,14 +333,44 @@ public struct Quiz: Identifiable, Codable, Equatable, Hashable {
     public var questions: [Question]
     public var createdAt: Date
     public var isPreMade: Bool
+    public var quizType: QuizType
+    public var targetCEFR: CEFRLevel?
+    public var vocabularies: [VocabularyCard]
+    public var durationMinutes: Int?
     
-    public init(id: String = UUID().uuidString, title: String, description: String = "", questions: [Question], createdAt: Date = Date(), isPreMade: Bool = false) {
+    public init(
+        id: String = UUID().uuidString,
+        title: String,
+        description: String = "",
+        questions: [Question],
+        createdAt: Date = Date(),
+        isPreMade: Bool = false,
+        quizType: QuizType = .general,
+        targetCEFR: CEFRLevel? = nil,
+        vocabularies: [VocabularyCard] = [],
+        durationMinutes: Int? = nil
+    ) {
         self.id = id
         self.title = title
         self.description = description
         self.questions = questions
         self.createdAt = createdAt
         self.isPreMade = isPreMade
+        self.quizType = quizType
+        self.targetCEFR = targetCEFR
+        self.vocabularies = vocabularies
+        self.durationMinutes = durationMinutes
+    }
+    
+    /// Sections grouping based on language skills or sectionIndex
+    public var detectedSkills: [LanguageSkill] {
+        var skills: [LanguageSkill] = []
+        for q in questions {
+            if let sk = q.skill, !skills.contains(sk) {
+                skills.append(sk)
+            }
+        }
+        return skills.isEmpty ? [.general] : skills
     }
 }
 
@@ -208,36 +378,58 @@ public struct QuizProgress: Identifiable, Codable, Equatable, Hashable {
     public var id: String
     public var quizId: String
     public var currentIndex: Int
-    public var userAnswers: [String: Int]
+    public var userAnswers: [String: Int] // Kept for legacy integer index compatibility
+    public var userSelectedOptionIds: [String: String] // questionId -> chosen Option ID (Rock-solid across all shuffles!)
     public var wrongQuestionIds: Set<String>
     public var flashcardMasteredIds: Set<String>
     public var isCompleted: Bool
     public var startTime: Date
     public var endTime: Date?
     public var shuffledQuestions: [Question]?
+    public var completedSectionIndices: Set<Int>
     
     public init(
         id: String = UUID().uuidString,
         quizId: String,
         currentIndex: Int = 0,
         userAnswers: [String: Int] = [:],
+        userSelectedOptionIds: [String: String] = [:],
         wrongQuestionIds: Set<String> = [],
         flashcardMasteredIds: Set<String> = [],
         isCompleted: Bool = false,
         startTime: Date = Date(),
         endTime: Date? = nil,
-        shuffledQuestions: [Question]? = nil
+        shuffledQuestions: [Question]? = nil,
+        completedSectionIndices: Set<Int> = []
     ) {
         self.id = id
         self.quizId = quizId
         self.currentIndex = currentIndex
         self.userAnswers = userAnswers
+        self.userSelectedOptionIds = userSelectedOptionIds
         self.wrongQuestionIds = wrongQuestionIds
         self.flashcardMasteredIds = flashcardMasteredIds
         self.isCompleted = isCompleted
         self.startTime = startTime
         self.endTime = endTime
         self.shuffledQuestions = shuffledQuestions
+        self.completedSectionIndices = completedSectionIndices
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.quizId = try container.decode(String.self, forKey: .quizId)
+        self.currentIndex = try container.decodeIfPresent(Int.self, forKey: .currentIndex) ?? 0
+        self.userAnswers = try container.decodeIfPresent([String: Int].self, forKey: .userAnswers) ?? [:]
+        self.userSelectedOptionIds = try container.decodeIfPresent([String: String].self, forKey: .userSelectedOptionIds) ?? [:]
+        self.wrongQuestionIds = try container.decodeIfPresent(Set<String>.self, forKey: .wrongQuestionIds) ?? []
+        self.flashcardMasteredIds = try container.decodeIfPresent(Set<String>.self, forKey: .flashcardMasteredIds) ?? []
+        self.isCompleted = try container.decodeIfPresent(Bool.self, forKey: .isCompleted) ?? false
+        self.startTime = try container.decodeIfPresent(Date.self, forKey: .startTime) ?? Date()
+        self.endTime = try container.decodeIfPresent(Date.self, forKey: .endTime)
+        self.shuffledQuestions = try container.decodeIfPresent([Question].self, forKey: .shuffledQuestions)
+        self.completedSectionIndices = try container.decodeIfPresent(Set<Int>.self, forKey: .completedSectionIndices) ?? []
     }
 }
 
@@ -245,15 +437,26 @@ public struct StudyProject: Identifiable, Codable, Equatable, Hashable {
     public var id: String
     public var name: String
     public var description: String
+    public var projectType: ProjectType
     public var quizzes: [Quiz]
     public var progressMap: [String: QuizProgress]
     public var createdAt: Date
     public var lastStudiedAt: Date?
     
-    public init(id: String = UUID().uuidString, name: String, description: String = "", quizzes: [Quiz] = [], progressMap: [String: QuizProgress] = [:], createdAt: Date = Date(), lastStudiedAt: Date? = nil) {
+    public init(
+        id: String = UUID().uuidString,
+        name: String,
+        description: String = "",
+        projectType: ProjectType = .general,
+        quizzes: [Quiz] = [],
+        progressMap: [String: QuizProgress] = [:],
+        createdAt: Date = Date(),
+        lastStudiedAt: Date? = nil
+    ) {
         self.id = id
         self.name = name
         self.description = description
+        self.projectType = projectType
         self.quizzes = quizzes
         self.progressMap = progressMap
         self.createdAt = createdAt

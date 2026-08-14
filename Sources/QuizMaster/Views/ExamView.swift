@@ -15,17 +15,40 @@ public struct ExamView: View {
     @State private var activeQuestions: [Question] = []
     @State private var currentIndex: Int = 0
     @State private var userAnswers: [String: Int] = [:] // questionId -> selectedOptionIndex
+    @State private var userSelectedOptionIds: [String: String] = [:] // questionId -> chosen Option ID
     @State private var showEndingView: Bool = false
     @State private var showNavPane: Bool = false
     @State private var askingGeminiQuestion: Question? = nil
     @State private var eventMonitor: Any? = nil
     
-    @State private var isTimerEnabled: Bool = false
+    @State private var isTimerConfigured: Bool = false
+    @State private var showMandatoryTimerDialog: Bool = false
     @State private var timeRemainingSeconds: Int = 1800 // default 30 mins
     @State private var isTimeUp: Bool = false
     @State private var showCustomTimerSheet: Bool = false
-    @State private var customTimerInputMinutes: String = "20"
+    @State private var customTimerInputMinutes: String = "45"
     @State private var timerPublisher = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
+    // Section Locking Confirmation
+    @State private var showSectionChangeAlert: Bool = false
+    @State private var pendingTargetIndex: Int? = nil
+    @State private var completedSections: Set<LanguageSkill> = []
+    
+    private var hasLanguageSkills: Bool {
+        activeQuestions.contains(where: { $0.skill != nil })
+    }
+    
+    private var groupedSkills: [LanguageSkill] {
+        var seen = Set<LanguageSkill>()
+        var result: [LanguageSkill] = []
+        for q in activeQuestions {
+            if let skill = q.skill, !seen.contains(skill) {
+                seen.insert(skill)
+                result.append(skill)
+            }
+        }
+        return result
+    }
     
     public var body: some View {
         LiquidGlassWindowBackdrop {
@@ -47,7 +70,6 @@ public struct ExamView: View {
                     VStack(spacing: 2) {
                         Text("\(quiz.title) • Thi thử")
                             .font(.system(size: 16 * fontScale, weight: .bold))
-
                         
                         if !activeQuestions.isEmpty {
                             Text(String(format: loc.text("progressFormat"), "\(currentIndex + 1)", "\(activeQuestions.count)"))
@@ -58,35 +80,20 @@ public struct ExamView: View {
                     
                     Spacer()
                     
-                    // Togglable Exam Timer Control Menu
-                    Menu {
-                        Button(loc.text("timer15m")) { setTimerDuration(minutes: 15) }
-                        Button(loc.text("timer45m")) { setTimerDuration(minutes: 45) }
-                        Button(loc.text("timerPomodoro")) { setTimerDuration(minutes: 25) }
-                        Button(loc.text("timerCustom")) { showCustomTimerSheet = true }
-                    } label: {
-                        HStack(spacing: 4 * fontScale) {
-                            Image(systemName: isTimerEnabled ? "timer.circle.fill" : "timer")
-                                .font(.system(size: 14 * fontScale))
-                                .foregroundColor(isTimerEnabled ? (timeRemainingSeconds <= 300 ? LiquidGlassPalette.coralRed : LiquidGlassPalette.sunsetOrange) : .secondary)
-                            
-                            if isTimerEnabled {
-                                Text(formattedTimeString)
-                                    .font(.system(size: 13 * fontScale, weight: .bold))
-                                    .foregroundColor(timeRemainingSeconds <= 300 ? LiquidGlassPalette.coralRed : LiquidGlassPalette.sunsetOrange)
-                            } else {
-                                Text(loc.text("examTimerLabel"))
-                                    .font(.system(size: 12 * fontScale, weight: .medium))
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                        .padding(.horizontal, 8 * fontScale)
-                        .padding(.vertical, 4 * fontScale)
-                        .background(isTimerEnabled ? (timeRemainingSeconds <= 300 ? LiquidGlassPalette.coralRed.opacity(0.12) : LiquidGlassPalette.sunsetOrange.opacity(0.12)) : Color.clear)
-                        .cornerRadius(6)
+                    // Exam Timer Display
+                    HStack(spacing: 4 * fontScale) {
+                        Image(systemName: "timer.circle.fill")
+                            .font(.system(size: 14 * fontScale))
+                            .foregroundColor(timeRemainingSeconds <= 300 ? LiquidGlassPalette.coralRed : LiquidGlassPalette.sunsetOrange)
+                        
+                        Text(formattedTimeString)
+                            .font(.system(size: 13 * fontScale, weight: .bold))
+                            .foregroundColor(timeRemainingSeconds <= 300 ? LiquidGlassPalette.coralRed : LiquidGlassPalette.sunsetOrange)
                     }
-                    .menuStyle(.borderlessButton)
-                    .help(loc.text("examTimerHelp"))
+                    .padding(.horizontal, 10 * fontScale)
+                    .padding(.vertical, 5 * fontScale)
+                    .background(timeRemainingSeconds <= 300 ? LiquidGlassPalette.coralRed.opacity(0.12) : LiquidGlassPalette.sunsetOrange.opacity(0.12))
+                    .cornerRadius(6)
                     
                     // Toggle Question Navigator Sidebar
                     Button(action: { withAnimation { showNavPane.toggle() } }) {
@@ -119,24 +126,61 @@ public struct ExamView: View {
                 
                 // Main Question & Right Navigation Split View
                 HStack(spacing: 0) {
-                    // Left Question Area
+                    // Left Reading Passage Side (for Reading questions with readingPassage)
+                    if !activeQuestions.isEmpty && currentIndex < activeQuestions.count,
+                       let passage = activeQuestions[currentIndex].readingPassage, !passage.isEmpty {
+                        ReadingPassagePane(passage: passage)
+                        
+                        Divider()
+                    }
+                    
+                    // Question Area
                     if !activeQuestions.isEmpty && currentIndex < activeQuestions.count {
                         let currentQuestion = activeQuestions[currentIndex]
                         
                         ScrollView {
                             VStack(alignment: .leading, spacing: 20 * fontScale) {
+                                // Question Card
                                 GlassCard {
                                     VStack(alignment: .leading, spacing: 10 * fontScale) {
-                                        HStack {
+                                        HStack(spacing: 8 * fontScale) {
                                             BadgeView(text: "\(loc.text("questionHeader")) \(currentIndex + 1)", color: LiquidGlassPalette.sunsetOrange)
+                                            
                                             Spacer()
                                         }
                                         
-                                        Text(currentQuestion.text)
-                                            .font(.system(size: 19 * fontScale, weight: .bold))
-                                            .lineSpacing(4)
+                                        Text(formattedMarkdownKey(currentQuestion.text))
+                                            .font(.system(size: 17 * fontScale, weight: .regular))
+                                            .lineSpacing(5)
                                     }
                                     .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                
+                                // Skill & SubTopic labels outside box and right above answer grid
+                                if currentQuestion.skill != nil || (currentQuestion.subTopic != nil && !currentQuestion.subTopic!.isEmpty) {
+                                    HStack(spacing: 12 * fontScale) {
+                                        if let skill = currentQuestion.skill {
+                                            HStack(spacing: 4 * fontScale) {
+                                                Image(systemName: "book.fill")
+                                                Text(skill.displayName.uppercased())
+                                            }
+                                            .font(.system(size: 11 * fontScale, weight: .bold))
+                                            .foregroundColor(LiquidGlassPalette.deepPurple)
+                                        }
+                                        
+                                        if let sub = currentQuestion.subTopic, !sub.isEmpty {
+                                            HStack(spacing: 4 * fontScale) {
+                                                Image(systemName: "tag.fill")
+                                                Text(sub.uppercased())
+                                            }
+                                            .font(.system(size: 11 * fontScale, weight: .bold))
+                                            .foregroundColor(LiquidGlassPalette.cyanTeal)
+                                        }
+                                        
+                                        Spacer()
+                                    }
+                                    .padding(.horizontal, 4 * fontScale)
+                                    .padding(.top, -6 * fontScale)
                                 }
                                 
                                 VStack(spacing: 12 * fontScale) {
@@ -165,15 +209,63 @@ public struct ExamView: View {
                                 .padding(.horizontal, 12 * fontScale)
                             
                             ScrollView {
-                                LazyVGrid(columns: [GridItem(.adaptive(minimum: 40 * fontScale), spacing: 8 * fontScale)], spacing: 8 * fontScale) {
-                                    ForEach(0..<activeQuestions.count, id: \.self) { idx in
-                                        navButton(index: idx, question: activeQuestions[idx])
+                                VStack(alignment: .leading, spacing: 14 * fontScale) {
+                                    if hasLanguageSkills {
+                                        ForEach(groupedSkills, id: \.self) { skill in
+                                            let skillIndices = activeQuestions.indices.filter { activeQuestions[$0].skill == skill }
+                                            if !skillIndices.isEmpty {
+                                                VStack(alignment: .leading, spacing: 6 * fontScale) {
+                                                    HStack(spacing: 4 * fontScale) {
+                                                        Image(systemName: "book.fill")
+                                                            .font(.system(size: 9 * fontScale))
+                                                        Text(skill.displayName.uppercased())
+                                                            .font(.system(size: 10 * fontScale, weight: .bold))
+                                                        
+                                                        if completedSections.contains(skill) {
+                                                            Image(systemName: "lock.fill")
+                                                                .font(.system(size: 9 * fontScale))
+                                                                .foregroundColor(.secondary)
+                                                        }
+                                                    }
+                                                    .foregroundColor(LiquidGlassPalette.deepPurple)
+                                                    
+                                                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 36 * fontScale), spacing: 6 * fontScale)], spacing: 6 * fontScale) {
+                                                        ForEach(skillIndices, id: \.self) { idx in
+                                                            navButton(index: idx, question: activeQuestions[idx])
+                                                        }
+                                                    }
+                                                }
+                                                .padding(.bottom, 6 * fontScale)
+                                            }
+                                        }
+                                        
+                                        // Non-skill questions if any
+                                        let otherIndices = activeQuestions.indices.filter { activeQuestions[$0].skill == nil }
+                                        if !otherIndices.isEmpty {
+                                            VStack(alignment: .leading, spacing: 6 * fontScale) {
+                                                Text("CÂU HỎI KHÁC")
+                                                    .font(.system(size: 10 * fontScale, weight: .bold))
+                                                    .foregroundColor(.secondary)
+                                                
+                                                LazyVGrid(columns: [GridItem(.adaptive(minimum: 36 * fontScale), spacing: 6 * fontScale)], spacing: 6 * fontScale) {
+                                                    ForEach(otherIndices, id: \.self) { idx in
+                                                        navButton(index: idx, question: activeQuestions[idx])
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 40 * fontScale), spacing: 8 * fontScale)], spacing: 8 * fontScale) {
+                                            ForEach(0..<activeQuestions.count, id: \.self) { idx in
+                                                navButton(index: idx, question: activeQuestions[idx])
+                                            }
+                                        }
                                     }
                                 }
                                 .padding(.horizontal, 12 * fontScale)
                             }
                         }
-                        .frame(width: 180 * fontScale)
+                        .frame(width: 200 * fontScale)
                         .background(.ultraThinMaterial)
                     }
                 }
@@ -184,12 +276,12 @@ public struct ExamView: View {
                 HStack {
                     HStack(spacing: 12 * fontScale) {
                         SecondaryButton(title: "Câu trước (←)", icon: "arrow.left") {
-                            if currentIndex > 0 { currentIndex -= 1 }
+                            attemptNavigate(to: currentIndex - 1)
                         }
-                        .disabled(currentIndex == 0)
+                        .disabled(currentIndex == 0 || isPreviousSectionLocked(currentIndex - 1))
                         
                         SecondaryButton(title: "Câu sau (→)", icon: "arrow.right") {
-                            if currentIndex + 1 < activeQuestions.count { currentIndex += 1 }
+                            attemptNavigate(to: currentIndex + 1)
                         }
                         .disabled(currentIndex + 1 >= activeQuestions.count)
                     }
@@ -208,64 +300,50 @@ public struct ExamView: View {
                 .background(.thinMaterial)
             }
         }
+        .sheet(isPresented: $showMandatoryTimerDialog) {
+            mandatoryTimerSheet
+        }
         .sheet(isPresented: $showEndingView) {
             if let prog = project.progressMap[quiz.id] {
                 EndingView(project: project, quiz: quiz, progress: prog)
             }
         }
-        .sheet(item: $askingGeminiQuestion) { q in
-            AskGeminiSheet(question: q)
-        }
-        .sheet(isPresented: $showCustomTimerSheet) {
-            VStack(spacing: 16 * fontScale) {
-                Text(loc.text("customTimerTitle"))
-                    .font(.system(size: 16 * fontScale, weight: .bold))
-                
-                Text(loc.text("customTimerSubtitle"))
-                    .font(.system(size: 12 * fontScale))
-                    .foregroundColor(.secondary)
-                
-                HStack {
-                    TextField("20", text: $customTimerInputMinutes)
-                        .textFieldStyle(.roundedBorder)
-                        .multilineTextAlignment(.center)
-                        .frame(width: 80)
-                    Text("phút")
-                        .font(.system(size: 13 * fontScale))
-                }
-                
-                HStack(spacing: 12 * fontScale) {
-                    SecondaryButton(title: loc.text("cancel"), icon: "xmark") {
-                        showCustomTimerSheet = false
+        .confirmationDialog(
+            loc.text("sectionLockedWarningTitle"),
+            isPresented: $showSectionChangeAlert,
+            titleVisibility: .visible
+        ) {
+            Button("Xác nhận chuyển phần thi", role: .none) {
+                if let target = pendingTargetIndex {
+                    // Lock current section
+                    if let currentSkill = activeQuestions[currentIndex].skill {
+                        completedSections.insert(currentSkill)
                     }
-                    
-                    PrimaryButton(title: loc.text("confirm"), icon: "checkmark", color: LiquidGlassPalette.sunsetOrange) {
-                        if let mins = Int(customTimerInputMinutes.trimmingCharacters(in: .whitespacesAndNewlines)), mins > 0 {
-                            setTimerDuration(minutes: mins)
-                        }
-                        showCustomTimerSheet = false
-                    }
+                    currentIndex = target
+                    pendingTargetIndex = nil
                 }
             }
-            .padding(20 * fontScale)
-            .frame(width: 320)
+            Button("Ở lại kiểm tra tiếp", role: .cancel) {
+                pendingTargetIndex = nil
+            }
+        } message: {
+            Text(loc.text("sectionLockedWarningMsg"))
         }
         .onAppear {
+            if let duration = quiz.durationMinutes, duration > 0 {
+                setTimerDuration(minutes: duration)
+                showMandatoryTimerDialog = false
+            } else {
+                showMandatoryTimerDialog = true
+            }
             setupExamQuestions()
             setupKeyboardMonitor()
         }
         .onDisappear {
             removeKeyboardMonitor()
         }
-        .onChange(of: showCustomTimerSheet) { isShowing in
-            if isShowing {
-                removeKeyboardMonitor()
-            } else {
-                setupKeyboardMonitor()
-            }
-        }
         .onReceive(timerPublisher) { _ in
-            guard isTimerEnabled && !showEndingView else { return }
+            guard isTimerConfigured && !showEndingView else { return }
             if timeRemainingSeconds > 0 {
                 timeRemainingSeconds -= 1
             } else if !isTimeUp {
@@ -273,6 +351,82 @@ public struct ExamView: View {
                 submitExam()
             }
         }
+    }
+    
+    // MARK: - Mandatory Timer Setup Sheet
+    private var mandatoryTimerSheet: some View {
+        VStack(spacing: 20 * fontScale) {
+            Image(systemName: "timer")
+                .font(.system(size: 48 * fontScale))
+                .foregroundColor(LiquidGlassPalette.sunsetOrange)
+            
+            VStack(spacing: 6 * fontScale) {
+                Text(loc.text("mandatoryTimerTitle"))
+                    .font(.system(size: 18 * fontScale, weight: .bold))
+                
+                Text(loc.text("mandatoryTimerSubtitle"))
+                    .font(.system(size: 13 * fontScale))
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            
+            VStack(spacing: 10 * fontScale) {
+                HStack(spacing: 12 * fontScale) {
+                    timerPresetButton(title: "15 phút", minutes: 15)
+                    timerPresetButton(title: "30 phút", minutes: 30)
+                    timerPresetButton(title: "45 phút", minutes: 45)
+                    timerPresetButton(title: "60 phút", minutes: 60)
+                }
+                
+                HStack {
+                    Text("Hoặc thời gian tùy chỉnh:")
+                        .font(.system(size: 12 * fontScale))
+                        .foregroundColor(.secondary)
+                    
+                    TextField("45", text: $customTimerInputMinutes)
+                        .textFieldStyle(.roundedBorder)
+                        .multilineTextAlignment(.center)
+                        .frame(width: 60 * fontScale)
+                    
+                    Text("phút")
+                        .font(.system(size: 12 * fontScale))
+                }
+                .padding(.top, 4 * fontScale)
+            }
+            
+            HStack(spacing: 16 * fontScale) {
+                SecondaryButton(title: loc.text("quitQuiz"), icon: "xmark") {
+                    showMandatoryTimerDialog = false
+                    dismiss()
+                }
+                
+                PrimaryButton(title: "Bắt đầu làm bài thi", icon: "play.fill", color: LiquidGlassPalette.sunsetOrange) {
+                    if let mins = Int(customTimerInputMinutes.trimmingCharacters(in: .whitespacesAndNewlines)), mins > 0 {
+                        setTimerDuration(minutes: mins)
+                    } else {
+                        setTimerDuration(minutes: 45)
+                    }
+                    showMandatoryTimerDialog = false
+                }
+            }
+        }
+        .padding(28 * fontScale)
+        .frame(width: 440 * fontScale)
+    }
+    
+    private func timerPresetButton(title: String, minutes: Int) -> some View {
+        Button(action: {
+            customTimerInputMinutes = "\(minutes)"
+        }) {
+            Text(title)
+                .font(.system(size: 12 * fontScale, weight: .semibold))
+                .foregroundColor(customTimerInputMinutes == "\(minutes)" ? .white : .primary)
+                .padding(.horizontal, 12 * fontScale)
+                .padding(.vertical, 8 * fontScale)
+                .background(customTimerInputMinutes == "\(minutes)" ? LiquidGlassPalette.sunsetOrange : Color.gray.opacity(0.15))
+                .cornerRadius(8)
+        }
+        .buttonStyle(.plain)
     }
     
     private var formattedTimeString: String {
@@ -283,7 +437,37 @@ public struct ExamView: View {
 
     private func setTimerDuration(minutes: Int) {
         timeRemainingSeconds = minutes * 60
-        isTimerEnabled = true
+        isTimerConfigured = true
+    }
+    
+    // MARK: - Section Locking Navigation Control
+    private func attemptNavigate(to targetIndex: Int) {
+        guard targetIndex >= 0 && targetIndex < activeQuestions.count else { return }
+        
+        let currentSkill = activeQuestions[currentIndex].skill
+        let targetSkill = activeQuestions[targetIndex].skill
+        
+        // If moving backwards to a locked section
+        if targetIndex < currentIndex, let targetSkill = targetSkill, completedSections.contains(targetSkill) {
+            return
+        }
+        
+        // If switching to a new skill/section forward
+        if targetIndex > currentIndex, let cur = currentSkill, let tgt = targetSkill, cur != tgt {
+            pendingTargetIndex = targetIndex
+            showSectionChangeAlert = true
+            return
+        }
+        
+        currentIndex = targetIndex
+    }
+    
+    private func isPreviousSectionLocked(_ index: Int) -> Bool {
+        guard index >= 0 && index < activeQuestions.count else { return false }
+        if let skill = activeQuestions[index].skill {
+            return completedSections.contains(skill)
+        }
+        return false
     }
     
     private func setupExamQuestions() {
@@ -323,14 +507,15 @@ public struct ExamView: View {
     private func navButton(index: Int, question: Question) -> some View {
         let isCurrent = index == currentIndex
         let isAnswered = userAnswers[question.id] != nil
-        let btnColor: Color = isCurrent ? LiquidGlassPalette.sunsetOrange : (isAnswered ? LiquidGlassPalette.sunsetOrange.opacity(0.7) : .gray.opacity(0.4))
+        let isLocked = isPreviousSectionLocked(index)
+        let btnColor: Color = isCurrent ? LiquidGlassPalette.sunsetOrange : (isAnswered ? LiquidGlassPalette.sunsetOrange.opacity(0.7) : (isLocked ? Color.gray.opacity(0.2) : .gray.opacity(0.4)))
         
         Button(action: {
-            currentIndex = index
+            attemptNavigate(to: index)
         }) {
             Text("\(index + 1)")
                 .font(.system(size: 13 * fontScale, weight: .bold))
-                .foregroundColor(isCurrent || isAnswered ? .white : .primary)
+                .foregroundColor(isCurrent || isAnswered ? .white : (isLocked ? .secondary.opacity(0.5) : .primary))
                 .frame(width: 38 * fontScale, height: 38 * fontScale)
                 .background(btnColor)
                 .cornerRadius(8)
@@ -340,10 +525,16 @@ public struct ExamView: View {
                 )
         }
         .buttonStyle(.plain)
+        .disabled(isLocked)
     }
     
     private func optionButton(for option: QuestionOption, index: Int, question: Question) -> some View {
-        let isSelected = userAnswers[question.id] == index
+        let isSelected: Bool
+        if let chosenId = userSelectedOptionIds[question.id] {
+            isSelected = chosenId == option.id
+        } else {
+            isSelected = userAnswers[question.id] == index
+        }
         
         let bgColor = isSelected ? LiquidGlassPalette.sunsetOrange.opacity(0.20) : (colorScheme == .light ? Color.white : Color(NSColor.controlBackgroundColor))
         let borderColor = isSelected ? LiquidGlassPalette.sunsetOrange : (colorScheme == .light ? Color.black.opacity(0.18) : Color.white.opacity(0.20))
@@ -351,6 +542,7 @@ public struct ExamView: View {
         
         return Button(action: {
             userAnswers[question.id] = index
+            userSelectedOptionIds[question.id] = option.id
         }) {
             HStack(spacing: 14 * fontScale) {
                 ZStack {
@@ -362,7 +554,7 @@ public struct ExamView: View {
                         .foregroundColor(textColor)
                 }
                 
-                Text(option.text)
+                Text(formattedMarkdownKey(option.text))
                     .font(.system(size: 15 * fontScale))
                     .foregroundColor(colorScheme == .light ? Color(NSColor.labelColor) : Color.white)
                     .multilineTextAlignment(.leading)
@@ -386,10 +578,30 @@ public struct ExamView: View {
         .buttonStyle(.plain)
     }
     
+    private func formattedMarkdownKey(_ rawText: String) -> LocalizedStringKey {
+        let lines = rawText.components(separatedBy: "\n")
+        let cleanedLines = lines.map { line -> String in
+            var l = line.trimmingCharacters(in: .whitespaces)
+            if l.hasPrefix("### ") { l = "**" + l.dropFirst(4) + "**" }
+            else if l.hasPrefix("## ") { l = "**" + l.dropFirst(3) + "**" }
+            else if l.hasPrefix("# ") { l = "**" + l.dropFirst(2) + "**" }
+            if l == "---" || l == "***" || l == "___" { return "───────────────" }
+            if l.hasPrefix("> ") { l = "💡 " + l.dropFirst(2) }
+            return l
+        }
+        return LocalizedStringKey(cleanedLines.joined(separator: "\n"))
+    }
+    
     private func submitExam() {
         var wrongIds: Set<String> = []
         for q in activeQuestions {
-            if let ans = userAnswers[q.id] {
+            let correctOptionId = (q.correctAnswerIndex >= 0 && q.correctAnswerIndex < q.options.count) ? q.options[q.correctAnswerIndex].id : ""
+            
+            if let chosenId = userSelectedOptionIds[q.id] {
+                if chosenId != correctOptionId {
+                    wrongIds.insert(q.id)
+                }
+            } else if let ans = userAnswers[q.id] {
                 if ans != q.correctAnswerIndex {
                     wrongIds.insert(q.id)
                 }
@@ -402,8 +614,10 @@ public struct ExamView: View {
             quizId: quiz.id,
             currentIndex: currentIndex,
             userAnswers: userAnswers,
+            userSelectedOptionIds: userSelectedOptionIds,
             wrongQuestionIds: wrongIds,
-            isCompleted: true
+            isCompleted: true,
+            shuffledQuestions: storage.settings.isShuffleEnabled ? project.progressMap[quiz.id]?.shuffledQuestions : nil
         )
         
         storage.saveProgress(projectId: project.id, progress: prog)

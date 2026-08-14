@@ -18,16 +18,33 @@ public struct PracticeView: View {
     
     // User progress state
     @State private var userAnswers: [String: Int] = [:]
+    @State private var userSelectedOptionIds: [String: String] = [:]
     @State private var wrongQuestionIds: Set<String> = []
     @State private var isQuizFinished: Bool = false
     @State private var showFinishDialog: Bool = false
     @State private var showReviewView: Bool = false
     @State private var isRedoingWrong: Bool = false
     @State private var askingGeminiQuestion: Question? = nil
-    @State private var showNavPane: Bool = true
+    @State private var showNavPane: Bool = false
     @State private var eventMonitor: Any? = nil
     
     @Environment(\.dismiss) var dismiss
+    
+    private var hasLanguageSkills: Bool {
+        activeQuestions.contains(where: { $0.skill != nil })
+    }
+    
+    private var groupedSkills: [LanguageSkill] {
+        var seen = Set<LanguageSkill>()
+        var result: [LanguageSkill] = []
+        for q in activeQuestions {
+            if let skill = q.skill, !seen.contains(skill) {
+                seen.insert(skill)
+                result.append(skill)
+            }
+        }
+        return result
+    }
     
     public var body: some View {
         LiquidGlassWindowBackdrop {
@@ -91,7 +108,16 @@ public struct PracticeView: View {
                 
                 // Main Question & Right Navigation Split View
                 HStack(spacing: 0) {
-                    // Left Question & Options Area
+                    // Left Reading Passage Side (for Reading questions with readingPassage)
+                    // Left Reading Passage Side (for Reading questions with readingPassage)
+                    if !activeQuestions.isEmpty && currentIndex < activeQuestions.count,
+                       let passage = activeQuestions[currentIndex].readingPassage, !passage.isEmpty {
+                        ReadingPassagePane(passage: passage)
+                        
+                        Divider()
+                    }
+                    
+                    // Question & Options Area
                     if !activeQuestions.isEmpty && currentIndex < activeQuestions.count {
                         let currentQuestion = activeQuestions[currentIndex]
                         
@@ -100,8 +126,9 @@ public struct PracticeView: View {
                                 // Question Card
                                 GlassCard {
                                     VStack(alignment: .leading, spacing: 10 * fontScale) {
-                                        HStack {
+                                        HStack(spacing: 8 * fontScale) {
                                             BadgeView(text: "\(loc.text("questionHeader")) \(currentIndex + 1)", color: LiquidGlassPalette.oceanBlue)
+                                            
                                             Spacer()
                                             
                                             Button(action: { askingGeminiQuestion = currentQuestion }) {
@@ -119,11 +146,38 @@ public struct PracticeView: View {
                                             .buttonStyle(.plain)
                                         }
                                         
-                                        Text(currentQuestion.text)
-                                            .font(.system(size: 19 * fontScale, weight: .bold))
-                                            .lineSpacing(4)
+                                        Text(formattedMarkdownKey(currentQuestion.text))
+                                            .font(.system(size: 17 * fontScale, weight: .regular))
+                                            .lineSpacing(5)
                                     }
                                     .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                
+                                // Skill & SubTopic labels outside box and right above answer grid
+                                if currentQuestion.skill != nil || (currentQuestion.subTopic != nil && !currentQuestion.subTopic!.isEmpty) {
+                                    HStack(spacing: 12 * fontScale) {
+                                        if let skill = currentQuestion.skill {
+                                            HStack(spacing: 4 * fontScale) {
+                                                Image(systemName: "book.fill")
+                                                Text(skill.displayName.uppercased())
+                                            }
+                                            .font(.system(size: 11 * fontScale, weight: .bold))
+                                            .foregroundColor(LiquidGlassPalette.deepPurple)
+                                        }
+                                        
+                                        if let sub = currentQuestion.subTopic, !sub.isEmpty {
+                                            HStack(spacing: 4 * fontScale) {
+                                                Image(systemName: "tag.fill")
+                                                Text(sub.uppercased())
+                                            }
+                                            .font(.system(size: 11 * fontScale, weight: .bold))
+                                            .foregroundColor(LiquidGlassPalette.cyanTeal)
+                                        }
+                                        
+                                        Spacer()
+                                    }
+                                    .padding(.horizontal, 4 * fontScale)
+                                    .padding(.top, -6 * fontScale)
                                 }
                                 
                                 // Option Buttons
@@ -184,15 +238,57 @@ public struct PracticeView: View {
                                 .padding(.horizontal, 12 * fontScale)
                             
                             ScrollView {
-                                LazyVGrid(columns: [GridItem(.adaptive(minimum: 40 * fontScale), spacing: 8 * fontScale)], spacing: 8 * fontScale) {
-                                    ForEach(0..<activeQuestions.count, id: \.self) { idx in
-                                        navButton(index: idx, question: activeQuestions[idx])
+                                VStack(alignment: .leading, spacing: 14 * fontScale) {
+                                    if hasLanguageSkills {
+                                        ForEach(groupedSkills, id: \.self) { skill in
+                                            let skillIndices = activeQuestions.indices.filter { activeQuestions[$0].skill == skill }
+                                            if !skillIndices.isEmpty {
+                                                VStack(alignment: .leading, spacing: 6 * fontScale) {
+                                                    HStack(spacing: 4 * fontScale) {
+                                                        Image(systemName: "book.fill")
+                                                            .font(.system(size: 9 * fontScale))
+                                                        Text(skill.displayName.uppercased())
+                                                            .font(.system(size: 10 * fontScale, weight: .bold))
+                                                    }
+                                                    .foregroundColor(LiquidGlassPalette.deepPurple)
+                                                    
+                                                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 36 * fontScale), spacing: 6 * fontScale)], spacing: 6 * fontScale) {
+                                                        ForEach(skillIndices, id: \.self) { idx in
+                                                            navButton(index: idx, question: activeQuestions[idx])
+                                                        }
+                                                    }
+                                                }
+                                                .padding(.bottom, 6 * fontScale)
+                                            }
+                                        }
+                                        
+                                        // Other / Non-skill questions if any
+                                        let otherIndices = activeQuestions.indices.filter { activeQuestions[$0].skill == nil }
+                                        if !otherIndices.isEmpty {
+                                            VStack(alignment: .leading, spacing: 6 * fontScale) {
+                                                Text("CÂU HỎI KHÁC")
+                                                    .font(.system(size: 10 * fontScale, weight: .bold))
+                                                    .foregroundColor(.secondary)
+                                                
+                                                LazyVGrid(columns: [GridItem(.adaptive(minimum: 36 * fontScale), spacing: 6 * fontScale)], spacing: 6 * fontScale) {
+                                                    ForEach(otherIndices, id: \.self) { idx in
+                                                        navButton(index: idx, question: activeQuestions[idx])
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 40 * fontScale), spacing: 8 * fontScale)], spacing: 8 * fontScale) {
+                                            ForEach(0..<activeQuestions.count, id: \.self) { idx in
+                                                navButton(index: idx, question: activeQuestions[idx])
+                                            }
+                                        }
                                     }
                                 }
                                 .padding(.horizontal, 12 * fontScale)
                             }
                         }
-                        .frame(width: 180 * fontScale)
+                        .frame(width: 200 * fontScale)
                         .background(.ultraThinMaterial)
                     }
                 }
@@ -225,7 +321,7 @@ public struct PracticeView: View {
             quizFinishDialog
         }
         .sheet(isPresented: $showReviewView) {
-            ReviewView(quiz: quiz, questions: activeQuestions, userAnswers: userAnswers, wrongIds: wrongQuestionIds)
+            ReviewView(quiz: quiz, questions: activeQuestions, userAnswers: userAnswers, userSelectedOptionIds: userSelectedOptionIds, wrongIds: wrongQuestionIds)
         }
         .sheet(item: $askingGeminiQuestion) { q in
             AskGeminiSheet(question: q)
@@ -243,15 +339,17 @@ public struct PracticeView: View {
     @ViewBuilder
     private func navButton(index: Int, question: Question) -> some View {
         let isCurrent = index == currentIndex
-        let userAns = userAnswers[question.id]
-        let btnColor: Color = isCurrent ? LiquidGlassPalette.oceanBlue : (userAns != nil ? (userAns == question.correctAnswerIndex ? LiquidGlassPalette.emeraldMint : LiquidGlassPalette.coralRed) : .gray.opacity(0.4))
+        let chosenOptId = userSelectedOptionIds[question.id]
+        let isAnsweredQuestion = chosenOptId != nil || userAnswers[question.id] != nil
+        let isCorrect = isQuestionAnsweredCorrectly(question: question)
+        let btnColor: Color = isCurrent ? LiquidGlassPalette.oceanBlue : (isAnsweredQuestion ? (isCorrect ? LiquidGlassPalette.emeraldMint : LiquidGlassPalette.coralRed) : .gray.opacity(0.4))
         
         Button(action: {
             jumpToQuestion(index: index)
         }) {
             Text("\(index + 1)")
                 .font(.system(size: 13 * fontScale, weight: .bold))
-                .foregroundColor(isCurrent || userAns != nil ? .white : .primary)
+                .foregroundColor(isCurrent || isAnsweredQuestion ? .white : .primary)
                 .frame(width: 38 * fontScale, height: 38 * fontScale)
                 .background(btnColor)
                 .cornerRadius(8)
@@ -263,13 +361,17 @@ public struct PracticeView: View {
         .buttonStyle(.plain)
     }
     
+    private func isQuestionAnsweredCorrectly(question: Question) -> Bool {
+        if let chosenId = userSelectedOptionIds[question.id] {
+            return question.correctAnswerIndex >= 0 && question.correctAnswerIndex < question.options.count && question.options[question.correctAnswerIndex].id == chosenId
+        } else if let userAns = userAnswers[question.id] {
+            return userAns == question.correctAnswerIndex
+        }
+        return false
+    }
+    
     private func formattedMarkdownKey(_ rawText: String) -> LocalizedStringKey {
-        var str = rawText.trimmingCharacters(in: .whitespacesAndNewlines)
-        if str.hasPrefix("```markdown") { str = String(str.dropFirst(11)) }
-        if str.hasPrefix("```") { str = String(str.dropFirst(3)) }
-        if str.hasSuffix("```") { str = String(str.dropLast(3)) }
-        
-        let lines = str.components(separatedBy: "\n")
+        let lines = rawText.components(separatedBy: "\n")
         let cleanedLines = lines.map { line -> String in
             var l = line.trimmingCharacters(in: .whitespaces)
             if l.hasPrefix("### ") { l = "**" + l.dropFirst(4) + "**" }
@@ -283,8 +385,14 @@ public struct PracticeView: View {
     }
     
     private func optionButton(for option: QuestionOption, index: Int, question: Question) -> some View {
-        let isSelected = selectedOptionIndex == index
-        let isCorrect = index == question.correctAnswerIndex
+        let isSelected: Bool
+        if let chosenId = userSelectedOptionIds[question.id] {
+            isSelected = chosenId == option.id
+        } else {
+            isSelected = selectedOptionIndex == index
+        }
+        
+        let isCorrect = (question.correctAnswerIndex >= 0 && question.correctAnswerIndex < question.options.count) ? (question.options[question.correctAnswerIndex].id == option.id) : (index == question.correctAnswerIndex)
         
         let bgColor: Color
         let borderColor: Color
@@ -328,7 +436,7 @@ public struct PracticeView: View {
                         .foregroundColor(textColor)
                 }
                 
-                Text(option.text)
+                Text(formattedMarkdownKey(option.text))
                     .font(.system(size: 15 * fontScale))
                     .foregroundColor(.primary)
                     .multilineTextAlignment(.leading)
@@ -359,35 +467,60 @@ public struct PracticeView: View {
         .disabled(isAnswered)
     }
     
+    private func quitCurrentView() {
+        dismiss()
+        WindowManager.shared.closeCurrentKeyWindow()
+    }
+    
     // MARK: - Keyboard Monitor (Disabled when AskGemini sheet is active!)
     private func setupKeyboardMonitor() {
         removeKeyboardMonitor()
         eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-            // Temporarily disable shortcuts if Ask Gemini sheet is open!
-            guard askingGeminiQuestion == nil && !showFinishDialog && !showReviewView else {
+            // When sheets/modals are active, let all key events pass through to textfields/sheets!
+            if askingGeminiQuestion != nil || showFinishDialog || showReviewView {
                 return event
             }
             
-            let chars = event.charactersIgnoringModifiers?.lowercased() ?? ""
-            
-            if event.keyCode == 51 {
-                dismiss()
+            // Delete / Backspace (51) or Escape (53) -> Quit Practice
+            if event.keyCode == 51 || event.keyCode == 53 {
+                quitCurrentView()
                 return nil
             }
             
-            if event.keyCode == 36 {
+            // Return / Enter (36), Keypad Enter (76), or Space (49) -> Advance to next question
+            if event.keyCode == 36 || event.keyCode == 76 || event.keyCode == 49 {
                 if isAnswered {
                     advanceToNextQuestion()
+                    return nil
                 }
-                return nil
             }
             
+            // Answer selection shortcuts: 1/2/3/4 or A/B/C/D
             if !isAnswered && !activeQuestions.isEmpty && currentIndex < activeQuestions.count {
                 let currentQuestion = activeQuestions[currentIndex]
-                if chars == "a" || chars == "1" { selectOption(index: 0, question: currentQuestion); return nil }
-                if chars == "b" || chars == "2" { selectOption(index: 1, question: currentQuestion); return nil }
-                if chars == "c" || chars == "3" { selectOption(index: 2, question: currentQuestion); return nil }
-                if chars == "d" || chars == "4" { selectOption(index: 3, question: currentQuestion); return nil }
+                let chars = event.charactersIgnoringModifiers?.lowercased() ?? ""
+                let code = event.keyCode
+                
+                // Option A / 1 (keyCode 18 is '1', keyCode 0 is 'a', keyCode 83 is Keypad 1)
+                if code == 18 || code == 0 || code == 83 || chars == "1" || chars == "a" {
+                    selectOption(index: 0, question: currentQuestion)
+                    return nil
+                }
+                // Option B / 2 (keyCode 19 is '2', keyCode 11 is 'b', keyCode 84 is Keypad 2)
+                if code == 19 || code == 11 || code == 84 || chars == "2" || chars == "b" {
+                    selectOption(index: 1, question: currentQuestion)
+                    return nil
+                }
+                // Option C / 3 (keyCode 20 is '3', keyCode 8 is 'c', keyCode 85 is Keypad 3)
+                if code == 20 || code == 8 || code == 85 || chars == "3" || chars == "c" {
+                    selectOption(index: 2, question: currentQuestion)
+                    return nil
+                }
+                // Option D / 4 (keyCode 21 is '4', keyCode 2 is 'd', keyCode 86 is Keypad 4)
+                if code == 21 || code == 2 || code == 86 || chars == "4" || chars == "d" {
+                    selectOption(index: 3, question: currentQuestion)
+                    return nil
+                }
             }
             
             return event
@@ -436,6 +569,7 @@ public struct PracticeView: View {
         // Restore checkpoint progress if exists!
         if let prog = project.progressMap[quiz.id] {
             self.userAnswers = prog.userAnswers
+            self.userSelectedOptionIds = prog.userSelectedOptionIds
             self.wrongQuestionIds = prog.wrongQuestionIds
             
             // Checkpoint index restore
@@ -447,6 +581,7 @@ public struct PracticeView: View {
         } else {
             self.currentIndex = 0
             self.userAnswers = [:]
+            self.userSelectedOptionIds = [:]
             self.wrongQuestionIds = []
         }
         
@@ -456,7 +591,11 @@ public struct PracticeView: View {
     private func loadCurrentQuestionState() {
         guard currentIndex < activeQuestions.count else { return }
         let currentQuestion = activeQuestions[currentIndex]
-        if let ansIndex = userAnswers[currentQuestion.id] {
+        if let chosenId = userSelectedOptionIds[currentQuestion.id],
+           let optIdx = currentQuestion.options.firstIndex(where: { $0.id == chosenId }) {
+            selectedOptionIndex = optIdx
+            isAnswered = true
+        } else if let ansIndex = userAnswers[currentQuestion.id] {
             selectedOptionIndex = ansIndex
             isAnswered = true
         } else {
@@ -474,12 +613,18 @@ public struct PracticeView: View {
     
     private func selectOption(index: Int, question: Question) {
         guard index >= 0 && index < question.options.count else { return }
+        let selectedOption = question.options[index]
         selectedOptionIndex = index
         isAnswered = true
         userAnswers[question.id] = index
+        userSelectedOptionIds[question.id] = selectedOption.id
         
-        if index != question.correctAnswerIndex {
+        let correctOptionId = (question.correctAnswerIndex >= 0 && question.correctAnswerIndex < question.options.count) ? question.options[question.correctAnswerIndex].id : ""
+        
+        if selectedOption.id != correctOptionId {
             wrongQuestionIds.insert(question.id)
+        } else {
+            wrongQuestionIds.remove(question.id)
         }
         
         saveCurrentProgress(isCompleted: false)
@@ -502,8 +647,10 @@ public struct PracticeView: View {
             quizId: quiz.id,
             currentIndex: currentIndex,
             userAnswers: userAnswers,
+            userSelectedOptionIds: userSelectedOptionIds,
             wrongQuestionIds: wrongQuestionIds,
-            isCompleted: isCompleted
+            isCompleted: isCompleted,
+            shuffledQuestions: storage.settings.isShuffleEnabled ? project.progressMap[quiz.id]?.shuffledQuestions : nil
         )
         storage.saveProgress(projectId: project.id, progress: prog)
     }

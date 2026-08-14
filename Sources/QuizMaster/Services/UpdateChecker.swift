@@ -205,6 +205,15 @@ public class UpdateChecker: ObservableObject {
                 let currentAppPath = Bundle.main.bundlePath
                 let currentPid = ProcessInfo.processInfo.processIdentifier
                 
+                // Securely backup User Database before app replacement
+                let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+                let dbDir = appSupport.appendingPathComponent("QuizMaster", isDirectory: true)
+                let dbFile = dbDir.appendingPathComponent("quiz_master_projects.json")
+                let backupFile = dbDir.appendingPathComponent("quiz_master_projects_backup_ota.json")
+                if FileManager.default.fileExists(atPath: dbFile.path) {
+                    try? FileManager.default.copyItem(at: dbFile, to: backupFile)
+                }
+                
                 // Detached self-replacing OTA background script
                 let script = """
                 nohup bash -c '

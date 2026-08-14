@@ -51,12 +51,16 @@ public class StorageManager: ObservableObject {
         }
     }
     
-    private func saveProjects() {
+    public func saveProjects() {
         do {
             let encoder = JSONEncoder()
             encoder.outputFormatting = .prettyPrinted
             let data = try encoder.encode(projects)
             try data.write(to: projectsFileURL, options: .atomic)
+            
+            // Rolling safety backup (prevents data loss across any sudden reboot or update)
+            let backupURL = projectsFileURL.deletingLastPathComponent().appendingPathComponent("quiz_master_projects_backup.json")
+            try? data.write(to: backupURL, options: .atomic)
         } catch {
             print("Failed to save projects: \(error)")
         }
@@ -64,17 +68,39 @@ public class StorageManager: ObservableObject {
     
     private func loadProjectsFromFile() -> [StudyProject] {
         let url = projectsFileURL
-        guard FileManager.default.fileExists(atPath: url.path),
-              let data = try? Data(contentsOf: url),
-              let decoded = try? JSONDecoder().decode([StudyProject].self, from: data) else {
-            return []
+        let decoder = JSONDecoder()
+        
+        if FileManager.default.fileExists(atPath: url.path),
+           let data = try? Data(contentsOf: url),
+           let decoded = try? decoder.decode([StudyProject].self, from: data),
+           !decoded.isEmpty {
+            return decoded
         }
-        return decoded
+        
+        // Fallback 1: Check rolling safety backup
+        let backupURL = url.deletingLastPathComponent().appendingPathComponent("quiz_master_projects_backup.json")
+        if FileManager.default.fileExists(atPath: backupURL.path),
+           let bData = try? Data(contentsOf: backupURL),
+           let bDecoded = try? decoder.decode([StudyProject].self, from: bData),
+           !bDecoded.isEmpty {
+            return bDecoded
+        }
+        
+        // Fallback 2: Check OTA safety backup
+        let otaBackupURL = url.deletingLastPathComponent().appendingPathComponent("quiz_master_projects_backup_ota.json")
+        if FileManager.default.fileExists(atPath: otaBackupURL.path),
+           let otaData = try? Data(contentsOf: otaBackupURL),
+           let otaDecoded = try? decoder.decode([StudyProject].self, from: otaData),
+           !otaDecoded.isEmpty {
+            return otaDecoded
+        }
+        
+        return []
     }
     
     // MARK: - Helper Mutations
-    public func addProject(name: String, description: String) -> StudyProject {
-        let project = StudyProject(name: name, description: description)
+    public func addProject(name: String, description: String, projectType: ProjectType = .general) -> StudyProject {
+        let project = StudyProject(name: name, description: description, projectType: projectType)
         projects.append(project)
         return project
     }
@@ -118,6 +144,14 @@ public class StorageManager: ObservableObject {
             projects[index].progressMap.removeValue(forKey: qId)
         }
         saveProjects()
+    }
+    
+    public func updateQuiz(projectId: String, quiz: Quiz) {
+        guard let pIndex = projects.firstIndex(where: { $0.id == projectId }) else { return }
+        if let qIndex = projects[pIndex].quizzes.firstIndex(where: { $0.id == quiz.id }) {
+            projects[pIndex].quizzes[qIndex] = quiz
+            saveProjects()
+        }
     }
     
     public func renameQuiz(projectId: String, quizId: String, newTitle: String) {

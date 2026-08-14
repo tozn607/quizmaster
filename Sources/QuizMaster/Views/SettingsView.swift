@@ -196,17 +196,13 @@ public struct SettingsView: View {
                     // About & App Info Footer Section
                     GlassCard {
                         VStack(alignment: .leading, spacing: 12 * fontScale) {
-                            Text(loc.text("authorInfo"))
+                            Text(loc.text("authorHeader"))
                                 .font(.system(size: 16 * fontScale, weight: .bold))
                             
                             Divider()
                             
                             HStack(spacing: 16 * fontScale) {
-                                Image(systemName: "graduationcap.circle.fill")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 52 * fontScale, height: 52 * fontScale)
-                                    .foregroundColor(.accentColor)
+                                AppLogoView(size: 54 * fontScale)
                                 
                                 VStack(alignment: .leading, spacing: 4 * fontScale) {
                                     HStack {

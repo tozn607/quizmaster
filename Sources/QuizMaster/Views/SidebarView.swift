@@ -11,16 +11,25 @@ public struct SidebarView: View {
     @State private var showNewProjectSheet: Bool = false
     @State private var newProjectName: String = ""
     @State private var newProjectDesc: String = ""
+    @State private var newProjectType: ProjectType = .general
     
     public var body: some View {
         VStack(spacing: 0) {
             // Header Title & Settings
             VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text(loc.text("projects"))
-                        .font(.headline)
-                        .fontWeight(.bold)
+                HStack(spacing: 10) {
+                    AppLogoView(size: 32)
+                    
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("QuizMaster")
+                            .font(.system(size: 15, weight: .bold))
+                        Text(loc.text("projects"))
+                            .font(.system(size: 11))
+                            .foregroundColor(.secondary)
+                    }
+                    
                     Spacer()
+                    
                     Button(action: { showSettingsSheet = true }) {
                         Image(systemName: "gearshape")
                             .font(.title3)
@@ -84,20 +93,30 @@ public struct SidebarView: View {
     
     @ViewBuilder
     private func projectRow(project: StudyProject) -> some View {
+        let isLL = project.projectType == .languageLearning
+        let iconColor = isLL ? LiquidGlassPalette.deepPurple : LiquidGlassPalette.oceanBlue
+        
         HStack(spacing: 12) {
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(LiquidGlassPalette.oceanBlue.opacity(0.15))
+                    .fill(iconColor.opacity(0.15))
                     .frame(width: 36, height: 36)
-                Image(systemName: "folder.fill")
-                    .foregroundColor(LiquidGlassPalette.oceanBlue)
+                Image(systemName: project.projectType.iconName)
+                    .foregroundColor(iconColor)
             }
             
             VStack(alignment: .leading, spacing: 3) {
-                Text(project.name)
-                    .font(.body)
-                    .fontWeight(.semibold)
-                    .lineLimit(1)
+                HStack(spacing: 4) {
+                    Text(project.name)
+                        .font(.body)
+                        .fontWeight(.semibold)
+                        .lineLimit(1)
+                    if isLL {
+                        Image(systemName: "text.bubble.fill")
+                            .font(.system(size: 9))
+                            .foregroundColor(LiquidGlassPalette.deepPurple)
+                    }
+                }
                 
                 HStack(spacing: 8) {
                     Text("\(project.quizzes.count) \(loc.text("quizzesCount"))")
@@ -142,10 +161,35 @@ public struct SidebarView: View {
                 .fontWeight(.bold)
             
             VStack(alignment: .leading, spacing: 6) {
+                Text(loc.text("projectTypeSelector"))
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                
+                Picker("", selection: $newProjectType) {
+                    ForEach(ProjectType.allCases) { type in
+                        Label(type.displayName, systemImage: type.iconName).tag(type)
+                    }
+                }
+                .pickerStyle(.segmented)
+                
+                if newProjectType == .languageLearning {
+                    HStack(alignment: .top, spacing: 6) {
+                        Image(systemName: "wrench.and.screwdriver.fill")
+                            .font(.caption2)
+                            .foregroundColor(LiquidGlassPalette.sunsetOrange)
+                        Text("Chế độ Ngoại ngữ đang trong giai đoạn thử nghiệm (WIP) và liên tục được cải tiến định dạng đề thi.")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.top, 2)
+                }
+            }
+            
+            VStack(alignment: .leading, spacing: 6) {
                 Text(loc.text("projectName"))
                     .font(.caption)
                     .fontWeight(.semibold)
-                TextField("Ví dụ: Ôn thi Tiếng Anh / Lịch sử", text: $newProjectName)
+                TextField(newProjectType == .languageLearning ? "Ví dụ: Luyện đề THPT Tiếng Anh / IELTS Reading" : "Ví dụ: Lịch sử 12 / Tin học Đại cương", text: $newProjectName)
                     .textFieldStyle(.roundedBorder)
             }
             
@@ -162,16 +206,18 @@ public struct SidebarView: View {
                     showNewProjectSheet = false
                     newProjectName = ""
                     newProjectDesc = ""
+                    newProjectType = .general
                 }
                 
                 Spacer()
                 
-                PrimaryButton(title: loc.text("create"), icon: "plus") {
-                    let created = storage.addProject(name: newProjectName, description: newProjectDesc)
+                PrimaryButton(title: loc.text("create"), icon: "plus", color: newProjectType == .languageLearning ? LiquidGlassPalette.deepPurple : LiquidGlassPalette.oceanBlue) {
+                    let created = storage.addProject(name: newProjectName, description: newProjectDesc, projectType: newProjectType)
                     selectedProject = created
                     showNewProjectSheet = false
                     newProjectName = ""
                     newProjectDesc = ""
+                    newProjectType = .general
                 }
                 .disabled(newProjectName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }

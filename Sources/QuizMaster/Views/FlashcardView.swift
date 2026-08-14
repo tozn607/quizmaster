@@ -15,15 +15,26 @@ public struct FlashcardView: View {
     @State private var historyStack: [Question] = []
     @State private var currentCard: Question? = nil
     
+    // Vocabulary Flashcard Support
+    @State private var allVocabs: [VocabularyCard] = []
+    @State private var vocabQueue: [VocabularyCard] = []
+    @State private var vocabHistory: [VocabularyCard] = []
+    @State private var currentVocab: VocabularyCard? = nil
+    @State private var selectedCEFRFilter: CEFRLevel = .all
+    
     @State private var isFlipped: Bool = false
     @State private var studyRound: Int = 1
     @State private var masteredIds: Set<String> = []
     @State private var needReviewIds: Set<String> = []
     @State private var isCompleted: Bool = false
-    @State private var showNavPane: Bool = true
+    @State private var showNavPane: Bool = false
     @State private var showReviewView: Bool = false
     
     @State private var eventMonitor: Any? = nil
+    
+    private var isLLVocabularyMode: Bool {
+        (quiz.quizType == .languageLearning || project.projectType == .languageLearning) && !quiz.vocabularies.isEmpty
+    }
     
     public var body: some View {
         LiquidGlassWindowBackdrop {
@@ -43,15 +54,30 @@ public struct FlashcardView: View {
                     Spacer()
                     
                     VStack(spacing: 2) {
-                        Text("\(quiz.title) • Thẻ ghi nhớ")
+                        Text("\(quiz.title) • \(isLLVocabularyMode ? "Từ vựng Ngoại ngữ (CEFR)" : "Thẻ ghi nhớ")")
                             .font(.system(size: 16 * fontScale, weight: .bold))
                         
-                        Text("Vòng học thứ \(studyRound) • Còn lại \(cardQueue.count + (currentCard != nil ? 1 : 0)) thẻ")
+                        let totalRemaining = isLLVocabularyMode ? (vocabQueue.count + (currentVocab != nil ? 1 : 0)) : (cardQueue.count + (currentCard != nil ? 1 : 0))
+                        Text("Vòng học thứ \(studyRound) • Còn lại \(totalRemaining) thẻ")
                             .font(.system(size: 12 * fontScale, weight: .bold))
                             .foregroundColor(LiquidGlassPalette.deepPurple)
                     }
                     
                     Spacer()
+                    
+                    // CEFR Level filter picker if in vocabulary mode
+                    if isLLVocabularyMode {
+                        Picker("", selection: $selectedCEFRFilter) {
+                            ForEach(CEFRLevel.allCases) { lvl in
+                                Text(lvl.badgeLabel).tag(lvl)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .frame(width: 120 * fontScale)
+                        .onChange(of: selectedCEFRFilter) { _ in
+                            setupFlashcards()
+                        }
+                    }
                     
                     // Toggle Question Navigator Sidebar
                     Button(action: { withAnimation { showNavPane.toggle() } }) {
@@ -79,10 +105,135 @@ public struct FlashcardView: View {
                     VStack(spacing: 24 * fontScale) {
                         if isCompleted {
                             completionView
+                        } else if isLLVocabularyMode, let vocab = currentVocab {
+                            Spacer()
+                            
+                            // 3D Flip Card Container for Vocabulary
+                            ZStack {
+                                if !isFlipped {
+                                    // Front: Vocabulary Word + Word Type + Phonetic
+                                    GlassCard {
+                                        VStack(spacing: 16 * fontScale) {
+                                            HStack {
+                                                let typeLower = vocab.wordType.lowercased()
+                                                let badgeTitle = typeLower.contains("idiom") ? "THÀNH NGỮ" : (typeLower.contains("phr") ? "CỤM ĐỘNG TỪ" : "TỪ VỰNG")
+                                                let badgeColor = typeLower.contains("idiom") ? LiquidGlassPalette.sunsetOrange : (typeLower.contains("phr") ? LiquidGlassPalette.cyanTeal : LiquidGlassPalette.deepPurple)
+                                                
+                                                BadgeView(text: badgeTitle, color: badgeColor)
+                                                Spacer()
+                                                BadgeView(text: vocab.cefrLevel.badgeLabel, color: LiquidGlassPalette.oceanBlue)
+                                            }
+                                            
+                                            Spacer()
+                                            
+                                            VStack(spacing: 8 * fontScale) {
+                                                HStack(alignment: .firstTextBaseline, spacing: 8 * fontScale) {
+                                                    Text(vocab.word)
+                                                        .font(.system(size: 30 * fontScale, weight: .bold))
+                                                        .multilineTextAlignment(.center)
+                                                    
+                                                    if !vocab.wordType.isEmpty {
+                                                        Text("(\(vocab.wordType))")
+                                                            .font(.system(size: 17 * fontScale, weight: .semibold))
+                                                            .foregroundColor(LiquidGlassPalette.deepPurple)
+                                                    }
+                                                }
+                                                
+                                                if !vocab.phonetic.isEmpty {
+                                                    Text(vocab.phonetic)
+                                                        .font(.system(size: 16 * fontScale))
+                                                        .foregroundColor(.secondary)
+                                                }
+                                            }
+                                            .multilineTextAlignment(.center)
+                                            .padding()
+                                            
+                                            Spacer()
+                                            
+                                            Text("💡 Nhấn phím Cách (Spacebar) hoặc chạm để xem nghĩa tiếng Việt & câu ví dụ")
+                                                .font(.system(size: 12 * fontScale))
+                                                .foregroundColor(.secondary)
+                                        }
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    }
+                                } else {
+                                    // Back: Vietnamese Meaning + Example Sentence in Bold
+                                    GlassCard {
+                                        VStack(spacing: 16 * fontScale) {
+                                            HStack {
+                                                BadgeView(text: "NGHĨA & VÍ DỤ", color: LiquidGlassPalette.emeraldMint)
+                                                Spacer()
+                                                BadgeView(text: vocab.cefrLevel.badgeLabel, color: LiquidGlassPalette.oceanBlue)
+                                            }
+                                            
+                                            Spacer()
+                                            
+                                            VStack(spacing: 14 * fontScale) {
+                                                Text(vocab.vietnameseMeaning)
+                                                    .font(.system(size: 22 * fontScale, weight: .bold))
+                                                    .foregroundColor(LiquidGlassPalette.emeraldMint)
+                                                    .multilineTextAlignment(.center)
+                                                
+                                                if !vocab.exampleSentence.isEmpty {
+                                                    Divider()
+                                                        .frame(width: 200 * fontScale)
+                                                    
+                                                    VStack(spacing: 4 * fontScale) {
+                                                        Text("Ví dụ minh họa:")
+                                                            .font(.system(size: 11 * fontScale, weight: .semibold))
+                                                            .foregroundColor(.secondary)
+                                                        
+                                                        Text(formattedMarkdown(vocab.exampleSentence))
+                                                            .font(.system(size: 15 * fontScale))
+                                                            .multilineTextAlignment(.center)
+                                                            .padding(.horizontal)
+                                                    }
+                                                }
+                                            }
+                                            
+                                            Spacer()
+                                            
+                                            Text("💡 Chọn Đã thuộc hoặc Chưa thuộc (1/2)")
+                                                .font(.system(size: 12 * fontScale))
+                                                .foregroundColor(.secondary)
+                                        }
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    }
+                                    .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
+                                }
+                            }
+                            .frame(width: 580 * fontScale, height: 360 * fontScale)
+                            .rotation3DEffect(.degrees(isFlipped ? 180 : 0), axis: (x: 0, y: 1, z: 0))
+                            .animation(.spring(response: 0.5, dampingFraction: 0.7), value: isFlipped)
+                            .onTapGesture {
+                                withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                                    isFlipped.toggle()
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                            // Card Action Buttons
+                            HStack(spacing: 18 * fontScale) {
+                                SecondaryButton(title: loc.text("prevCard"), icon: "arrow.left") {
+                                    goPreviousCard()
+                                }
+                                .disabled(isLLVocabularyMode ? vocabHistory.isEmpty : historyStack.isEmpty)
+                                
+                                PrimaryButton(title: "Chưa thuộc", icon: "xmark", color: LiquidGlassPalette.coralRed) {
+                                    markCard(mastered: false)
+                                }
+                                
+                                PrimaryButton(title: "Đã thuộc bài", icon: "checkmark", color: LiquidGlassPalette.emeraldMint) {
+                                    markCard(mastered: true)
+                                }
+                            }
+                            .padding(.bottom, 20 * fontScale)
+                            
                         } else if let card = currentCard {
                             Spacer()
                             
-                            // 3D Flip Card Container
+                            // 3D Flip Card Container for Regular Quiz
                             ZStack {
                                 if !isFlipped {
                                     // Front: Question Side
@@ -178,11 +329,12 @@ public struct FlashcardView: View {
                     .frame(maxWidth: .infinity)
                     
                     // Right Navigation Pane Sidebar
-                    if showNavPane && !allQuestions.isEmpty {
+                    let totalCount = isLLVocabularyMode ? allVocabs.count : allQuestions.count
+                    if showNavPane && totalCount > 0 {
                         Divider()
                         
                         VStack(alignment: .leading, spacing: 12 * fontScale) {
-                            Text(loc.text("questionNavPane"))
+                            Text(isLLVocabularyMode ? "Danh sách từ vựng" : loc.text("questionNavPane"))
                                 .font(.system(size: 13 * fontScale, weight: .bold))
                                 .foregroundColor(.secondary)
                                 .padding(.top, 12 * fontScale)
@@ -190,8 +342,8 @@ public struct FlashcardView: View {
                             
                             ScrollView {
                                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 40 * fontScale), spacing: 8 * fontScale)], spacing: 8 * fontScale) {
-                                    ForEach(0..<allQuestions.count, id: \.self) { idx in
-                                        navButton(index: idx, question: allQuestions[idx])
+                                    ForEach(0..<totalCount, id: \.self) { idx in
+                                        navButton(index: idx)
                                     }
                                 }
                                 .padding(.horizontal, 12 * fontScale)
@@ -229,15 +381,20 @@ public struct FlashcardView: View {
     
     // MARK: - Navigation & Card Logic
     @ViewBuilder
-    private func navButton(index: Int, question: Question) -> some View {
-        let isCurrent = currentCard?.id == question.id
-        let isMastered = masteredIds.contains(question.id)
-        let isNeedReview = needReviewIds.contains(question.id)
+    private func navButton(index: Int) -> some View {
+        let cardId: String = isLLVocabularyMode ? (index < allVocabs.count ? allVocabs[index].id : "") : (index < allQuestions.count ? allQuestions[index].id : "")
+        let isCurrent = isLLVocabularyMode ? currentVocab?.id == cardId : currentCard?.id == cardId
+        let isMastered = masteredIds.contains(cardId)
+        let isNeedReview = needReviewIds.contains(cardId)
         
         let btnColor: Color = isCurrent ? LiquidGlassPalette.deepPurple : (isMastered ? LiquidGlassPalette.emeraldMint : (isNeedReview ? LiquidGlassPalette.coralRed : .gray.opacity(0.4)))
         
         Button(action: {
-            jumpToCard(question: question)
+            if isLLVocabularyMode {
+                if index < allVocabs.count { jumpToVocab(allVocabs[index]) }
+            } else {
+                if index < allQuestions.count { jumpToCard(allQuestions[index]) }
+            }
         }) {
             Text("\(index + 1)")
                 .font(.system(size: 13 * fontScale, weight: .bold))
@@ -254,37 +411,63 @@ public struct FlashcardView: View {
     }
     
     private func setupFlashcards() {
-        var rawQuestions: [Question]
-        if storage.settings.isShuffleEnabled {
-            if let existingShuffled = project.progressMap[quiz.id]?.shuffledQuestions, !existingShuffled.isEmpty {
-                rawQuestions = existingShuffled
-            } else {
-                let newShuffled = quiz.questions.shuffled().map { $0.shuffledWithRelabeledOptions() }
-                var prog = project.progressMap[quiz.id] ?? QuizProgress(quizId: quiz.id)
-                prog.shuffledQuestions = newShuffled
-                storage.saveProgress(projectId: project.id, progress: prog)
-                rawQuestions = newShuffled
-            }
-        } else {
-            rawQuestions = quiz.questions
-        }
-        
-        allQuestions = rawQuestions
-        cardQueue = allQuestions
         masteredIds.removeAll()
         needReviewIds.removeAll()
-        historyStack.removeAll()
         studyRound = 1
         isCompleted = false
+        isFlipped = false
         
-        if !cardQueue.isEmpty {
-            currentCard = cardQueue.removeFirst()
+        if isLLVocabularyMode {
+            var rawVocabs = quiz.vocabularies
+            if selectedCEFRFilter != .all {
+                let filtered = rawVocabs.filter { $0.cefrLevel == selectedCEFRFilter }
+                if !filtered.isEmpty {
+                    rawVocabs = filtered
+                }
+            }
+            
+            if storage.settings.isShuffleEnabled {
+                rawVocabs.shuffle()
+            }
+            
+            allVocabs = rawVocabs
+            vocabQueue = rawVocabs
+            vocabHistory.removeAll()
+            
+            if !vocabQueue.isEmpty {
+                currentVocab = vocabQueue.removeFirst()
+            } else {
+                currentVocab = nil
+            }
         } else {
-            currentCard = nil
+            var rawQuestions: [Question]
+            if storage.settings.isShuffleEnabled {
+                if let existingShuffled = project.progressMap[quiz.id]?.shuffledQuestions, !existingShuffled.isEmpty {
+                    rawQuestions = existingShuffled
+                } else {
+                    let newShuffled = quiz.questions.shuffled().map { $0.shuffledWithRelabeledOptions() }
+                    var prog = project.progressMap[quiz.id] ?? QuizProgress(quizId: quiz.id)
+                    prog.shuffledQuestions = newShuffled
+                    storage.saveProgress(projectId: project.id, progress: prog)
+                    rawQuestions = newShuffled
+                }
+            } else {
+                rawQuestions = quiz.questions
+            }
+            
+            allQuestions = rawQuestions
+            cardQueue = allQuestions
+            historyStack.removeAll()
+            
+            if !cardQueue.isEmpty {
+                currentCard = cardQueue.removeFirst()
+            } else {
+                currentCard = nil
+            }
         }
     }
     
-    private func jumpToCard(question: Question) {
+    private func jumpToCard(_ question: Question) {
         if let curr = currentCard {
             historyStack.append(curr)
         }
@@ -293,39 +476,79 @@ public struct FlashcardView: View {
         isFlipped = false
     }
     
-    private func goPreviousCard() {
-        guard let prev = historyStack.popLast() else { return }
-        if let curr = currentCard {
-            cardQueue.insert(curr, at: 0)
+    private func jumpToVocab(_ vocab: VocabularyCard) {
+        if let curr = currentVocab {
+            vocabHistory.append(curr)
         }
-        currentCard = prev
+        currentVocab = vocab
+        vocabQueue.removeAll(where: { $0.id == vocab.id })
         isFlipped = false
     }
     
-    private func markCard(mastered: Bool) {
-        guard let card = currentCard else { return }
-        
-        historyStack.append(card)
-        
-        if mastered {
-            masteredIds.insert(card.id)
-            needReviewIds.remove(card.id)
+    private func goPreviousCard() {
+        if isLLVocabularyMode {
+            guard let prev = vocabHistory.popLast() else { return }
+            if let curr = currentVocab {
+                vocabQueue.insert(curr, at: 0)
+            }
+            currentVocab = prev
+            isFlipped = false
         } else {
-            needReviewIds.insert(card.id)
+            guard let prev = historyStack.popLast() else { return }
+            if let curr = currentCard {
+                cardQueue.insert(curr, at: 0)
+            }
+            currentCard = prev
+            isFlipped = false
         }
-        
-        isFlipped = false
-        
-        if !cardQueue.isEmpty {
-            currentCard = cardQueue.removeFirst()
+    }
+    
+    private func markCard(mastered: Bool) {
+        if isLLVocabularyMode {
+            guard let card = currentVocab else { return }
+            vocabHistory.append(card)
+            
+            if mastered {
+                masteredIds.insert(card.id)
+                needReviewIds.remove(card.id)
+            } else {
+                needReviewIds.insert(card.id)
+            }
+            
+            isFlipped = false
+            
+            if !vocabQueue.isEmpty {
+                currentVocab = vocabQueue.removeFirst()
+            } else {
+                isCompleted = true
+                currentVocab = nil
+            }
         } else {
-            isCompleted = true
-            currentCard = nil
+            guard let card = currentCard else { return }
+            historyStack.append(card)
+            
+            if mastered {
+                masteredIds.insert(card.id)
+                needReviewIds.remove(card.id)
+            } else {
+                needReviewIds.insert(card.id)
+            }
+            
+            isFlipped = false
+            
+            if !cardQueue.isEmpty {
+                currentCard = cardQueue.removeFirst()
+            } else {
+                isCompleted = true
+                currentCard = nil
+            }
         }
     }
     
     private var completionView: some View {
-        GlassCard {
+        let totalCount = isLLVocabularyMode ? allVocabs.count : allQuestions.count
+        
+        return GlassCard {
             VStack(spacing: 20 * fontScale) {
                 Image(systemName: needReviewIds.isEmpty ? "checkmark.seal.fill" : "exclamationmark.triangle.fill")
                     .font(.system(size: 56 * fontScale))
@@ -336,12 +559,12 @@ public struct FlashcardView: View {
                         .font(.system(size: 22 * fontScale, weight: .bold))
                     
                     if needReviewIds.isEmpty {
-                        Text("Chúc mừng! Bạn đã ghi nhớ 100% (\(allQuestions.count)/\(allQuestions.count) câu hỏi) trong bộ đề thi!")
+                        Text("Chúc mừng! Bạn đã ghi nhớ 100% (\(totalCount)/\(totalCount) thẻ) trong bộ đề thi!")
                             .font(.system(size: 14 * fontScale))
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                     } else {
-                        Text("Kết thúc Vòng \(studyRound): Thuộc \(masteredIds.count)/\(allQuestions.count) thẻ. Còn lại \(needReviewIds.count) thẻ chưa thuộc.")
+                        Text("Kết thúc Vòng \(studyRound): Thuộc \(masteredIds.count)/\(totalCount) thẻ. Còn lại \(needReviewIds.count) thẻ chưa thuộc.")
                             .font(.system(size: 14 * fontScale))
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
@@ -356,14 +579,18 @@ public struct FlashcardView: View {
                             color: LiquidGlassPalette.sunsetOrange
                         ) {
                             studyRound += 1
-                            var nextQueue = allQuestions.filter { needReviewIds.contains($0.id) }
-                            if storage.settings.isShuffleEnabled {
-                                nextQueue.shuffle()
-                            }
-                            cardQueue = nextQueue
-                            isCompleted = false
-                            if !cardQueue.isEmpty {
-                                currentCard = cardQueue.removeFirst()
+                            if isLLVocabularyMode {
+                                var nextQueue = allVocabs.filter { needReviewIds.contains($0.id) }
+                                if storage.settings.isShuffleEnabled { nextQueue.shuffle() }
+                                vocabQueue = nextQueue
+                                isCompleted = false
+                                if !vocabQueue.isEmpty { currentVocab = vocabQueue.removeFirst() }
+                            } else {
+                                var nextQueue = allQuestions.filter { needReviewIds.contains($0.id) }
+                                if storage.settings.isShuffleEnabled { nextQueue.shuffle() }
+                                cardQueue = nextQueue
+                                isCompleted = false
+                                if !cardQueue.isEmpty { currentCard = cardQueue.removeFirst() }
                             }
                         }
                     }
@@ -376,11 +603,13 @@ public struct FlashcardView: View {
                         setupFlashcards()
                     }
                     
-                    SecondaryButton(
-                        title: loc.text("btnReviewWithAnswers"),
-                        icon: "doc.text.magnifyingglass"
-                    ) {
-                        showReviewView = true
+                    if !isLLVocabularyMode {
+                        SecondaryButton(
+                            title: loc.text("btnReviewWithAnswers"),
+                            icon: "doc.text.magnifyingglass"
+                        ) {
+                            showReviewView = true
+                        }
                     }
                     
                     Button(loc.text("backToDashboard")) {
@@ -397,23 +626,49 @@ public struct FlashcardView: View {
         }
     }
     
+    private func formattedMarkdown(_ rawText: String) -> LocalizedStringKey {
+        return LocalizedStringKey(rawText)
+    }
+    
     private func setupKeyboardMonitor() {
+        removeKeyboardMonitor()
         eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-            if event.keyCode == 49 { // Spacebar
+            // Delete / Backspace (51) or Escape (53) -> Quit Flashcards
+            if event.keyCode == 51 || event.keyCode == 53 {
+                dismiss()
+                WindowManager.shared.closeCurrentKeyWindow()
+                return nil
+            }
+            
+            // Spacebar (49) or Return (36) -> Flip Flashcard
+            if event.keyCode == 49 || event.keyCode == 36 {
                 withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
                     isFlipped.toggle()
                 }
                 return nil
-            } else if event.keyCode == 123 { // Left arrow
+            }
+            
+            // Left arrow (123) -> Previous card
+            if event.keyCode == 123 {
                 goPreviousCard()
                 return nil
-            } else if event.charactersIgnoringModifiers == "1" || event.charactersIgnoringModifiers == "v" || event.charactersIgnoringModifiers == "V" {
+            }
+            
+            let chars = event.charactersIgnoringModifiers?.lowercased() ?? ""
+            let code = event.keyCode
+            
+            // 1 / V / Keypad 1 (18, 9, 83) -> Thuộc (Mastered)
+            if code == 18 || code == 9 || code == 83 || chars == "1" || chars == "v" {
                 markCard(mastered: true)
                 return nil
-            } else if event.charactersIgnoringModifiers == "2" || event.charactersIgnoringModifiers == "x" || event.charactersIgnoringModifiers == "X" {
+            }
+            
+            // 2 / X / Keypad 2 (19, 7, 84) -> Chưa thuộc (Need Review)
+            if code == 19 || code == 7 || code == 84 || chars == "2" || chars == "x" {
                 markCard(mastered: false)
                 return nil
             }
+            
             return event
         }
     }

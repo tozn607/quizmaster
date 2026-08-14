@@ -17,17 +17,14 @@ func renderIcon(size: CGFloat) -> NSImage {
     context.addPath(path)
     context.clip()
     
-    // Vibrant Rainbow Gradient (Red -> Orange -> Yellow -> Green -> Cyan -> Blue -> Purple)
+    // Matches AppLogoView in App Settings: Ocean Blue -> Cyan Teal -> Deep Purple
     let colorSpace = CGColorSpaceCreateDeviceRGB()
     let colors = [
-        NSColor(calibratedRed: 0.98, green: 0.28, blue: 0.42, alpha: 1.0).cgColor, // Coral Red
-        NSColor(calibratedRed: 1.00, green: 0.58, blue: 0.16, alpha: 1.0).cgColor, // Vibrant Orange
-        NSColor(calibratedRed: 0.98, green: 0.82, blue: 0.18, alpha: 1.0).cgColor, // Golden Yellow
-        NSColor(calibratedRed: 0.18, green: 0.82, blue: 0.48, alpha: 1.0).cgColor, // Emerald Green
-        NSColor(calibratedRed: 0.10, green: 0.72, blue: 0.95, alpha: 1.0).cgColor, // Cyan Blue
-        NSColor(calibratedRed: 0.55, green: 0.32, blue: 0.95, alpha: 1.0).cgColor  // Royal Purple
+        NSColor(calibratedRed: 0.05, green: 0.58, blue: 0.98, alpha: 1.0).cgColor, // Ocean Blue
+        NSColor(calibratedRed: 0.10, green: 0.76, blue: 0.82, alpha: 1.0).cgColor, // Cyan Teal
+        NSColor(calibratedRed: 0.48, green: 0.36, blue: 0.80, alpha: 1.0).cgColor  // Deep Purple
     ] as CFArray
-    let locations: [CGFloat] = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+    let locations: [CGFloat] = [0.0, 0.5, 1.0]
     
     if let gradient = CGGradient(colorsSpace: colorSpace, colors: colors, locations: locations) {
         context.drawLinearGradient(
@@ -54,9 +51,9 @@ func renderIcon(size: CGFloat) -> NSImage {
     context.addPath(shinePath)
     context.fillPath()
     
-    // Draw pure white main graduation cap icon with shadow for legibility & depth
+    // Draw pure white centered graduation cap icon with shadow for legibility & depth
     if let capSymbol = NSImage(systemSymbolName: "graduationcap.fill", accessibilityDescription: nil) {
-        let symbolSize = size * 0.55
+        let symbolSize = size * 0.54
         let symbolRect = NSRect(
             x: (size - symbolSize) / 2,
             y: (size - symbolSize) / 2,

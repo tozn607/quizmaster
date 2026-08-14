@@ -93,17 +93,17 @@ public struct SecondaryButton: View {
                 ? Color.white
                 : Color.white.opacity(0.15)
             )
-            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .strokeBorder(
                         colorScheme == .light
                         ? Color.black.opacity(0.25)
                         : Color.white.opacity(0.35),
-                        lineWidth: 1.5
+                        lineWidth: 1.2
                     )
             )
-            .shadow(color: Color.black.opacity(0.08), radius: 3, x: 0, y: 2)
+            .shadow(color: Color.black.opacity(0.08), radius: 3, x: 0, y: 1.5)
         }
         .buttonStyle(.plain)
     }
@@ -176,21 +176,42 @@ public struct GlassCard<Content: View>: View {
 public struct BadgeView: View {
     @Environment(\.appFontScale) var fontScale
     let text: String
+    var icon: String? = nil
     var color: Color = LiquidGlassPalette.oceanBlue
     
-    public init(text: String, color: Color = LiquidGlassPalette.oceanBlue) {
+    public init(text: String, icon: String? = nil, color: Color = LiquidGlassPalette.oceanBlue) {
         self.text = text
+        self.icon = icon
         self.color = color
     }
 
     public var body: some View {
-        Text(text)
-            .font(.system(size: 11 * fontScale, weight: .bold))
-            .padding(.horizontal, 10 * fontScale)
-            .padding(.vertical, 4 * fontScale)
-            .foregroundColor(.white)
-            .background(color) // Solid 100% vibrant color fill
-            .clipShape(Capsule())
-            .shadow(color: color.opacity(0.4), radius: 3, x: 0, y: 1)
+        HStack(spacing: 4 * fontScale) {
+            if let icon = icon {
+                Image(systemName: icon)
+                    .font(.system(size: 10 * fontScale, weight: .bold))
+            }
+            Text(text)
+                .font(.system(size: 11 * fontScale, weight: .bold))
+        }
+        .padding(.horizontal, 10 * fontScale)
+        .padding(.vertical, 4.5 * fontScale)
+        .foregroundColor(.white)
+        .background(
+            ZStack {
+                color
+                LinearGradient(
+                    colors: [Color.white.opacity(0.22), Color.clear],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            }
+        )
+        .clipShape(Capsule())
+        .overlay(
+            Capsule()
+                .strokeBorder(Color.white.opacity(0.35), lineWidth: 0.8)
+        )
+        .shadow(color: color.opacity(0.35), radius: 2.5, x: 0, y: 1)
     }
 }

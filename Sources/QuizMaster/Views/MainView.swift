@@ -22,6 +22,9 @@ public struct MainView: View {
     @State private var quizToResetProgress: Quiz? = nil
     @State private var showResetProgressConfirmation: Bool = false
     
+    @State private var quizToDelete: Quiz? = nil
+    @State private var showDeleteQuizConfirmation: Bool = false
+    
     @State private var isMultiSelectMode: Bool = false
     @State private var selectedQuizIds: Set<String> = []
     
@@ -170,6 +173,20 @@ public struct MainView: View {
         } message: { quiz in
             Text("Bạn có chắc chắn muốn xóa toàn bộ lịch sử và kết quả làm bài của bộ đề \"\(quiz.title)\"? Thao tác này không thể hoàn tác.")
         }
+        .alert(
+            "Xóa bộ đề thi này?",
+            isPresented: $showDeleteQuizConfirmation,
+            presenting: quizToDelete
+        ) { quiz in
+            Button("Xóa bộ đề", role: .destructive) {
+                if let proj = currentSelectedProject {
+                    storage.deleteQuiz(projectId: proj.id, quizId: quiz.id)
+                }
+            }
+            Button("Hủy", role: .cancel) {}
+        } message: { quiz in
+            Text("Bạn có chắc chắn muốn xóa vĩnh viễn bộ đề \"\(quiz.title)\" cùng toàn bộ câu hỏi và tiến độ học? Thao tác này không thể khôi phục.")
+        }
     }
     
     // MARK: - Project Detail View
@@ -282,7 +299,8 @@ public struct MainView: View {
                             let combinedId = "combined:" + selectedQuizIds.sorted().joined(separator: ",")
                             let combinedTitle = "Luyện tập: Tổ hợp \(selectedQuizzes.count) bộ đề"
                             let combinedQuestions = selectedQuizzes.flatMap { $0.questions }
-                            activePracticeQuiz = Quiz(id: combinedId, title: combinedTitle, description: "Luyện tập tổng hợp", questions: combinedQuestions)
+                            let combinedQuiz = Quiz(id: combinedId, title: combinedTitle, description: "Luyện tập tổng hợp", questions: combinedQuestions)
+                            WindowManager.shared.openPracticeWindow(project: project, quiz: combinedQuiz, storage: storage, loc: loc, fontScale: fontScale)
                         } label: {
                             Label(loc.text("practiceMode"), systemImage: "pencil.and.outline")
                         }
@@ -292,7 +310,8 @@ public struct MainView: View {
                             let combinedId = "combined:" + selectedQuizIds.sorted().joined(separator: ",")
                             let combinedTitle = "Thi: Tổ hợp \(selectedQuizzes.count) bộ đề"
                             let combinedQuestions = selectedQuizzes.flatMap { $0.questions }
-                            activeExamQuiz = Quiz(id: combinedId, title: combinedTitle, description: "Thi tổng hợp", questions: combinedQuestions)
+                            let combinedQuiz = Quiz(id: combinedId, title: combinedTitle, description: "Thi tổng hợp", questions: combinedQuestions)
+                            WindowManager.shared.openExamWindow(project: project, quiz: combinedQuiz, storage: storage, loc: loc, fontScale: fontScale)
                         } label: {
                             Label(loc.text("examMode"), systemImage: "timer")
                         }
@@ -302,7 +321,8 @@ public struct MainView: View {
                             let combinedId = "combined:" + selectedQuizIds.sorted().joined(separator: ",")
                             let combinedTitle = "Flashcard: Tổ hợp \(selectedQuizzes.count) bộ đề"
                             let combinedQuestions = selectedQuizzes.flatMap { $0.questions }
-                            activeFlashcardQuiz = Quiz(id: combinedId, title: combinedTitle, description: "Thẻ ghi nhớ tổng hợp", questions: combinedQuestions)
+                            let combinedQuiz = Quiz(id: combinedId, title: combinedTitle, description: "Thẻ ghi nhớ tổng hợp", questions: combinedQuestions)
+                            WindowManager.shared.openFlashcardWindow(project: project, quiz: combinedQuiz, storage: storage, loc: loc, fontScale: fontScale)
                         } label: {
                             Label(loc.text("flashcardMode"), systemImage: "rectangle.on.rectangle.angled")
                         }
@@ -380,7 +400,7 @@ public struct MainView: View {
                             PrimaryButton(title: loc.text("importDoc"), icon: "plus", color: .accentColor) {
                                  showImportSheet = true
                              }
-                         }
+}
                          .frame(maxWidth: .infinity, minHeight: 300)
                      } else {
                          LazyVGrid(columns: [GridItem(.adaptive(minimum: 420), spacing: 20)], spacing: 20) {
@@ -400,6 +420,7 @@ public struct MainView: View {
         let isSelectedInMulti = selectedQuizIds.contains(quiz.id)
         let prog = project.progressMap[quiz.id]
         let isFullyCompleted = (prog?.isCompleted == true) || ((prog?.userAnswers.count ?? 0) >= quiz.questions.count && quiz.questions.count > 0)
+        let isLL = quiz.quizType == .languageLearning || project.projectType == .languageLearning
         
         let rainbowGradient = LinearGradient(
             colors: [
@@ -427,137 +448,187 @@ public struct MainView: View {
         )
         
         return GlassCard {
-            VStack(alignment: .leading, spacing: 12) {
-                // Header & Badges
-                HStack {
-                    if isMultiSelectMode {
-                        Button(action: {
-                            if isSelectedInMulti {
-                                selectedQuizIds.remove(quiz.id)
-                            } else {
-                                selectedQuizIds.insert(quiz.id)
-                            }
-                        }) {
-                            Image(systemName: isSelectedInMulti ? "checkmark.square.fill" : "square")
-                                .font(.title2)
-                                .foregroundColor(isSelectedInMulti ? .accentColor : .gray)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                    
-                    BadgeView(text: "\(quiz.questions.count) \(loc.text("questionsCount"))", color: .accentColor)
-                    if isFullyCompleted {
-                        BadgeView(text: "Hoàn thành 100%", color: .green)
-                    }
-                    
-                    Spacer()
-                    
-                    // Move Quiz Button
-                    Button(action: {
-                        quizToMove = quiz
-                        targetMoveProjectId = storage.projects.first(where: { $0.id != project.id })?.id ?? ""
-                        showMoveModal = true
-                    }) {
-                        Image(systemName: "folder.arrow.up")
-                            .font(.subheadline)
-                            .foregroundColor(.accentColor.opacity(0.8))
-                    }
-                    .buttonStyle(.plain)
-                    .help("Chuyển bộ đề sang Dự án khác")
-                    
-                    // Rename Quiz Button
-                    Button(action: {
-                        quizToRename = quiz
-                        renameTitleInput = quiz.title
-                    }) {
-                        Image(systemName: "pencil")
-                            .font(.subheadline)
-                            .foregroundColor(.accentColor.opacity(0.8))
-                    }
-                    .buttonStyle(.plain)
-                    .help(loc.text("renameQuiz"))
-                    
-                    // Reset Progress Button
-                    Button(action: {
-                        quizToResetProgress = quiz
-                        showResetProgressConfirmation = true
-                    }) {
-                        Image(systemName: "arrow.counterclockwise")
-                            .font(.subheadline)
-                            .foregroundColor(.accentColor.opacity(0.8))
-                    }
-                    .buttonStyle(.plain)
-                    .help(loc.text("resetProgress"))
-                    
-                    // Delete Quiz Set Button
-                    Button(action: {
-                        storage.deleteQuiz(projectId: project.id, quizId: quiz.id)
-                    }) {
-                        Image(systemName: "trash")
-                            .font(.subheadline)
-                            .foregroundColor(.gray.opacity(0.7))
-                    }
-                    .buttonStyle(.plain)
-                    .help(loc.text("deleteQuiz"))
+            ZStack(alignment: .topTrailing) {
+                // Faint Gray Apple SF Symbol Translation Icon in Card Background (Shifted higher up away from buttons)
+                if isLL {
+                    Image(systemName: "translate")
+                        .font(.system(size: 80 * fontScale))
+                        .foregroundColor(Color.gray.opacity(0.08))
+                        .offset(x: 5, y: 35)
+                        .allowsHitTesting(false)
                 }
                 
-                // Quiz Title (Fixed height for 2 lines so card height is uniform)
-                Text(quiz.title)
-                    .font(.title3)
-                    .fontWeight(.bold)
-                    .lineLimit(2)
-                    .frame(height: 48, alignment: .topLeading)
-                
-                // Uniform Progress Bar Slot (Same height for all cards)
-                VStack(alignment: .leading, spacing: 4) {
-                    if let prog = prog, !prog.userAnswers.isEmpty {
-                        HStack {
-                            Text("Đã luyện tập (\(prog.userAnswers.count) / \(quiz.questions.count) câu)")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Spacer()
-                            Text("\(prog.wrongQuestionIds.isEmpty ? 100 : Int(Double(quiz.questions.count - prog.wrongQuestionIds.count) / Double(quiz.questions.count) * 100))%")
-                                .font(.caption)
-                                .fontWeight(.bold)
-                                .foregroundColor(.green)
-                        }
-                        ProgressBar(value: Double(prog.userAnswers.count) / Double(quiz.questions.count), height: 4, color: isFullyCompleted ? .green : .blue)
-                    } else {
-                        HStack {
-                            Text("Chưa bắt đầu ôn tập")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Spacer()
-                        }
-                        ProgressBar(value: 0, height: 4, color: .gray.opacity(0.3))
-                    }
-                }
-                .frame(height: 28)
-                
-                Divider()
-                
-                // Centered Action Buttons: 3 Study Modes
-                HStack {
-                    Spacer(minLength: 0)
-                    
-                    VStack(spacing: 8) {
-                        HStack(spacing: 10) {
-                            PrimaryButton(title: loc.text("practiceMode"), icon: "pencil.and.outline", color: LiquidGlassPalette.oceanBlue) {
-                                activePracticeQuiz = quiz
+                VStack(alignment: .leading, spacing: 12) {
+                    // Header & Badges
+                    HStack {
+                        if isMultiSelectMode {
+                            Button(action: {
+                                if isSelectedInMulti {
+                                    selectedQuizIds.remove(quiz.id)
+                                } else {
+                                    selectedQuizIds.insert(quiz.id)
+                                }
+                            }) {
+                                Image(systemName: isSelectedInMulti ? "checkmark.square.fill" : "square")
+                                    .font(.title2)
+                                    .foregroundColor(isSelectedInMulti ? .accentColor : .gray)
                             }
-                            
-                            PrimaryButton(title: loc.text("examMode"), icon: "timer", color: LiquidGlassPalette.sunsetOrange) {
-                                activeExamQuiz = quiz
-                            }
+                            .buttonStyle(.plain)
                         }
                         
-                        PrimaryButton(title: loc.text("flashcardMode"), icon: "rectangle.on.rectangle.angled", color: LiquidGlassPalette.deepPurple) {
-                            activeFlashcardQuiz = quiz
+                        BadgeView(text: "\(quiz.questions.count) \(loc.text("questionsCount"))", color: isLL ? LiquidGlassPalette.deepPurple : .accentColor)
+                        
+                        if let cefr = quiz.targetCEFR {
+                            BadgeView(text: cefr.badgeLabel, color: LiquidGlassPalette.deepPurple)
+                        }
+                        
+                        if isFullyCompleted {
+                            BadgeView(text: "Hoàn thành 100%", color: .green)
+                        }
+                        
+                        Spacer()
+                        
+                        // Move Quiz Button
+                        Button(action: {
+                            quizToMove = quiz
+                            targetMoveProjectId = storage.projects.first(where: { $0.id != project.id && $0.projectType == project.projectType })?.id ?? ""
+                            showMoveModal = true
+                        }) {
+                            Image(systemName: "folder.arrow.up")
+                                .font(.subheadline)
+                                .foregroundColor(.accentColor.opacity(0.8))
+                        }
+                        .buttonStyle(.plain)
+                        .help("Chuyển bộ đề sang Dự án khác")
+                        
+                        // Rename Quiz Button
+                        Button(action: {
+                            quizToRename = quiz
+                            renameTitleInput = quiz.title
+                        }) {
+                            Image(systemName: "pencil")
+                                .font(.subheadline)
+                                .foregroundColor(.accentColor.opacity(0.8))
+                        }
+                        .buttonStyle(.plain)
+                        .help(loc.text("renameQuiz"))
+                        
+                        // Edit Quiz Button (For regular projects / quizzes)
+                        if !isLL {
+                            Button(action: {
+                                if let pIdx = storage.projects.firstIndex(where: { $0.id == project.id }),
+                                   let qIdx = storage.projects[pIdx].quizzes.firstIndex(where: { $0.id == quiz.id }) {
+                                    let binding = Binding<Quiz>(
+                                        get: { storage.projects[pIdx].quizzes[qIdx] },
+                                        set: { storage.projects[pIdx].quizzes[qIdx] = $0; storage.saveProjects() }
+                                    )
+                                    WindowManager.shared.openEditorWindow(projectId: project.id, quizBinding: binding, storage: storage, loc: loc, fontScale: fontScale)
+                                }
+                            }) {
+                                Image(systemName: "square.and.pencil")
+                                    .font(.subheadline)
+                                    .foregroundColor(LiquidGlassPalette.cyanTeal)
+                            }
+                            .buttonStyle(.plain)
+                            .help("Chỉnh sửa câu hỏi & đáp án trong bộ đề")
+                        }
+                        
+                        // Reset Progress Button
+                        Button(action: {
+                            quizToResetProgress = quiz
+                            showResetProgressConfirmation = true
+                        }) {
+                            Image(systemName: "arrow.counterclockwise")
+                                .font(.subheadline)
+                                .foregroundColor(.accentColor.opacity(0.8))
+                        }
+                        .buttonStyle(.plain)
+                        .help(loc.text("resetProgress"))
+                        
+                        // Delete Quiz Set Button
+                        Button(action: {
+                            quizToDelete = quiz
+                            showDeleteQuizConfirmation = true
+                        }) {
+                            Image(systemName: "trash")
+                                .font(.subheadline)
+                                .foregroundColor(.gray.opacity(0.7))
+                        }
+                        .buttonStyle(.plain)
+                        .help(loc.text("deleteQuiz"))
+                    }
+                    
+                    // Quiz Title (Fixed height for 2 lines so card height is uniform)
+                    HStack(alignment: .top, spacing: 6) {
+                        if isLL {
+                            Image(systemName: "text.bubble.fill")
+                                .font(.system(size: 13))
+                                .foregroundColor(LiquidGlassPalette.deepPurple)
+                                .padding(.top, 3)
+                        }
+                        
+                        Text(quiz.title)
+                            .font(.title3)
+                            .fontWeight(.bold)
+                            .lineLimit(2)
+                            .frame(height: 48, alignment: .topLeading)
+                    }
+                    
+                    // Uniform Progress Bar Slot (Same height for all cards)
+                    VStack(alignment: .leading, spacing: 4) {
+                        if let prog = prog, !prog.userAnswers.isEmpty {
+                            HStack {
+                                Text("Đã luyện tập (\(prog.userAnswers.count) / \(quiz.questions.count) câu)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Text("\(prog.wrongQuestionIds.isEmpty ? 100 : Int(Double(quiz.questions.count - prog.wrongQuestionIds.count) / Double(quiz.questions.count) * 100))%")
+                                    .font(.caption)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.green)
+                            }
+                            ProgressBar(value: Double(prog.userAnswers.count) / Double(quiz.questions.count), height: 4, color: isFullyCompleted ? .green : (isLL ? LiquidGlassPalette.deepPurple : .blue))
+                        } else {
+                            HStack {
+                                Text("Chưa bắt đầu ôn tập")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                            }
+                            ProgressBar(value: 0, height: 4, color: .gray.opacity(0.3))
                         }
                     }
-                    .frame(maxWidth: 360)
+                    .frame(height: 28)
                     
-                    Spacer(minLength: 0)
+                    Divider()
+                    
+                    // Centered Action Buttons: 3 Study Modes (Opening Independent Free-Floating Windows)
+                    HStack {
+                        Spacer(minLength: 0)
+                        
+                        VStack(spacing: 8) {
+                            HStack(spacing: 10) {
+                                PrimaryButton(title: loc.text("practiceMode"), icon: "pencil.and.outline", color: LiquidGlassPalette.oceanBlue) {
+                                    WindowManager.shared.openPracticeWindow(project: project, quiz: quiz, storage: storage, loc: loc, fontScale: fontScale)
+                                }
+                                
+                                PrimaryButton(title: loc.text("examMode"), icon: "timer", color: LiquidGlassPalette.sunsetOrange) {
+                                    WindowManager.shared.openExamWindow(project: project, quiz: quiz, storage: storage, loc: loc, fontScale: fontScale)
+                                }
+                            }
+                            
+                            PrimaryButton(
+                                title: isLL ? "Thẻ từ vựng CEFR (\(quiz.vocabularies.count))" : loc.text("flashcardMode"),
+                                icon: isLL ? "character.book.closed.fill" : "rectangle.on.rectangle.angled",
+                                color: LiquidGlassPalette.deepPurple
+                            ) {
+                                WindowManager.shared.openFlashcardWindow(project: project, quiz: quiz, storage: storage, loc: loc, fontScale: fontScale)
+                            }
+                        }
+                        .frame(maxWidth: 360)
+                        
+                        Spacer(minLength: 0)
+                    }
                 }
             }
         }
@@ -571,6 +642,23 @@ public struct MainView: View {
                 .stroke(isFullyCompleted ? AnyShapeStyle(rainbowStroke) : AnyShapeStyle(Color.secondary.opacity(0.15)), lineWidth: isFullyCompleted ? 2 : 1)
         )
         .contextMenu {
+            if !isLL {
+                Button {
+                    if let pIdx = storage.projects.firstIndex(where: { $0.id == project.id }),
+                       let qIdx = storage.projects[pIdx].quizzes.firstIndex(where: { $0.id == quiz.id }) {
+                        let binding = Binding<Quiz>(
+                            get: { storage.projects[pIdx].quizzes[qIdx] },
+                            set: { storage.projects[pIdx].quizzes[qIdx] = $0; storage.saveProjects() }
+                        )
+                        WindowManager.shared.openEditorWindow(projectId: project.id, quizBinding: binding, storage: storage, loc: loc, fontScale: fontScale)
+                    }
+                } label: {
+                    Label("Chỉnh sửa câu hỏi & đáp án...", systemImage: "square.and.pencil")
+                }
+                
+                Divider()
+            }
+            
             Button {
                 exportToZip(quiz: quiz)
             } label: {
@@ -587,7 +675,7 @@ public struct MainView: View {
             
             Button {
                 quizToMove = quiz
-                targetMoveProjectId = storage.projects.first(where: { $0.id != project.id })?.id ?? ""
+                targetMoveProjectId = storage.projects.first(where: { $0.id != project.id && $0.projectType == project.projectType })?.id ?? ""
                 showMoveModal = true
             } label: {
                 Label("Chuyển sang Dự án khác...", systemImage: "folder.arrow.up")
@@ -610,72 +698,79 @@ public struct MainView: View {
             Divider()
             
             Button(role: .destructive) {
-                storage.deleteQuiz(projectId: project.id, quizId: quiz.id)
+                quizToDelete = quiz
+                showDeleteQuizConfirmation = true
             } label: {
                 Label(loc.text("deleteQuiz"), systemImage: "trash")
             }
         }
     }
      
-     // MARK: - Move Quiz Sheet Modal
+     // MARK: - Move Quiz Sheet
      private var moveQuizSheet: some View {
-         let otherProjects = storage.projects.filter { $0.id != currentSelectedProject?.id }
-         
-         return VStack(spacing: 18) {
-             HStack {
-                 Image(systemName: "folder.arrow.up")
-                     .font(.title2)
-                     .foregroundColor(.accentColor)
-                 Text(quizToMove != nil ? "Chuyển Bộ đề thi" : "Chuyển \(selectedQuizIds.count) Bộ đề thi")
-                     .font(.title3)
-                     .fontWeight(.bold)
-                 Spacer()
+         let compatibleProjects = storage.projects.filter { p in
+             if let current = currentSelectedProject {
+                 return p.id != current.id && p.projectType == current.projectType
              }
+             return false
+         }
+         
+         return VStack(alignment: .leading, spacing: 16) {
+             Text(loc.text("moveQuizTitle"))
+                 .font(.headline)
+                 .fontWeight(.bold)
              
-             Divider()
-             
-             if otherProjects.isEmpty {
-                 Text("Chưa có dự án nào khác. Hãy tạo một dự án mới ở Sidebar trước khi chuyển.")
+             if compatibleProjects.isEmpty {
+                 Text("Không có dự án cùng loại nào khác (\(currentSelectedProject?.projectType.displayName ?? "")). Hãy tạo một dự án mới cùng loại ở thanh bên trước khi chuyển.")
                      .font(.subheadline)
                      .foregroundColor(.secondary)
+                     .padding(.vertical, 8)
+                 
+                 HStack {
+                     Spacer()
+                     SecondaryButton(title: "Đóng", icon: "xmark") {
+                         showMoveModal = false
+                         quizToMove = nil
+                     }
+                 }
              } else {
                  VStack(alignment: .leading, spacing: 8) {
-                     Text("Chọn Dự án đích muốn chuyển bộ đề tới:")
+                     Text(loc.text("selectTargetProject"))
                          .font(.subheadline)
                          .fontWeight(.semibold)
                      
                      Picker("", selection: $targetMoveProjectId) {
-                         ForEach(otherProjects) { proj in
+                         ForEach(compatibleProjects) { proj in
                              Text(proj.name).tag(proj.id)
                          }
                      }
                      .pickerStyle(.radioGroup)
                  }
-             }
-             
-             Divider()
-             
-             HStack {
-                 SecondaryButton(title: "Hủy", icon: "xmark") {
-                     showMoveModal = false
-                     quizToMove = nil
-                 }
                  
-                 Spacer()
+                 Divider()
                  
-                 PrimaryButton(title: "Xác nhận Chuyển", icon: "checkmark", color: .accentColor) {
-                     if let proj = currentSelectedProject, !targetMoveProjectId.isEmpty {
-                         if let q = quizToMove {
-                             storage.moveQuiz(quizId: q.id, fromProjectId: proj.id, toProjectId: targetMoveProjectId)
-                         } else if !selectedQuizIds.isEmpty {
-                             storage.moveQuizzes(quizIds: selectedQuizIds, fromProjectId: proj.id, toProjectId: targetMoveProjectId)
-                             selectedQuizIds.removeAll()
-                         }
+                 HStack {
+                     SecondaryButton(title: "Hủy", icon: "xmark") {
+                         showMoveModal = false
+                         quizToMove = nil
                      }
-                     showMoveModal = false
-                     quizToMove = nil
+                     
+                     Spacer()
+                     
+                     PrimaryButton(title: "Xác nhận Chuyển", icon: "checkmark", color: .accentColor) {
+                         if let proj = currentSelectedProject, !targetMoveProjectId.isEmpty {
+                             if let q = quizToMove {
+                                 storage.moveQuiz(quizId: q.id, fromProjectId: proj.id, toProjectId: targetMoveProjectId)
+                             } else if !selectedQuizIds.isEmpty {
+                                 storage.moveQuizzes(quizIds: selectedQuizIds, fromProjectId: proj.id, toProjectId: targetMoveProjectId)
+                                 selectedQuizIds.removeAll()
+                             }
+                         }
+                         showMoveModal = false
+                         quizToMove = nil
+                     }
+                     .disabled(targetMoveProjectId.isEmpty)
                  }
-                 .disabled(otherProjects.isEmpty || targetMoveProjectId.isEmpty)
              }
          }
          .padding(24)

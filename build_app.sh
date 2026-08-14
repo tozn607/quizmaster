@@ -15,7 +15,7 @@ else
 fi
 echo "$BUILD_NUMBER" > "$BUILD_FILE"
 
-VERSION="1.2.3"
+VERSION="2.0.0"
 RELEASE_TAG="v${VERSION}-b${BUILD_NUMBER}"
 
 echo "🔢 Building QuizMaster v${VERSION} (Build ${BUILD_NUMBER})...."
@@ -23,25 +23,29 @@ echo "🔢 Building QuizMaster v${VERSION} (Build ${BUILD_NUMBER})...."
 # Create build_info.json in source repository
 cat <<EOF > "build_info.json"
 {
-  "version": "1.2.3",
+  "version": "1.3.0",
   "buildNumber": ${BUILD_NUMBER},
-  "releaseTag": "v1.2.3-b${BUILD_NUMBER}",
+  "releaseTag": "v1.3.0-b${BUILD_NUMBER}",
   "buildDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "releaseNotes": "QuizMaster v1.2.3 (Build ${BUILD_NUMBER}):\n- Inline Reset Progress button right on each Card with safety confirmation\n- Streamlined Multi-Select Study dropdown (Practice, Exam, Flashcard) and refined desaturated button styling"
+  "releaseNotes": "QuizMaster v1.3.0:\n- Hỗ trợ chuyên sâu cho môn Ngoại ngữ với các dạng bài đọc hiểu, trắc nghiệm từ vựng, ngữ pháp và phát âm\n- Tách biệt hoàn toàn dự án Ôn tập chung và Ngoại ngữ\n- Chế độ thẻ ghi nhớ từ vựng tự động trích xuất từ đề thi kèm phiên âm IPA, nghĩa tiếng Việt và câu ví dụ minh họa\n- Giao diện bài thi thông minh hiển thị bài đọc bên trái và khóa phần thi khi chuyển tiếp"
 }
 EOF
 
 # Create release_notes.txt
 cat <<'EOF' > "release_notes.txt"
-# 🚀 QuizMaster v1.2.3 Release Notes
+# QuizMaster v1.3.0 - Bản cập nhật Học & Thi Ngoại ngữ
 
-### 🌟 New Features & Enhancements in v1.2.3:
-- 🔄 **Inline Reset Progress with Safety Confirmation**:
-  - Quick progress reset button on Quiz Cards with an alert confirmation popup to prevent accidental data loss.
-- 📚 **Streamlined Multi-Select Study Dropdown**:
-  - Unified Practice, Exam, and Flashcard study modes into a clean 'Bắt đầu học' menu for multiple selected quizzes.
-- 🎨 **De-saturated Visual Styling**:
-  - Refined button color palette and replaced glowing colored shadows with clean, natural macOS drop shadows.
+### Các điểm mới trong phiên bản 1.3.0:
+- **Hỗ trợ chuyên biệt cho đề thi Ngoại ngữ**:
+  - Nhập và xử lý hoàn chỉnh các đề thi tiếng Anh (như đề thi tốt nghiệp THPT, đề luyện thi chứng chỉ) bao gồm bài đọc hiểu, điền từ, bài tập ngữ pháp và ngữ âm.
+- **Phân loại dự án độc lập**:
+  - Cho phép tạo dự án chuyên môn 'Học & Thi Ngoại ngữ' riêng biệt với dự án thông thường, đảm bảo quản lý bộ đề trực quan và không bị nhầm lẫn.
+- **Thẻ ghi nhớ từ vựng theo khung CEFR**:
+  - Chế độ Flashcard cho đề thi ngoại ngữ tự động tổng hợp danh sách từ vựng theo khung tham chiếu CEFR. Mặt trước hiển thị từ kèm loại từ và phiên âm quốc tế IPA; mặt sau hiển thị nghĩa tiếng Việt chuẩn cùng câu văn ví dụ có từ vựng được làm nổi bật.
+- **Trải nghiệm làm bài đọc hiểu tiện lợi**:
+  - Chế độ Luyện tập và Thi thử tự động tách khung bài đọc ở cột bên trái với cỡ chữ tối ưu, giúp theo dõi nội dung bài luận song song cùng câu hỏi và đáp án bên phải.
+- **Bộ đếm thời gian và quy chế chuyển phần thi**:
+  - Thi thử yêu cầu thiết lập đồng hồ đếm ngược trước khi bắt đầu và có thông báo xác nhận khi chuyển sang kỹ năng tiếp theo.
 EOF
 
 echo "🎨 Generating AppIcon..."
@@ -52,6 +56,8 @@ echo "🔨 Compiling QuizMaster Swift application..."
 swift build -c release
 
 APP_NAME="QuizMaster"
+APP_VERSION="2.0.0"
+BUNDLE_ID="com.tozn.quizmaster"
 BUNDLE_DIR="${APP_NAME}.app"
 CONTENTS_DIR="${BUNDLE_DIR}/Contents"
 MACOS_DIR="${CONTENTS_DIR}/MacOS"

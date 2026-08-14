@@ -1,9 +1,9 @@
-# HƯỚNG DẪN SỬ DỤNG CHI TIẾT QUIZMASTER (v1.2.1)
+# HƯỚNG DẪN SỬ DỤNG CHI TIẾT QUIZMASTER (v2.0.0)
 
 Tác giả: **@tozn607**  
 Nền tảng: macOS (Swift / SwiftUI Native)  
-Ngày soạn: **13 Tháng 8 năm 2026**  
-Dành cho phiên bản: **v1.2.1**
+Ngày soạn: **14 Tháng 8 năm 2026**  
+Dành cho phiên bản: **v2.0.0**
 
 
 ## CHƯƠNG 1: MÀN HÌNH HƯỚNG DẪN CẤU HÌNH BAN ĐẦU & API KEY
@@ -83,6 +83,19 @@ Khi mở **QuizMaster.app** lần đầu trên macOS, nếu gặp thông báo l�
 
 4. Bấm **"Bắt đầu Quét với Gemini AI"** (Xác nhận trên hộp thoại kiểm tra chế độ quét).
 ![Screenshot](/DOCS/SCREENSHOTS/quizmaster6.png)
+
+### 2.1. CHẾ ĐỘ HỌC NGOẠI NGỮ (LANGUAGE LEARNING)
+> ⚠️ **Lưu ý**: Chế độ Học Ngoại ngữ là tính năng chuyên biệt dành riêng cho các **Dự án Học Ngoại ngữ**, hiện đang trong giai đoạn phát triển và tối ưu hóa xử lý văn bản phức tạp (Work in Progress).
+
+1. **Tạo Dự án Ngoại ngữ**: Khi bấm nút `+` ở Sidebar, chọn loại dự án là **"Dự án Học Ngoại ngữ"**.
+2. **Nhập Đề thi Ngoại ngữ**:
+   - Bấm **"Nhập Tài liệu / Bộ đề"** và mở rộng mục **"Học Ngoại Ngữ"**.
+   - Chọn tệp đề thi (Word `.docx`, PDF, TXT) chuẩn cấu trúc đề THPT Quốc gia, IELTS, TOEIC.
+   - Chọn **Khung trình độ CEFR** (A1, A2, B1, B2, C1, C2) để AI tự động trích xuất danh sách thẻ Flashcard từ vựng tương ứng.
+3. **Các Điểm Nổi Bật**:
+   - **Khung đọc bài chuyên dụng (Reading)**: Tự động tách bài đọc sang cột bên trái với thanh trượt tùy chỉnh cỡ chữ, font có chân/không chân, màu nền (Sepia, Trắng, Tối) và giãn dòng.
+   - **Phân nhóm Kỹ năng**: Menu danh sách câu hỏi tự động nhóm theo Kỹ năng (Phát âm, Ngữ pháp, Điền từ, Đọc hiểu) và khóa phần thi khi chuyển sang kỹ năng mới trong chế độ Thi thử.
+   - **Flashcard Từ vựng CEFR**: Tự động sinh thẻ từ vựng với từ loại, phiên âm IPA, nghĩa tiếng Việt và câu ví dụ in đậm.
 
 ## CHƯƠNG 3: BA CHẾ ĐỘ ÔN TẬP VÀ THANH ĐIỀU HƯỚNG CÂU HỎI
 

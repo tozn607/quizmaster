@@ -1,7 +1,7 @@
 {
-  "version": "1.2.3",
-  "buildNumber": 161,
-  "releaseTag": "v1.2.3-b161",
-  "buildDate": "2026-08-14T02:28:42Z",
-  "releaseNotes": "QuizMaster v1.2.3 (Build 161):\n- Inline Reset Progress button right on each Card with safety confirmation\n- Streamlined Multi-Select Study dropdown (Practice, Exam, Flashcard) and refined desaturated button styling"
+  "version": "1.3.0",
+  "buildNumber": 177,
+  "releaseTag": "v1.3.0-b177",
+  "buildDate": "2026-08-14T05:45:06Z",
+  "releaseNotes": "QuizMaster v1.3.0:\n- Hỗ trợ chuyên sâu cho môn Ngoại ngữ với các dạng bài đọc hiểu, trắc nghiệm từ vựng, ngữ pháp và phát âm\n- Tách biệt hoàn toàn dự án Ôn tập chung và Ngoại ngữ\n- Chế độ thẻ ghi nhớ từ vựng tự động trích xuất từ đề thi kèm phiên âm IPA, nghĩa tiếng Việt và câu ví dụ minh họa\n- Giao diện bài thi thông minh hiển thị bài đọc bên trái và khóa phần thi khi chuyển tiếp"
 }

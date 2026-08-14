@@ -2,7 +2,7 @@
   <img src="AppIcon.png" width="128" height="128" alt="QuizMaster App Icon">
 </p>
 
-# QuizMaster (v1.2.3)
+# QuizMaster (v2.0.0)
 
 [![macOS Supported](https://img.shields.io/badge/macOS-13.0%2B-blue.svg)](https://apple.com)
 [![Language](https://img.shields.io/badge/Swift-5.9-orange.svg)](https://swift.org)
@@ -42,13 +42,14 @@ Nhấn vào đây: **[Hướng dẫn Sử dụng Chi tiết](DOCS/HUONG_DAN_SU_D
 
 ### Các Tính năng Nổi bật:
 - **Quét Tài liệu & Tạo Đề bằng AI**: Tự động chuyển đổi tài liệu bài giảng PDF, Word (`.docx`), TXT thành bộ đề trắc nghiệm hoàn chỉnh kèm đáp án và lời giải chi tiết.
+- **Dự án & Chế độ Học Ngoại ngữ (Language Learning - WIP / Thử nghiệm)**: Hỗ trợ phân tích chuyên sâu các đề thi tiếng Anh (THPT Quốc Gia, IELTS, TOEIC), tự động tách bài đọc hiểu (Reading Passage) với thanh tùy biến định dạng font/màu giấy, chia nhóm kỹ năng (Phát âm, Ngữ pháp, Điền từ) và trích xuất bộ thẻ Flashcard từ vựng theo khung trình độ CEFR.
 - **Mức độ Chi tiết Câu hỏi**: 3 chế độ quét linh hoạt: **Mặc định** (~12-20 câu), **Ý chính / Trọng tâm** (~8-15 câu), **Chi tiết toàn bộ** (~35-60+ câu).
-- **Thẻ ghi nhớ**: Lật thẻ mượt mà với nút "Thẻ trước" xem lại lịch sử thẻ. Khi kết thúc vòng học, màn hình tổng kết cho phép tiếp tục học các thẻ chưa thuộc hoặc học lại từ đầu.
-- **Chế độ Thi thử Chống gian lận**: Môi trường thi thật không hiện đáp án và ẩn nút Hỏi AI để đảm bảo đánh giá chính xác năng lực.
-- **Công tắc Xáo trộn**: Nút **"🔀 Xáo trộn câu hỏi & đáp án"** bật/tắt xáo trộn vị trí câu hỏi và các phương án A/B/C/D linh hoạt.
+- **Thẻ ghi nhớ 3D**: Lật thẻ mượt mà với nút "Thẻ trước" xem lại lịch sử thẻ. Khi kết thúc vòng học, màn hình tổng kết cho phép tiếp tục học các thẻ chưa thuộc hoặc học lại từ đầu.
+- **Chế độ Thi thử Chống gian lận**: Môi trường thi thật không hiện đáp án và ẩn nút Hỏi AI để đảm bảo đánh giá chính xác năng lực. Có đồng hồ đếm ngược bắt buộc chống thoát đề.
+- **Công tắc Xáo trộn Bất biến**: Nút **"🔀 Xáo trộn câu hỏi & đáp án"** bật/tắt xáo trộn vị trí câu hỏi và các phương án A/B/C/D linh hoạt, hoàn toàn bảo toàn kết quả đã chọn và lịch sử làm bài.
 - **Thanh Điều hướng Câu hỏi**: Bảng bên phải hiển thị danh sách câu hỏi theo màu trạng thái (Đúng, Sai, Đã thuộc, Chưa làm) giúp di chuyển nhanh giữa các câu.
 - **Lưu Vị trí Học Tự động**: Tự động lưu tiến độ làm bài luyện tập, cho phép thoát ra và quay lại đúng câu đang làm dở.
-- **Đặt lại Tiến độ**: Xóa tiến độ học của cả dự án hoặc từng bộ đề thi khi muốn ôn tập lại từ đầu.
+- **Đặt lại Tiến độ & Quản lý Bộ đề**: Hỗ trợ đổi tên, chuyển dự án, chọn nhiều và xóa bộ đề an toàn với hộp thoại xác nhận.
 - **Kiểm tra Cập nhật Tự động**: Tích hợp màn hình xem thông tin bản cập nhật mới và tải về trực tiếp từ GitHub.
 
 ### Phím tắt Bàn phím
