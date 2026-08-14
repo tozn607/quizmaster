@@ -19,6 +19,9 @@ public struct MainView: View {
     @State private var quizToRename: Quiz? = nil
     @State private var renameTitleInput: String = ""
     
+    @State private var quizToResetProgress: Quiz? = nil
+    @State private var showResetProgressConfirmation: Bool = false
+    
     @State private var isMultiSelectMode: Bool = false
     @State private var selectedQuizIds: Set<String> = []
     
@@ -153,6 +156,20 @@ public struct MainView: View {
         .sheet(isPresented: $showMoveModal) {
             moveQuizSheet
         }
+        .alert(
+            "Đặt lại tiến độ?",
+            isPresented: $showResetProgressConfirmation,
+            presenting: quizToResetProgress
+        ) { quiz in
+            Button("Đặt lại", role: .destructive) {
+                if let proj = currentSelectedProject {
+                    storage.resetQuizProgress(projectId: proj.id, quizId: quiz.id)
+                }
+            }
+            Button("Hủy", role: .cancel) {}
+        } message: { quiz in
+            Text("Bạn có chắc chắn muốn xóa toàn bộ lịch sử và kết quả làm bài của bộ đề \"\(quiz.title)\"? Thao tác này không thể hoàn tác.")
+        }
     }
     
     // MARK: - Project Detail View
@@ -242,29 +259,94 @@ public struct MainView: View {
             .padding()
             .background(.thinMaterial)
             
-            // Multi-select Action Toolbar (Delete Selected / Move Selected)
+            // Multi-select Action Toolbar (Streamlined Dropdown + Secondary Actions)
             if isMultiSelectMode && !selectedQuizIds.isEmpty {
+                let selectedQuizzes = project.quizzes.filter { selectedQuizIds.contains($0.id) }
+                
                 HStack(spacing: 12) {
-                    Text("Đã chọn \(selectedQuizIds.count) bộ đề thi")
-                        .font(.subheadline)
-                        .fontWeight(.bold)
-                        .foregroundColor(.accentColor)
+                    HStack(spacing: 6) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.accentColor)
+                        Text("Đã chọn \(selectedQuizIds.count) bộ đề thi")
+                            .font(.subheadline)
+                            .fontWeight(.bold)
+                            .foregroundColor(.accentColor)
+                    }
                     
                     Spacer()
                     
-                    PrimaryButton(title: "Chuyển sang Dự án khác...", icon: "folder.arrow.up", color: .accentColor) {
+                    // Unified Study Dropdown Menu
+                    Menu {
+                        Button {
+                            guard !selectedQuizzes.isEmpty else { return }
+                            let combinedId = "combined:" + selectedQuizIds.sorted().joined(separator: ",")
+                            let combinedTitle = "Luyện tập: Tổ hợp \(selectedQuizzes.count) bộ đề"
+                            let combinedQuestions = selectedQuizzes.flatMap { $0.questions }
+                            activePracticeQuiz = Quiz(id: combinedId, title: combinedTitle, description: "Luyện tập tổng hợp", questions: combinedQuestions)
+                        } label: {
+                            Label(loc.text("practiceMode"), systemImage: "pencil.and.outline")
+                        }
+                        
+                        Button {
+                            guard !selectedQuizzes.isEmpty else { return }
+                            let combinedId = "combined:" + selectedQuizIds.sorted().joined(separator: ",")
+                            let combinedTitle = "Thi: Tổ hợp \(selectedQuizzes.count) bộ đề"
+                            let combinedQuestions = selectedQuizzes.flatMap { $0.questions }
+                            activeExamQuiz = Quiz(id: combinedId, title: combinedTitle, description: "Thi tổng hợp", questions: combinedQuestions)
+                        } label: {
+                            Label(loc.text("examMode"), systemImage: "timer")
+                        }
+                        
+                        Button {
+                            guard !selectedQuizzes.isEmpty else { return }
+                            let combinedId = "combined:" + selectedQuizIds.sorted().joined(separator: ",")
+                            let combinedTitle = "Flashcard: Tổ hợp \(selectedQuizzes.count) bộ đề"
+                            let combinedQuestions = selectedQuizzes.flatMap { $0.questions }
+                            activeFlashcardQuiz = Quiz(id: combinedId, title: combinedTitle, description: "Thẻ ghi nhớ tổng hợp", questions: combinedQuestions)
+                        } label: {
+                            Label(loc.text("flashcardMode"), systemImage: "rectangle.on.rectangle.angled")
+                        }
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "play.fill")
+                                .font(.system(size: 11 * fontScale, weight: .bold))
+                            Text("Bắt đầu học (\(selectedQuizIds.count))")
+                                .font(.system(size: 13 * fontScale, weight: .bold))
+                            Image(systemName: "chevron.down")
+                                .font(.system(size: 10 * fontScale, weight: .semibold))
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 14 * fontScale)
+                        .padding(.vertical, 8 * fontScale)
+                        .background(LiquidGlassPalette.oceanBlue.opacity(0.95))
+                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .strokeBorder(Color.white.opacity(0.25), lineWidth: 0.75)
+                        )
+                        .shadow(color: Color.black.opacity(0.10), radius: 3, x: 0, y: 1.5)
+                    }
+                    .menuStyle(.borderlessButton)
+                    
+                    Divider()
+                        .frame(height: 20)
+                    
+                    SecondaryButton(title: "Chuyển sang Dự án khác...", icon: "folder.arrow.up") {
                         targetMoveProjectId = storage.projects.first(where: { $0.id != project.id })?.id ?? ""
                         showMoveModal = true
                     }
                     
-                    PrimaryButton(title: "Xóa các bộ đề đã chọn (\(selectedQuizIds.count))", icon: "trash.fill", color: .red) {
+                    SecondaryButton(title: "Xóa (\(selectedQuizIds.count))", icon: "trash") {
                         storage.deleteQuizzes(quizIds: selectedQuizIds, fromProjectId: project.id)
                         selectedQuizIds.removeAll()
                     }
                 }
-                .padding()
-                .background(Color.accentColor.opacity(0.1))
-                .border(Color.accentColor.opacity(0.3), width: 1)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(Color.accentColor.opacity(0.08))
+                .cornerRadius(12)
+                .padding(.horizontal)
+                .padding(.bottom, 8)
             }
             
             Divider()
@@ -395,6 +477,18 @@ public struct MainView: View {
                     .buttonStyle(.plain)
                     .help(loc.text("renameQuiz"))
                     
+                    // Reset Progress Button
+                    Button(action: {
+                        quizToResetProgress = quiz
+                        showResetProgressConfirmation = true
+                    }) {
+                        Image(systemName: "arrow.counterclockwise")
+                            .font(.subheadline)
+                            .foregroundColor(.accentColor.opacity(0.8))
+                    }
+                    .buttonStyle(.plain)
+                    .help(loc.text("resetProgress"))
+                    
                     // Delete Quiz Set Button
                     Button(action: {
                         storage.deleteQuiz(projectId: project.id, quizId: quiz.id)
@@ -507,7 +601,8 @@ public struct MainView: View {
             }
             
             Button {
-                storage.resetQuizProgress(projectId: project.id, quizId: quiz.id)
+                quizToResetProgress = quiz
+                showResetProgressConfirmation = true
             } label: {
                 Label(loc.text("resetProgress"), systemImage: "arrow.counterclockwise")
             }

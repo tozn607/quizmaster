@@ -2,12 +2,12 @@ import SwiftUI
 import AppKit
 
 public struct LiquidGlassPalette {
-    public static let oceanBlue = Color(red: 0.0, green: 0.45, blue: 0.98)
-    public static let cyanTeal = Color(red: 0.0, green: 0.68, blue: 0.72)
-    public static let emeraldMint = Color(red: 0.10, green: 0.72, blue: 0.38)
-    public static let sunsetOrange = Color(red: 0.98, green: 0.45, blue: 0.05)
-    public static let coralRed = Color(red: 0.92, green: 0.18, blue: 0.30)
-    public static let deepPurple = Color(red: 0.55, green: 0.25, blue: 0.92)
+    public static let oceanBlue = Color(red: 0.12, green: 0.48, blue: 0.92)
+    public static let cyanTeal = Color(red: 0.15, green: 0.58, blue: 0.65)
+    public static let emeraldMint = Color(red: 0.18, green: 0.62, blue: 0.40)
+    public static let sunsetOrange = Color(red: 0.88, green: 0.46, blue: 0.20)
+    public static let coralRed = Color(red: 0.84, green: 0.28, blue: 0.32)
+    public static let deepPurple = Color(red: 0.48, green: 0.36, blue: 0.80)
 }
 
 public struct PrimaryButton: View {
@@ -40,12 +40,12 @@ public struct PrimaryButton: View {
             .padding(.vertical, 9 * fontScale)
             .background(
                 ZStack {
-                    // Full solid vibrant color fill
-                    color
+                    // Refined solid color fill
+                    color.opacity(0.92)
                     
-                    // Glossy specular top shine
+                    // Subtle specular top shine
                     LinearGradient(
-                        colors: [Color.white.opacity(0.30), Color.clear],
+                        colors: [Color.white.opacity(0.18), Color.clear],
                         startPoint: .top,
                         endPoint: .center
                     )
@@ -54,9 +54,9 @@ public struct PrimaryButton: View {
             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .strokeBorder(Color.white.opacity(0.40), lineWidth: 1)
+                    .strokeBorder(Color.white.opacity(0.25), lineWidth: 0.75)
             )
-            .shadow(color: color.opacity(0.45), radius: 6, x: 0, y: 3)
+            .shadow(color: Color.black.opacity(0.10), radius: 3, x: 0, y: 1.5)
         }
         .buttonStyle(.plain)
     }

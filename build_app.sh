@@ -15,7 +15,7 @@ else
 fi
 echo "$BUILD_NUMBER" > "$BUILD_FILE"
 
-VERSION="1.2.2"
+VERSION="1.2.3"
 RELEASE_TAG="v${VERSION}-b${BUILD_NUMBER}"
 
 echo "🔢 Building QuizMaster v${VERSION} (Build ${BUILD_NUMBER})...."
@@ -23,29 +23,25 @@ echo "🔢 Building QuizMaster v${VERSION} (Build ${BUILD_NUMBER})...."
 # Create build_info.json in source repository
 cat <<EOF > "build_info.json"
 {
-  "version": "1.2.2",
+  "version": "1.2.3",
   "buildNumber": ${BUILD_NUMBER},
-  "releaseTag": "v1.2.2-b${BUILD_NUMBER}",
+  "releaseTag": "v1.2.3-b${BUILD_NUMBER}",
   "buildDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "releaseNotes": "QuizMaster v1.2.2 (Build ${BUILD_NUMBER}):\n- Togglable Exam Timer (15m, 45m, Pomodoro 25m, Custom minutes with number input fix)\n- Time-of-day emoji badge & cheeky greetings on top of Sidebar project list\n- Document length processing time warning callout banner in Document Import\n- Coherent equal button sizing for Shuffle and Multi-Select buttons across all window sizes\n- Permanent GitHub Release direct download URL support"
+  "releaseNotes": "QuizMaster v1.2.3 (Build ${BUILD_NUMBER}):\n- Inline Reset Progress button right on each Card with safety confirmation\n- Streamlined Multi-Select Study dropdown (Practice, Exam, Flashcard) and refined desaturated button styling"
 }
 EOF
 
 # Create release_notes.txt
 cat <<'EOF' > "release_notes.txt"
-# 🚀 QuizMaster v1.2.2 Release Notes
+# 🚀 QuizMaster v1.2.3 Release Notes
 
-### 🌟 New Features & Enhancements in v1.2.2:
-- ⏱️ **Togglable Exam Timer (15m, 45m, Pomodoro & Custom)**:
-  - Added a countdown timer in Exam mode with preset options (15m, 45m, Pomodoro 25m) and Custom minute input.
-  - Features live countdown display (`⏱️ 29:54`), color warning when <5 minutes remain, and auto-submission upon time expiry.
-- 🌅 **Time-of-Day Emoji & Cheeky Greetings**:
-  - Sidebar header badge detecting local time (morning 🌅, noon ☀️, afternoon 🌤️, night 🌙, midnight 🌌) with cheeky randomized study encouragement messages.
-- 💡 **Document Length Processing Warning Callout**:
-  - Prominent duration warning banner positioned at the top of Document Import advising users that longer documents require more AI scanning time.
-- 🔀 **Coherent Button Design & Permanent Direct Downloads**:
-  - Equalized Shuffle and Multi-Select button sizing across all window dimensions.
-  - Added direct release download support with permanent redirect links on GitHub.
+### 🌟 New Features & Enhancements in v1.2.3:
+- 🔄 **Inline Reset Progress with Safety Confirmation**:
+  - Quick progress reset button on Quiz Cards with an alert confirmation popup to prevent accidental data loss.
+- 📚 **Streamlined Multi-Select Study Dropdown**:
+  - Unified Practice, Exam, and Flashcard study modes into a clean 'Bắt đầu học' menu for multiple selected quizzes.
+- 🎨 **De-saturated Visual Styling**:
+  - Refined button color palette and replaced glowing colored shadows with clean, natural macOS drop shadows.
 EOF
 
 echo "🎨 Generating AppIcon..."
