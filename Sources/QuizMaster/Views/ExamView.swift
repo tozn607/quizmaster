@@ -16,6 +16,7 @@ public struct ExamView: View {
     @State private var currentIndex: Int = 0
     @State private var userAnswers: [String: Int] = [:] // questionId -> selectedOptionIndex
     @State private var userSelectedOptionIds: [String: String] = [:] // questionId -> chosen Option ID
+    @State private var currentProgress: QuizProgress? = nil
     @State private var showEndingView: Bool = false
     @State private var showNavPane: Bool = false
     @State private var askingGeminiQuestion: Question? = nil
@@ -72,7 +73,7 @@ public struct ExamView: View {
                     Spacer()
                     
                     VStack(spacing: 2) {
-                        Text("\(quiz.title) • Thi thử")
+                        Text("\(quiz.title) • \(loc.text("examMode"))")
                             .font(.system(size: 16 * fontScale, weight: .bold))
                         
                         if !activeQuestions.isEmpty {
@@ -141,6 +142,28 @@ public struct ExamView: View {
                         .menuStyle(.borderlessButton)
                         .help(loc.text("examTimerHelp"))
                     }
+                    
+                    // Shuffle toggle button inside Exam View
+                    Button(action: {
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                            storage.settings.isShuffleEnabled.toggle()
+                            storage.saveSettings()
+                            setupExamQuestions(forceReshuffle: storage.settings.isShuffleEnabled)
+                        }
+                    }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: storage.settings.isShuffleEnabled ? "shuffle.circle.fill" : "shuffle.circle")
+                            Text(loc.text("toggleShuffle"))
+                        }
+                        .font(.system(size: 12 * fontScale, weight: .medium))
+                        .foregroundColor(storage.settings.isShuffleEnabled ? LiquidGlassPalette.sunsetOrange : .secondary)
+                        .padding(.horizontal, 8 * fontScale)
+                        .padding(.vertical, 4 * fontScale)
+                        .background(storage.settings.isShuffleEnabled ? LiquidGlassPalette.sunsetOrange.opacity(0.12) : Color.clear)
+                        .cornerRadius(6)
+                    }
+                    .buttonStyle(.plain)
+                    .help("Xáo trộn thứ tự câu hỏi và các phương án A/B/C/D")
                     
                     // Toggle Question Navigator Sidebar
                     Button(action: { withAnimation { showNavPane.toggle() } }) {
@@ -322,12 +345,12 @@ public struct ExamView: View {
                 // Footer Navigation
                 HStack {
                     HStack(spacing: 12 * fontScale) {
-                        SecondaryButton(title: "Câu trước (←)", icon: "arrow.left") {
+                        SecondaryButton(title: loc.currentLanguage == .vietnamese ? "Câu trước (←)" : "Previous (←)", icon: "arrow.left") {
                             attemptNavigate(to: currentIndex - 1)
                         }
                         .disabled(currentIndex == 0 || isPreviousSectionLocked(currentIndex - 1))
                         
-                        SecondaryButton(title: "Câu sau (→)", icon: "arrow.right") {
+                        SecondaryButton(title: loc.currentLanguage == .vietnamese ? "Câu sau (→)" : "Next (→)", icon: "arrow.right") {
                             attemptNavigate(to: currentIndex + 1)
                         }
                         .disabled(currentIndex + 1 >= activeQuestions.count)
@@ -336,7 +359,9 @@ public struct ExamView: View {
                     Spacer()
                     
                     PrimaryButton(
-                        title: "Nộp bài thi (\(userAnswers.count)/\(activeQuestions.count) câu)",
+                        title: loc.currentLanguage == .vietnamese
+                            ? "Nộp bài thi (\(userAnswers.count)/\(activeQuestions.count) câu)"
+                            : "Submit Exam (\(userAnswers.count)/\(activeQuestions.count) questions)",
                         icon: "checkmark.seal.fill",
                         color: LiquidGlassPalette.sunsetOrange
                     ) {
@@ -354,7 +379,7 @@ public struct ExamView: View {
             customTimerSheet
         }
         .sheet(isPresented: $showEndingView) {
-            if let prog = project.progressMap[quiz.id] {
+            if let prog = currentProgress ?? storage.projects.first(where: { $0.id == project.id })?.progressMap[quiz.id] ?? project.progressMap[quiz.id] {
                 EndingView(project: project, quiz: quiz, progress: prog)
             }
         }
@@ -363,7 +388,7 @@ public struct ExamView: View {
             isPresented: $showSectionChangeAlert,
             titleVisibility: .visible
         ) {
-            Button("Xác nhận chuyển phần thi", role: .none) {
+            Button(loc.currentLanguage == .vietnamese ? "Xác nhận chuyển phần thi" : "Confirm Section Switch", role: .none) {
                 if let target = pendingTargetIndex {
                     // Lock current section
                     if let currentSkill = activeQuestions[currentIndex].skill {
@@ -373,7 +398,7 @@ public struct ExamView: View {
                     pendingTargetIndex = nil
                 }
             }
-            Button("Ở lại kiểm tra tiếp", role: .cancel) {
+            Button(loc.currentLanguage == .vietnamese ? "Ở lại kiểm tra tiếp" : "Stay on Current Section", role: .cancel) {
                 pendingTargetIndex = nil
             }
         } message: {
@@ -438,7 +463,7 @@ public struct ExamView: View {
                 }
                 
                 HStack {
-                    Text("Hoặc thời gian tùy chỉnh:")
+                    Text(loc.currentLanguage == .vietnamese ? "Hoặc thời gian tùy chỉnh:" : "Or custom duration:")
                         .font(.system(size: 12 * fontScale))
                         .foregroundColor(.secondary)
                     
@@ -447,7 +472,7 @@ public struct ExamView: View {
                         .multilineTextAlignment(.center)
                         .frame(width: 60 * fontScale)
                     
-                    Text("phút")
+                    Text(loc.currentLanguage == .vietnamese ? "phút" : "mins")
                         .font(.system(size: 12 * fontScale))
                 }
                 .padding(.top, 4 * fontScale)
@@ -459,7 +484,7 @@ public struct ExamView: View {
                     dismiss()
                 }
                 
-                PrimaryButton(title: "Bắt đầu làm bài thi", icon: "play.fill", color: LiquidGlassPalette.sunsetOrange) {
+                PrimaryButton(title: loc.currentLanguage == .vietnamese ? "Bắt đầu làm bài thi" : "Start Exam", icon: "play.fill", color: LiquidGlassPalette.sunsetOrange) {
                     if let mins = Int(customTimerInputMinutes.trimmingCharacters(in: .whitespacesAndNewlines)), mins > 0 {
                         setTimerDuration(minutes: mins)
                     } else {
@@ -570,12 +595,14 @@ public struct ExamView: View {
         return false
     }
     
-    private func setupExamQuestions() {
-        let wrongIds = project.progressMap[quiz.id]?.wrongQuestionIds ?? []
+    private func setupExamQuestions(forceReshuffle: Bool = false) {
+        let prog = project.progressMap[quiz.id]
+        let wrongIds = prog?.wrongQuestionIds ?? []
         let hasWrongOnlyFilter = redoWrongOnly && !wrongIds.isEmpty
         
         if storage.settings.isShuffleEnabled {
-            if let existingShuffled = project.progressMap[quiz.id]?.shuffledQuestions, !existingShuffled.isEmpty {
+            let hasActiveSession = prog != nil && !(prog?.isCompleted ?? false) && !(prog?.userAnswers.isEmpty ?? true)
+            if !forceReshuffle && hasActiveSession, let existingShuffled = prog?.shuffledQuestions, !existingShuffled.isEmpty {
                 if hasWrongOnlyFilter {
                     activeQuestions = existingShuffled.filter { wrongIds.contains($0.id) }
                 } else {
@@ -583,9 +610,15 @@ public struct ExamView: View {
                 }
             } else {
                 let newShuffled = quiz.questions.shuffled().map { $0.shuffledWithRelabeledOptions() }
-                var prog = project.progressMap[quiz.id] ?? QuizProgress(quizId: quiz.id)
-                prog.shuffledQuestions = newShuffled
-                storage.saveProgress(projectId: project.id, progress: prog)
+                var newProg = prog ?? QuizProgress(quizId: quiz.id)
+                newProg.shuffledQuestions = newShuffled
+                if forceReshuffle {
+                    newProg.userAnswers = [:]
+                    newProg.userSelectedOptionIds = [:]
+                    newProg.wrongQuestionIds = []
+                    newProg.currentIndex = 0
+                }
+                storage.saveProgress(projectId: project.id, progress: newProg)
                 
                 if hasWrongOnlyFilter {
                     activeQuestions = newShuffled.filter { wrongIds.contains($0.id) }
@@ -600,13 +633,27 @@ public struct ExamView: View {
                 activeQuestions = quiz.questions
             }
         }
+        
+        if forceReshuffle {
+            currentIndex = 0
+            userAnswers = [:]
+            userSelectedOptionIds = [:]
+        }
+    }
+    
+    // MARK: - Option Selection Helper
+    private func selectOption(for question: Question, index: Int) {
+        guard index >= 0 && index < question.options.count else { return }
+        let option = question.options[index]
+        userAnswers[question.id] = index
+        userSelectedOptionIds[question.id] = option.id
     }
     
     // MARK: - Navigation Button Renderer
     @ViewBuilder
     private func navButton(index: Int, question: Question) -> some View {
         let isCurrent = index == currentIndex
-        let isAnswered = userAnswers[question.id] != nil
+        let isAnswered = userSelectedOptionIds[question.id] != nil || userAnswers[question.id] != nil
         let isLocked = isPreviousSectionLocked(index)
         let btnColor: Color = isCurrent ? LiquidGlassPalette.sunsetOrange : (isAnswered ? LiquidGlassPalette.sunsetOrange.opacity(0.7) : (isLocked ? Color.gray.opacity(0.2) : .gray.opacity(0.4)))
         
@@ -641,8 +688,7 @@ public struct ExamView: View {
         let textColor = isSelected ? LiquidGlassPalette.sunsetOrange : (colorScheme == .light ? Color(NSColor.labelColor) : Color.white)
         
         return Button(action: {
-            userAnswers[question.id] = index
-            userSelectedOptionIds[question.id] = option.id
+            selectOption(for: question, index: index)
         }) {
             HStack(spacing: 14 * fontScale) {
                 ZStack {
@@ -717,9 +763,10 @@ public struct ExamView: View {
             userSelectedOptionIds: userSelectedOptionIds,
             wrongQuestionIds: wrongIds,
             isCompleted: true,
-            shuffledQuestions: storage.settings.isShuffleEnabled ? project.progressMap[quiz.id]?.shuffledQuestions : nil
+            shuffledQuestions: activeQuestions
         )
         
+        currentProgress = prog
         storage.saveProgress(projectId: project.id, progress: prog)
         showEndingView = true
     }
@@ -743,21 +790,21 @@ public struct ExamView: View {
             }
             
             if event.keyCode == 123 {
-                if currentIndex > 0 { currentIndex -= 1 }
+                if currentIndex > 0 { attemptNavigate(to: currentIndex - 1) }
                 return nil
             }
             
             if event.keyCode == 124 {
-                if currentIndex + 1 < activeQuestions.count { currentIndex += 1 }
+                if currentIndex + 1 < activeQuestions.count { attemptNavigate(to: currentIndex + 1) }
                 return nil
             }
             
             if !activeQuestions.isEmpty && currentIndex < activeQuestions.count {
                 let q = activeQuestions[currentIndex]
-                if chars == "a" || chars == "1" { userAnswers[q.id] = 0; return nil }
-                if chars == "b" || chars == "2" { userAnswers[q.id] = 1; return nil }
-                if chars == "c" || chars == "3" { userAnswers[q.id] = 2; return nil }
-                if chars == "d" || chars == "4" { userAnswers[q.id] = 3; return nil }
+                if chars == "a" || chars == "1" { selectOption(for: q, index: 0); return nil }
+                if chars == "b" || chars == "2" { selectOption(for: q, index: 1); return nil }
+                if chars == "c" || chars == "3" { selectOption(for: q, index: 2); return nil }
+                if chars == "d" || chars == "4" { selectOption(for: q, index: 3); return nil }
             }
             
             return event

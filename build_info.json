@@ -1,7 +1,7 @@
 {
   "version": "2.0.1",
-  "buildNumber": 182,
-  "releaseTag": "v2.0.1-b182",
-  "buildDate": "2026-08-14T06:13:33Z",
-  "releaseNotes": "QuizMaster v2.0.1:\n- Tách biệt Cỡ chữ và Thu phóng giao diện độc lập với 4 mức kích thước (Nhỏ hơn, Mặc định, Lớn hơn, Rất lớn)\n- Phóng to/thu nhỏ đồng bộ toàn diện trên toàn ứng dụng\n- Tùy biến đồng hồ Thi thử linh hoạt, thi không giới hạn thời gian và khôi phục đồng hồ Pomodoro 25 phút"
+  "buildNumber": 191,
+  "releaseTag": "v2.0.1-b191",
+  "buildDate": "2026-08-14T13:36:33Z",
+  "releaseNotes": "QuizMaster v2.0.1:\n- Tối ưu bộ quét tài liệu thông minh: Hỗ trợ quét tài liệu dài (>95 câu) với tính năng chia luồng (chunking) tự động\n- Khắc phục triệt để lỗi đảo từ khi OCR/DOCX, bảo toàn nguyên vẹn văn bản gốc\n- Sửa lỗi nộp bài & hiển thị điểm số tức thì trong Chế độ Thi thử (Exam Mode)\n- Tối ưu và bổ sung nút Xáo trộn (Shuffle) trực tiếp trong Chế độ Luyện tập & Thi thử"
 }

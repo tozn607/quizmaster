@@ -27,27 +27,31 @@ cat <<EOF > "build_info.json"
   "buildNumber": ${BUILD_NUMBER},
   "releaseTag": "v${VERSION}-b${BUILD_NUMBER}",
   "buildDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "releaseNotes": "QuizMaster v${VERSION}:\n- Tách biệt Cỡ chữ và Thu phóng giao diện độc lập với 4 mức kích thước (Nhỏ hơn, Mặc định, Lớn hơn, Rất lớn)\n- Phóng to/thu nhỏ đồng bộ toàn diện trên toàn ứng dụng\n- Tùy biến đồng hồ Thi thử linh hoạt, thi không giới hạn thời gian và khôi phục đồng hồ Pomodoro 25 phút"
+  "releaseNotes": "QuizMaster v${VERSION}:\n- Tối ưu bộ quét tài liệu thông minh: Hỗ trợ quét tài liệu dài (>95 câu) với tính năng chia luồng (chunking) tự động\n- Khắc phục triệt để lỗi đảo từ khi OCR/DOCX, bảo toàn nguyên vẹn văn bản gốc\n- Sửa lỗi nộp bài & hiển thị điểm số tức thì trong Chế độ Thi thử (Exam Mode)\n- Tối ưu và bổ sung nút Xáo trộn (Shuffle) trực tiếp trong Chế độ Luyện tập & Thi thử"
 }
 EOF
 
 # Create release_notes.txt
 cat <<EOF > "release_notes.txt"
-# QuizMaster v${VERSION} - Nâng cấp Cỡ chữ Toàn diện & Đồng hồ Thi thử Linh hoạt
+# QuizMaster v${VERSION} - Nâng cấp Quét Tài liệu Lớn, Hoàn thiện Thi thử & Nút Xáo trộn
 
-Bản cập nhật v${VERSION} mang đến trải nghiệm thị giác vượt trội và tinh chỉnh linh hoạt cho các chế độ học tập:
+Bản cập nhật v${VERSION} mang đến các cải tiến quan trọng về hiệu năng quét tài liệu và độ ổn định khi làm bài:
 
-### 1. Tách biệt Cỡ chữ & Thu phóng Giao diện Độc lập
-- Tách riêng hai cài đặt: **Cỡ chữ (Font Size)** và **Thu phóng giao diện (Interface Scaling)** để tùy biến độc lập theo sở thích cá nhân.
-- Bổ sung tùy chọn **Rất lớn (Extra Large)** (4 mức: *Nhỏ hơn*, *Mặc định*, *Lớn hơn*, *Rất lớn*) và gia tăng khoảng cách tỷ lệ co giãn (từ 0.80x đến 1.45x) giúp chữ to rõ, dễ đọc hơn.
+### 1. Nâng cấp Bộ Quét Tài liệu Thông minh (> 95 Câu hỏi)
+- **Tự động chia luồng (Chunking)**: Hỗ trợ quét và tạo trắc nghiệm cho tài liệu dung lượng lớn với hàng trăm câu hỏi mà không bị ngắt quãng hoặc chạm trần token.
+- **Khôi phục JSON tự động**: Cơ chế quét ngược (backwards validation) giúp khôi phục các câu hỏi hoàn chỉnh ngay cả khi phản hồi bị cắt bớt, triệt tiêu hoàn toàn lỗi định dạng dữ liệu.
 
-### 2. Đồng bộ Phóng to/Thu nhỏ Toàn Diện Toàn Bộ Ứng Dụng
-- Áp dụng chuẩn xác tỷ lệ phóng to trên mọi giao diện: Thanh bên danh mục dự án, Trang tổng quan, Thẻ đề thi, Trình chỉnh sửa câu hỏi, Hộp thoại và Cài đặt.
+### 2. Bảo toàn Tuyệt đối Thứ tự Từ & Cấu trúc Câu
+- **Tối ưu Vision OCR**: Tự động sắp xếp các khối chữ theo tọa độ hình học (trên xuống dưới, trái qua phải), không còn tình trạng xáo trộn thứ tự từ trong câu.
+- **Nâng cấp trình đọc Word DOCX**: Xử lý chuẩn xác khoảng trắng, tab, ngắt dòng và các ô bảng biểu.
 
-### 3. Tối ưu Chế độ Thi thử & Khôi phục Đồng hồ Pomodoro
-- **Linh hoạt thời gian làm bài**: Các dự án thông thường không còn bị ép buộc đếm giờ, cho phép bạn làm bài thi thoải mái theo nhịp độ riêng hoặc tùy ý bật/tắt đồng hồ qua menu trên thanh tiêu đề.
-- **Bắt buộc chuẩn hóa đối với Ngoại ngữ**: Giữ nguyên tính năng kiểm soát thời gian nghiêm ngặt dành riêng cho các kỳ thi chuẩn hóa (IELTS, THPT Tiếng Anh).
-- **Khôi phục Đồng hồ Pomodoro**: Bổ sung lại phím tắt chọn nhanh **🍅 Pomodoro (25 Phút)** trong menu đồng hồ và hộp thoại cài đặt thời gian.
+### 3. Sửa lỗi Chế độ Thi thử (Exam Mode) & Tính điểm Tức thì
+- **Đồng bộ hóa câu trả lời**: Lưu trữ và cập nhật trạng thái làm bài ngay lập tức khi nộp bài thi, không còn bị mất điểm hoặc hiển thị 0 câu đúng.
+- **Tính điểm chính xác**: Khớp chính xác phương án đã chọn kể cả khi đang bật chế độ xáo trộn.
+
+### 4. Tối ưu Nút Xáo trộn (Shuffle)
+- **Khắc phục lỗi xáo trộn**: Đảm bảo bật/tắt xáo trộn luôn tạo ra bộ câu hỏi và phương án A/B/C/D ngẫu nhiên mới.
+- **Nút xáo trộn nhanh**: Bổ sung nút **Xáo trộn (Shuffle)** trực tiếp trên thanh tiêu đề của Chế độ Luyện tập và Thi thử để xáo trộn tức thì khi đang làm bài.
 EOF
 
 echo "🎨 Generating AppIcon..."

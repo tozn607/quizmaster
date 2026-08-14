@@ -12,19 +12,20 @@ public struct EndingView: View {
     @State private var showReviewSheet: Bool = false
     
     public var body: some View {
-        let totalQuestions = quiz.questions.count
-        let correctFirstTry = progress.userAnswers.filter { qId, ansIdx in
-            if let q = quiz.questions.first(where: { $0.id == qId }) {
-                let correctOptId = (q.correctAnswerIndex >= 0 && q.correctAnswerIndex < q.options.count) ? q.options[q.correctAnswerIndex].id : ""
-                if let chosenOptId = progress.userSelectedOptionIds[qId] {
-                    return chosenOptId == correctOptId
-                }
+        let questionsList = progress.shuffledQuestions ?? quiz.questions
+        let totalQuestions = questionsList.count
+        let correctFirstTry = questionsList.filter { q in
+            let correctOptId = (q.correctAnswerIndex >= 0 && q.correctAnswerIndex < q.options.count) ? q.options[q.correctAnswerIndex].id : ""
+            if let chosenOptId = progress.userSelectedOptionIds[q.id] {
+                return chosenOptId == correctOptId
+            }
+            if let ansIdx = progress.userAnswers[q.id] {
                 return q.correctAnswerIndex == ansIdx
             }
             return false
         }.count
         
-        let wrongCount = progress.wrongQuestionIds.count
+        let wrongCount = max(0, totalQuestions - correctFirstTry)
         let accuracyPercent = totalQuestions > 0 ? Int((Double(correctFirstTry) / Double(totalQuestions)) * 100.0) : 0
         
         VStack(spacing: 0) {
@@ -48,14 +49,14 @@ public struct EndingView: View {
                     // Detailed Score Grid
                     GlassCard {
                         VStack(spacing: 18 * fontScale) {
-                            Text("Tổng kết Điểm số")
+                            Text(loc.currentLanguage == .vietnamese ? "Tổng kết Điểm số" : "Exam Summary")
                                 .font(.system(size: 16 * fontScale, weight: .bold))
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             
                             HStack(spacing: 16 * fontScale) {
-                                statTile(title: "Điểm số", value: "\(accuracyPercent)%", color: accuracyPercent >= 70 ? .green : .orange)
-                                statTile(title: "Trả lời Đúng", value: "\(correctFirstTry) / \(totalQuestions)", color: .blue)
-                                statTile(title: "Trả lời Sai", value: "\(wrongCount)", color: .red)
+                                statTile(title: loc.currentLanguage == .vietnamese ? "Điểm số" : "Score", value: "\(accuracyPercent)%", color: accuracyPercent >= 70 ? .green : .orange)
+                                statTile(title: loc.currentLanguage == .vietnamese ? "Trả lời Đúng" : "Correct", value: "\(correctFirstTry) / \(totalQuestions)", color: .blue)
+                                statTile(title: loc.currentLanguage == .vietnamese ? "Trả lời Sai" : "Incorrect", value: "\(wrongCount)", color: .red)
                             }
                             
                             Divider()
@@ -75,7 +76,7 @@ public struct EndingView: View {
                     VStack(spacing: 12 * fontScale) {
                         if wrongCount > 0 {
                             PrimaryButton(
-                                title: loc.text("btnRedoWrongOnly") + " (\(wrongCount) câu)",
+                                title: loc.text("btnRedoWrongOnly") + (loc.currentLanguage == .vietnamese ? " (\(wrongCount) câu)" : " (\(wrongCount) questions)"),
                                 icon: "arrow.triangle.2.circlepath",
                                 color: .orange
                             ) {
@@ -103,7 +104,7 @@ public struct EndingView: View {
         }
         .frame(width: 540 * fontScale, height: 600 * fontScale)
         .sheet(isPresented: $showReviewSheet) {
-            ReviewView(quiz: quiz, questions: quiz.questions, userAnswers: progress.userAnswers, userSelectedOptionIds: progress.userSelectedOptionIds, wrongIds: progress.wrongQuestionIds)
+            ReviewView(quiz: quiz, questions: questionsList, userAnswers: progress.userAnswers, userSelectedOptionIds: progress.userSelectedOptionIds, wrongIds: progress.wrongQuestionIds)
         }
     }
     
@@ -125,9 +126,16 @@ public struct EndingView: View {
     }
     
     private func masteryRatingText(percent: Int) -> String {
-        if percent >= 90 { return "★★★★★ Xuất sắc (Mastered)" }
-        if percent >= 75 { return "★★★★☆ Tốt (Proficient)" }
-        if percent >= 50 { return "★★★☆☆ Khá (Intermediate)" }
-        return "★★☆☆☆ Cần Ôn Luyện Thêm"
+        if loc.currentLanguage == .vietnamese {
+            if percent >= 90 { return "★★★★★ Xuất sắc (Mastered)" }
+            if percent >= 75 { return "★★★★☆ Tốt (Proficient)" }
+            if percent >= 50 { return "★★★☆☆ Khá (Intermediate)" }
+            return "★★☆☆☆ Cần Ôn Luyện Thêm"
+        } else {
+            if percent >= 90 { return "★★★★★ Mastered" }
+            if percent >= 75 { return "★★★★☆ Proficient" }
+            if percent >= 50 { return "★★★☆☆ Intermediate" }
+            return "★★☆☆☆ Needs More Practice"
+        }
     }
 }

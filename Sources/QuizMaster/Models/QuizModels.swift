@@ -416,11 +416,13 @@ public struct Question: Identifiable, Codable, Equatable, Hashable {
     
     public func shuffledWithRelabeledOptions() -> Question {
         guard options.count > 1 else { return self }
-        let correctOpt = options[correctAnswerIndex]
+        let safeCorrectIndex = (correctAnswerIndex >= 0 && correctAnswerIndex < options.count) ? correctAnswerIndex : 0
+        let correctOpt = options.indices.contains(safeCorrectIndex) ? options[safeCorrectIndex] : options[0]
         let shuffledOpts = options.shuffled()
         let newIndex = shuffledOpts.firstIndex(where: { $0.id == correctOpt.id }) ?? 0
+        let labels = ["A", "B", "C", "D", "E", "F", "G", "H"]
         let relabeled = shuffledOpts.enumerated().map { idx, opt in
-            let label = String(UnicodeScalar(65 + idx)!)
+            let label = idx < labels.count ? labels[idx] : "\(idx + 1)"
             return QuestionOption(id: opt.id, label: label, text: opt.text)
         }
         var copy = self

@@ -99,11 +99,53 @@ public class DocumentProcessor {
                     return
                 }
                 
-                let recognizedStrings = observations.compactMap { observation in
-                    observation.topCandidates(1).first?.string
+                // Pair observations with top candidate text
+                struct RecognizedLineItem {
+                    let text: String
+                    let box: CGRect
                 }
                 
-                continuation.resume(returning: recognizedStrings.joined(separator: "\n"))
+                var items: [RecognizedLineItem] = []
+                for obs in observations {
+                    if let text = obs.topCandidates(1).first?.string, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        items.append(RecognizedLineItem(text: text, box: obs.boundingBox))
+                    }
+                }
+                
+                guard !items.isEmpty else {
+                    continuation.resume(returning: "")
+                    return
+                }
+                
+                // Sort observations geometrically: top-to-bottom (descending Y in Vision coords), then left-to-right (ascending X)
+                // Group items into horizontal lines using dynamic line height threshold
+                let sortedByY = items.sorted { $0.box.midY > $1.box.midY }
+                
+                var lines: [[RecognizedLineItem]] = []
+                for item in sortedByY {
+                    let itemMidY = item.box.midY
+                    let itemHeight = max(0.012, item.box.height)
+                    let threshold = itemHeight * 0.65
+                    
+                    if let lineIdx = lines.firstIndex(where: { line in
+                        guard let firstInLine = line.first else { return false }
+                        return abs(firstInLine.box.midY - itemMidY) < threshold
+                    }) {
+                        lines[lineIdx].append(item)
+                    } else {
+                        lines.append([item])
+                    }
+                }
+                
+                // Sort each line from left to right (minX ascending) and join
+                var reconstructedText = ""
+                for var line in lines {
+                    line.sort { $0.box.minX < $1.box.minX }
+                    let lineStr = line.map { $0.text }.joined(separator: " ")
+                    reconstructedText += lineStr + "\n"
+                }
+                
+                continuation.resume(returning: reconstructedText.trimmingCharacters(in: .whitespacesAndNewlines))
             }
             
             request.recognitionLevel = .accurate
@@ -173,7 +215,7 @@ public class DocumentProcessor {
     }
 }
 
-// Simple XML Parser for Word document text node extraction
+// XML Parser for Word document text node extraction with whitespace and table preservation
 private class DocxTextParser: NSObject, XMLParserDelegate {
     private let parser: XMLParser
     private var extractedText = ""
@@ -187,14 +229,24 @@ private class DocxTextParser: NSObject, XMLParserDelegate {
     
     func parse() -> String {
         parser.parse()
-        return extractedText
+        return extractedText.trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
     func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
         if elementName == "w:t" {
             isInsideTextNode = true
-        } else if elementName == "w:p" || elementName == "w:tr" {
+        } else if elementName == "w:tab" {
+            extractedText += "    "
+        } else if elementName == "w:br" || elementName == "w:cr" {
             extractedText += "\n"
+        } else if elementName == "w:p" || elementName == "w:tr" {
+            if !extractedText.isEmpty && !extractedText.hasSuffix("\n") {
+                extractedText += "\n"
+            }
+        } else if elementName == "w:tc" {
+            if !extractedText.isEmpty && !extractedText.hasSuffix(" ") && !extractedText.hasSuffix("\n") {
+                extractedText += " "
+            }
         }
     }
     

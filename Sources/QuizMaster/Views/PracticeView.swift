@@ -77,6 +77,28 @@ public struct PracticeView: View {
                     
                     Spacer()
                     
+                    // Shuffle toggle button inside Practice View
+                    Button(action: {
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                            storage.settings.isShuffleEnabled.toggle()
+                            storage.saveSettings()
+                            setupQuizQuestions(forceReshuffle: storage.settings.isShuffleEnabled)
+                        }
+                    }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: storage.settings.isShuffleEnabled ? "shuffle.circle.fill" : "shuffle.circle")
+                            Text(loc.text("toggleShuffle"))
+                        }
+                        .font(.system(size: 12 * fontScale, weight: .medium))
+                        .foregroundColor(storage.settings.isShuffleEnabled ? LiquidGlassPalette.oceanBlue : .secondary)
+                        .padding(.horizontal, 8 * fontScale)
+                        .padding(.vertical, 4 * fontScale)
+                        .background(storage.settings.isShuffleEnabled ? LiquidGlassPalette.oceanBlue.opacity(0.12) : Color.clear)
+                        .cornerRadius(6)
+                    }
+                    .buttonStyle(.plain)
+                    .help("Xáo trộn thứ tự câu hỏi và các phương án A/B/C/D")
+                    
                     // Toggle Question Navigator Sidebar
                     Button(action: { withAnimation { showNavPane.toggle() } }) {
                         HStack(spacing: 4) {
@@ -535,12 +557,14 @@ public struct PracticeView: View {
     }
     
     // MARK: - Logic & Checkpoint Progress Restore
-    private func setupQuizQuestions() {
-        let wrongIds = project.progressMap[quiz.id]?.wrongQuestionIds ?? []
+    private func setupQuizQuestions(forceReshuffle: Bool = false) {
+        let prog = project.progressMap[quiz.id]
+        let wrongIds = prog?.wrongQuestionIds ?? []
         let hasWrongOnlyFilter = redoWrongOnly && !wrongIds.isEmpty
         
         if storage.settings.isShuffleEnabled {
-            if let existingShuffled = project.progressMap[quiz.id]?.shuffledQuestions, !existingShuffled.isEmpty {
+            let hasActiveSession = prog != nil && !(prog?.isCompleted ?? false) && !(prog?.userAnswers.isEmpty ?? true)
+            if !forceReshuffle && hasActiveSession, let existingShuffled = prog?.shuffledQuestions, !existingShuffled.isEmpty {
                 if hasWrongOnlyFilter {
                     activeQuestions = existingShuffled.filter { wrongIds.contains($0.id) }
                 } else {
@@ -548,9 +572,15 @@ public struct PracticeView: View {
                 }
             } else {
                 let newShuffled = quiz.questions.shuffled().map { $0.shuffledWithRelabeledOptions() }
-                var prog = project.progressMap[quiz.id] ?? QuizProgress(quizId: quiz.id)
-                prog.shuffledQuestions = newShuffled
-                storage.saveProgress(projectId: project.id, progress: prog)
+                var newProg = prog ?? QuizProgress(quizId: quiz.id)
+                newProg.shuffledQuestions = newShuffled
+                if forceReshuffle {
+                    newProg.userAnswers = [:]
+                    newProg.userSelectedOptionIds = [:]
+                    newProg.wrongQuestionIds = []
+                    newProg.currentIndex = 0
+                }
+                storage.saveProgress(projectId: project.id, progress: newProg)
                 
                 if hasWrongOnlyFilter {
                     activeQuestions = newShuffled.filter { wrongIds.contains($0.id) }
@@ -566,15 +596,14 @@ public struct PracticeView: View {
             }
         }
         
-        // Restore checkpoint progress if exists!
-        if let prog = project.progressMap[quiz.id] {
-            self.userAnswers = prog.userAnswers
-            self.userSelectedOptionIds = prog.userSelectedOptionIds
-            self.wrongQuestionIds = prog.wrongQuestionIds
+        // Restore checkpoint progress if exists and not forcing reshuffle
+        if !forceReshuffle, let currentProg = project.progressMap[quiz.id] {
+            self.userAnswers = currentProg.userAnswers
+            self.userSelectedOptionIds = currentProg.userSelectedOptionIds
+            self.wrongQuestionIds = currentProg.wrongQuestionIds
             
-            // Checkpoint index restore
-            if prog.currentIndex >= 0 && prog.currentIndex < activeQuestions.count {
-                self.currentIndex = prog.currentIndex
+            if currentProg.currentIndex >= 0 && currentProg.currentIndex < activeQuestions.count {
+                self.currentIndex = currentProg.currentIndex
             } else {
                 self.currentIndex = 0
             }
