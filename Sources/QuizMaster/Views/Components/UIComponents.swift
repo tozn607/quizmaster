@@ -12,6 +12,7 @@ public struct LiquidGlassPalette {
 
 public struct PrimaryButton: View {
     @Environment(\.appFontScale) var fontScale
+    @Environment(\.appUiScale) var uiScale
     @Environment(\.colorScheme) var colorScheme
     let title: String
     let icon: String?
@@ -27,7 +28,7 @@ public struct PrimaryButton: View {
     
     public var body: some View {
         Button(action: action) {
-            HStack(spacing: 8) {
+            HStack(spacing: 8 * uiScale) {
                 if let icon = icon {
                     Image(systemName: icon)
                         .font(.system(size: 14 * fontScale, weight: .bold))
@@ -36,8 +37,8 @@ public struct PrimaryButton: View {
                     .font(.system(size: 14 * fontScale, weight: .bold))
             }
             .foregroundColor(.white)
-            .padding(.horizontal, 16 * fontScale)
-            .padding(.vertical, 9 * fontScale)
+            .padding(.horizontal, 16 * uiScale)
+            .padding(.vertical, 9 * uiScale)
             .background(
                 ZStack {
                     // Refined solid color fill
@@ -64,6 +65,7 @@ public struct PrimaryButton: View {
 
 public struct SecondaryButton: View {
     @Environment(\.appFontScale) var fontScale
+    @Environment(\.appUiScale) var uiScale
     @Environment(\.colorScheme) var colorScheme
     let title: String
     let icon: String?
@@ -77,7 +79,7 @@ public struct SecondaryButton: View {
     
     public var body: some View {
         Button(action: action) {
-            HStack(spacing: 8) {
+            HStack(spacing: 8 * uiScale) {
                 if let icon = icon {
                     Image(systemName: icon)
                         .font(.system(size: 14 * fontScale, weight: .bold))
@@ -86,8 +88,8 @@ public struct SecondaryButton: View {
                     .font(.system(size: 14 * fontScale, weight: .bold))
             }
             .foregroundColor(colorScheme == .light ? Color(NSColor.labelColor) : Color.white)
-            .padding(.horizontal, 14 * fontScale)
-            .padding(.vertical, 8 * fontScale)
+            .padding(.horizontal, 14 * uiScale)
+            .padding(.vertical, 8 * uiScale)
             .background(
                 colorScheme == .light
                 ? Color.white

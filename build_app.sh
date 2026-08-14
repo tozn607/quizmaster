@@ -15,7 +15,7 @@ else
 fi
 echo "$BUILD_NUMBER" > "$BUILD_FILE"
 
-VERSION="2.0.0"
+VERSION="2.0.1"
 RELEASE_TAG="v${VERSION}-b${BUILD_NUMBER}"
 
 echo "🔢 Building QuizMaster v${VERSION} (Build ${BUILD_NUMBER})...."
@@ -27,32 +27,27 @@ cat <<EOF > "build_info.json"
   "buildNumber": ${BUILD_NUMBER},
   "releaseTag": "v${VERSION}-b${BUILD_NUMBER}",
   "buildDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "releaseNotes": "QuizMaster v${VERSION}:\n- Kiến trúc cửa sổ độc lập, tự do thay đổi kích thước\n- Thuật toán xáo trộn câu hỏi và đáp án chuẩn xác\n- Tối ưu hệ thống phím tắt và trải nghiệm ôn tập\n- Thử nghiệm Chế độ Học Ngoại ngữ (WIP)"
+  "releaseNotes": "QuizMaster v${VERSION}:\n- Tách biệt Cỡ chữ và Thu phóng giao diện độc lập với 4 mức kích thước (Nhỏ hơn, Mặc định, Lớn hơn, Rất lớn)\n- Phóng to/thu nhỏ đồng bộ toàn diện trên toàn ứng dụng\n- Tùy biến đồng hồ Thi thử linh hoạt, thi không giới hạn thời gian và khôi phục đồng hồ Pomodoro 25 phút"
 }
 EOF
 
 # Create release_notes.txt
 cat <<EOF > "release_notes.txt"
-# QuizMaster v${VERSION} - Bản phát hành Thế hệ Mới (Major Update)
+# QuizMaster v${VERSION} - Nâng cấp Cỡ chữ Toàn diện & Đồng hồ Thi thử Linh hoạt
 
-Bản cập nhật lớn v${VERSION} mang đến nhiều cải tiến vượt bậc về độ ổn định, giao diện và các chế độ học tập chuyên biệt:
+Bản cập nhật v${VERSION} mang đến trải nghiệm thị giác vượt trội và tinh chỉnh linh hoạt cho các chế độ học tập:
 
-### 1. Kiến trúc Cửa sổ Độc lập và Tối ưu Hiển thị
-- Mọi chế độ học tập (Luyện tập, Thi thử, Thẻ ghi nhớ và Trình chỉnh sửa đề thi) được mở trong các cửa sổ macOS độc lập, tự do thay đổi kích thước và tự động ghi nhớ không gian làm việc.
-- Đồng nhất thiết kế bo góc, phông chữ và dải màu kính lỏng hiện đại trên toàn ứng dụng.
+### 1. Tách biệt Cỡ chữ & Thu phóng Giao diện Độc lập
+- Tách riêng hai cài đặt: **Cỡ chữ (Font Size)** và **Thu phóng giao diện (Interface Scaling)** để tùy biến độc lập theo sở thích cá nhân.
+- Bổ sung tùy chọn **Rất lớn (Extra Large)** (4 mức: *Nhỏ hơn*, *Mặc định*, *Lớn hơn*, *Rất lớn*) và gia tăng khoảng cách tỷ lệ co giãn (từ 0.80x đến 1.45x) giúp chữ to rõ, dễ đọc hơn.
 
-### 2. Thuật toán Xáo trộn Câu hỏi và Đáp án Chuẩn xác
-- Tái cấu trúc cơ chế lưu trữ kết quả và tiến độ học theo định danh câu hỏi, khắc phục triệt để hiện tượng lệch đáp án khi bật tắt chế độ xáo trộn trước, trong hoặc sau khi làm bài.
+### 2. Đồng bộ Phóng to/Thu nhỏ Toàn Diện Toàn Bộ Ứng Dụng
+- Áp dụng chuẩn xác tỷ lệ phóng to trên mọi giao diện: Thanh bên danh mục dự án, Trang tổng quan, Thẻ đề thi, Trình chỉnh sửa câu hỏi, Hộp thoại và Cài đặt.
 
-### 3. Tối ưu Hệ thống Phím tắt và Trải nghiệm
-- Nhận diện nhạy bén toàn bộ các phím số, phím chữ cái, phím xóa và phím chuyển câu trong suốt quá trình làm bài.
-- Bổ sung hộp thoại xác nhận an toàn khi xóa bộ đề thi.
-
-### 4. Thử nghiệm Chế độ Học Ngoại ngữ (Bản thử nghiệm WIP)
-- Bổ sung phân loại Dự án Học Ngoại ngữ dành riêng cho các đề thi tiếng Anh (như đề thi THPT, chứng chỉ quốc tế).
-- Tách biệt khung đọc bài hiểu ở cột bên trái với thanh tùy chỉnh kiểu chữ, màu nền giấy và giãn cách dòng.
-- Tự động trích xuất bộ thẻ ghi nhớ từ vựng theo khung trình độ CEFR kèm phiên âm quốc tế và câu ví dụ minh họa.
-- Lưu ý: Chế độ Học Ngoại ngữ đang trong giai đoạn hoàn thiện và tối ưu hóa xử lý văn bản chuyên sâu. Người dùng có thể trải nghiệm thử nghiệm ngay trong phiên bản này.
+### 3. Tối ưu Chế độ Thi thử & Khôi phục Đồng hồ Pomodoro
+- **Linh hoạt thời gian làm bài**: Các dự án thông thường không còn bị ép buộc đếm giờ, cho phép bạn làm bài thi thoải mái theo nhịp độ riêng hoặc tùy ý bật/tắt đồng hồ qua menu trên thanh tiêu đề.
+- **Bắt buộc chuẩn hóa đối với Ngoại ngữ**: Giữ nguyên tính năng kiểm soát thời gian nghiêm ngặt dành riêng cho các kỳ thi chuẩn hóa (IELTS, THPT Tiếng Anh).
+- **Khôi phục Đồng hồ Pomodoro**: Bổ sung lại phím tắt chọn nhanh **🍅 Pomodoro (25 Phút)** trong menu đồng hồ và hộp thoại cài đặt thời gian.
 EOF
 
 echo "🎨 Generating AppIcon..."
@@ -63,7 +58,7 @@ echo "🔨 Compiling QuizMaster Swift application..."
 swift build -c release
 
 APP_NAME="QuizMaster"
-APP_VERSION="2.0.0"
+APP_VERSION="2.0.1"
 BUNDLE_ID="com.tozn.quizmaster"
 BUNDLE_DIR="${APP_NAME}.app"
 CONTENTS_DIR="${BUNDLE_DIR}/Contents"

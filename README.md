@@ -2,7 +2,7 @@
   <img src="AppIcon.png" width="128" height="128" alt="QuizMaster App Icon">
 </p>
 
-# QuizMaster (v2.0.0)
+# QuizMaster (v2.0.1)
 
 [![macOS Supported](https://img.shields.io/badge/macOS-13.0%2B-blue.svg)](https://apple.com)
 [![Language](https://img.shields.io/badge/Swift-5.9-orange.svg)](https://swift.org)

@@ -21,7 +21,7 @@ public class WindowManager: NSObject, NSWindowDelegate {
         }
     }
     
-    public func openPracticeWindow(project: StudyProject, quiz: Quiz, storage: StorageManager, loc: LocalizationManager, fontScale: CGFloat) {
+    public func openPracticeWindow(project: StudyProject, quiz: Quiz, storage: StorageManager, loc: LocalizationManager, fontScale: CGFloat, uiScale: CGFloat = 1.0) {
         let windowKey = "practice:\(quiz.id)"
         
         if let existing = openWindows[windowKey], let win = existing.window, win.isVisible {
@@ -34,13 +34,14 @@ public class WindowManager: NSObject, NSWindowDelegate {
             .environmentObject(storage)
             .environmentObject(loc)
             .environment(\.appFontScale, fontScale)
+            .environment(\.appUiScale, uiScale)
         
         let hostingController = NSHostingController(rootView: practiceView)
         let window = NSWindow(contentViewController: hostingController)
         window.title = "\(quiz.title) - Luyện tập"
         window.styleMask = [.titled, .closable, .miniaturizable, .resizable]
-        window.minSize = NSSize(width: 900, height: 650)
-        window.setContentSize(NSSize(width: 1200, height: 820))
+        window.minSize = NSSize(width: 900 * uiScale, height: 650 * uiScale)
+        window.setContentSize(NSSize(width: 1200 * uiScale, height: 820 * uiScale))
         window.center()
         window.isReleasedWhenClosed = false
         window.delegate = self
@@ -51,7 +52,7 @@ public class WindowManager: NSObject, NSWindowDelegate {
         NSApp.activate(ignoringOtherApps: true)
     }
     
-    public func openExamWindow(project: StudyProject, quiz: Quiz, storage: StorageManager, loc: LocalizationManager, fontScale: CGFloat) {
+    public func openExamWindow(project: StudyProject, quiz: Quiz, storage: StorageManager, loc: LocalizationManager, fontScale: CGFloat, uiScale: CGFloat = 1.0) {
         let windowKey = "exam:\(quiz.id)"
         
         if let existing = openWindows[windowKey], let win = existing.window, win.isVisible {
@@ -64,13 +65,14 @@ public class WindowManager: NSObject, NSWindowDelegate {
             .environmentObject(storage)
             .environmentObject(loc)
             .environment(\.appFontScale, fontScale)
+            .environment(\.appUiScale, uiScale)
         
         let hostingController = NSHostingController(rootView: examView)
         let window = NSWindow(contentViewController: hostingController)
         window.title = "\(quiz.title) - Thi thử"
         window.styleMask = [.titled, .closable, .miniaturizable, .resizable]
-        window.minSize = NSSize(width: 900, height: 650)
-        window.setContentSize(NSSize(width: 1200, height: 820))
+        window.minSize = NSSize(width: 900 * uiScale, height: 650 * uiScale)
+        window.setContentSize(NSSize(width: 1200 * uiScale, height: 820 * uiScale))
         window.center()
         window.isReleasedWhenClosed = false
         window.delegate = self
@@ -81,7 +83,7 @@ public class WindowManager: NSObject, NSWindowDelegate {
         NSApp.activate(ignoringOtherApps: true)
     }
     
-    public func openFlashcardWindow(project: StudyProject, quiz: Quiz, storage: StorageManager, loc: LocalizationManager, fontScale: CGFloat) {
+    public func openFlashcardWindow(project: StudyProject, quiz: Quiz, storage: StorageManager, loc: LocalizationManager, fontScale: CGFloat, uiScale: CGFloat = 1.0) {
         let windowKey = "flashcard:\(quiz.id)"
         
         if let existing = openWindows[windowKey], let win = existing.window, win.isVisible {
@@ -94,13 +96,14 @@ public class WindowManager: NSObject, NSWindowDelegate {
             .environmentObject(storage)
             .environmentObject(loc)
             .environment(\.appFontScale, fontScale)
+            .environment(\.appUiScale, uiScale)
         
         let hostingController = NSHostingController(rootView: flashcardView)
         let window = NSWindow(contentViewController: hostingController)
         window.title = "\(quiz.title) - Thẻ ghi nhớ"
         window.styleMask = [.titled, .closable, .miniaturizable, .resizable]
-        window.minSize = NSSize(width: 850, height: 600)
-        window.setContentSize(NSSize(width: 1080, height: 750))
+        window.minSize = NSSize(width: 850 * uiScale, height: 600 * uiScale)
+        window.setContentSize(NSSize(width: 1080 * uiScale, height: 750 * uiScale))
         window.center()
         window.isReleasedWhenClosed = false
         window.delegate = self
@@ -111,7 +114,7 @@ public class WindowManager: NSObject, NSWindowDelegate {
         NSApp.activate(ignoringOtherApps: true)
     }
     
-    public func openEditorWindow(projectId: String, quizBinding: Binding<Quiz>, storage: StorageManager, loc: LocalizationManager, fontScale: CGFloat) {
+    public func openEditorWindow(projectId: String, quizBinding: Binding<Quiz>, storage: StorageManager, loc: LocalizationManager, fontScale: CGFloat, uiScale: CGFloat = 1.0) {
         let quiz = quizBinding.wrappedValue
         let windowKey = "editor:\(quiz.id)"
         
@@ -125,13 +128,14 @@ public class WindowManager: NSObject, NSWindowDelegate {
             .environmentObject(storage)
             .environmentObject(loc)
             .environment(\.appFontScale, fontScale)
+            .environment(\.appUiScale, uiScale)
         
         let hostingController = NSHostingController(rootView: editorView)
         let window = NSWindow(contentViewController: hostingController)
         window.title = "Chỉnh sửa câu hỏi & đáp án - \(quiz.title)"
         window.styleMask = [.titled, .closable, .miniaturizable, .resizable]
-        window.minSize = NSSize(width: 850, height: 600)
-        window.setContentSize(NSSize(width: 1050, height: 720))
+        window.minSize = NSSize(width: 850 * uiScale, height: 600 * uiScale)
+        window.setContentSize(NSSize(width: 1050 * uiScale, height: 720 * uiScale))
         window.center()
         window.isReleasedWhenClosed = false
         window.delegate = self

@@ -5,6 +5,7 @@ public struct SettingsView: View {
     @EnvironmentObject var storage: StorageManager
     @EnvironmentObject var loc: LocalizationManager
     @Environment(\.appFontScale) var fontScale
+    @Environment(\.appUiScale) var uiScale
     @Environment(\.dismiss) var dismiss
     
     @State private var apiKey: String = ""
@@ -163,13 +164,25 @@ public struct SettingsView: View {
                                 .pickerStyle(.segmented)
                             }
                             
-                            VStack(alignment: .leading, spacing: 6 * fontScale) {
+                            VStack(alignment: .leading, spacing: 6 * uiScale) {
                                 Text(loc.text("fontSizeLabel"))
                                     .font(.system(size: 13 * fontScale))
                                 
                                 Picker("", selection: $storage.settings.fontSize) {
                                     ForEach(AppFontSize.allCases) { size in
-                                        Text(size.displayName).tag(size)
+                                        Text(loc.text(size.localizationKey)).tag(size)
+                                    }
+                                }
+                                .pickerStyle(.segmented)
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 6 * uiScale) {
+                                Text(loc.text("windowScalingLabel"))
+                                    .font(.system(size: 13 * fontScale))
+                                
+                                Picker("", selection: $storage.settings.uiScale) {
+                                    ForEach(AppUIScale.allCases) { scale in
+                                        Text(loc.text(scale.localizationKey)).tag(scale)
                                     }
                                 }
                                 .pickerStyle(.segmented)
@@ -273,7 +286,7 @@ public struct SettingsView: View {
             .background(.thinMaterial)
         }
         }
-        .frame(width: 680 * fontScale, height: 760 * fontScale)
+        .frame(width: 680 * uiScale, height: 780 * uiScale)
         .sheet(isPresented: $showUpdateModal) {
             SoftwareUpdateView()
         }

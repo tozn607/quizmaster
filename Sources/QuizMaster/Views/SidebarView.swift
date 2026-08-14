@@ -22,9 +22,9 @@ public struct SidebarView: View {
                     
                     VStack(alignment: .leading, spacing: 1) {
                         Text("QuizMaster")
-                            .font(.system(size: 15, weight: .bold))
+                            .font(.system(size: 15 * fontScale, weight: .bold))
                         Text(loc.text("projects"))
-                            .font(.system(size: 11))
+                            .font(.system(size: 11 * fontScale))
                             .foregroundColor(.secondary)
                     }
                     
@@ -32,7 +32,7 @@ public struct SidebarView: View {
                     
                     Button(action: { showSettingsSheet = true }) {
                         Image(systemName: "gearshape")
-                            .font(.title3)
+                            .font(.system(size: 15 * fontScale))
                             .foregroundColor(.secondary)
                     }
                     .buttonStyle(.plain)
@@ -49,10 +49,10 @@ public struct SidebarView: View {
             if storage.projects.isEmpty {
                 VStack(spacing: 12) {
                     Image(systemName: "folder.badge.plus")
-                        .font(.system(size: 36))
+                        .font(.system(size: 36 * fontScale))
                         .foregroundColor(.gray)
                     Text(loc.text("noProjects"))
-                        .font(.caption)
+                        .font(.system(size: 12 * fontScale))
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
@@ -77,8 +77,9 @@ public struct SidebarView: View {
                 HStack {
                     Image(systemName: "plus.circle.fill")
                         .foregroundColor(LiquidGlassPalette.oceanBlue)
+                        .font(.system(size: 14 * fontScale))
                     Text(loc.text("addProject"))
-                        .fontWeight(.bold)
+                        .font(.system(size: 14 * fontScale, weight: .bold))
                     Spacer()
                 }
                 .padding(12)
@@ -103,17 +104,17 @@ public struct SidebarView: View {
                     .frame(width: 36, height: 36)
                 Image(systemName: project.projectType.iconName)
                     .foregroundColor(iconColor)
+                    .font(.system(size: 16 * fontScale))
             }
             
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 4) {
                     Text(project.name)
-                        .font(.body)
-                        .fontWeight(.semibold)
+                        .font(.system(size: 14 * fontScale, weight: .semibold))
                         .lineLimit(1)
                     if isLL {
                         Image(systemName: "text.bubble.fill")
-                            .font(.system(size: 9))
+                            .font(.system(size: 9 * fontScale))
                             .foregroundColor(LiquidGlassPalette.deepPurple)
                     }
                 }
@@ -123,7 +124,7 @@ public struct SidebarView: View {
                     Text("•")
                     Text("\(project.totalQuestions) \(loc.text("questionsCount"))")
                 }
-                .font(.caption2)
+                .font(.system(size: 11 * fontScale))
                 .foregroundColor(.secondary)
             }
             
@@ -157,13 +158,11 @@ public struct SidebarView: View {
     private var newProjectDialog: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text(loc.text("newProjectTitle"))
-                .font(.title3)
-                .fontWeight(.bold)
+                .font(.system(size: 16 * fontScale, weight: .bold))
             
             VStack(alignment: .leading, spacing: 6) {
                 Text(loc.text("projectTypeSelector"))
-                    .font(.caption)
-                    .fontWeight(.semibold)
+                    .font(.system(size: 12 * fontScale, weight: .semibold))
                 
                 Picker("", selection: $newProjectType) {
                     ForEach(ProjectType.allCases) { type in
@@ -175,10 +174,10 @@ public struct SidebarView: View {
                 if newProjectType == .languageLearning {
                     HStack(alignment: .top, spacing: 6) {
                         Image(systemName: "wrench.and.screwdriver.fill")
-                            .font(.caption2)
+                            .font(.system(size: 10 * fontScale))
                             .foregroundColor(LiquidGlassPalette.sunsetOrange)
                         Text("Chế độ Ngoại ngữ đang trong giai đoạn thử nghiệm (WIP) và liên tục được cải tiến định dạng đề thi.")
-                            .font(.caption2)
+                            .font(.system(size: 10 * fontScale))
                             .foregroundColor(.secondary)
                     }
                     .padding(.top, 2)
@@ -187,16 +186,14 @@ public struct SidebarView: View {
             
             VStack(alignment: .leading, spacing: 6) {
                 Text(loc.text("projectName"))
-                    .font(.caption)
-                    .fontWeight(.semibold)
+                    .font(.system(size: 12 * fontScale, weight: .semibold))
                 TextField(newProjectType == .languageLearning ? "Ví dụ: Luyện đề THPT Tiếng Anh / IELTS Reading" : "Ví dụ: Lịch sử 12 / Tin học Đại cương", text: $newProjectName)
                     .textFieldStyle(.roundedBorder)
             }
             
             VStack(alignment: .leading, spacing: 6) {
                 Text("Mô tả (Không bắt buộc)")
-                    .font(.caption)
-                    .fontWeight(.semibold)
+                    .font(.system(size: 12 * fontScale, weight: .semibold))
                 TextField("Mô tả ngắn gọn mục tiêu bài học...", text: $newProjectDesc)
                     .textFieldStyle(.roundedBorder)
             }
@@ -247,9 +244,9 @@ public struct SidebarView: View {
         
         return HStack(spacing: 6) {
             Text(emoji)
-                .font(.system(size: 13))
+                .font(.system(size: 13 * fontScale))
             Text(greeting)
-                .font(.system(size: 11, weight: .semibold))
+                .font(.system(size: 11 * fontScale, weight: .semibold))
                 .foregroundColor(LiquidGlassPalette.oceanBlue)
                 .lineLimit(2)
                 .multilineTextAlignment(.leading)

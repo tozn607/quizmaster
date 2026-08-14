@@ -78,8 +78,7 @@ public struct QuizEditorView: View {
                                     Spacer()
                                     if idx < editedQuestions.count {
                                         Text(editedQuestions[idx].correctAnswerLabel)
-                                            .font(.caption)
-                                            .fontWeight(.bold)
+                                            .font(.system(size: 11 * fontScale, weight: .bold))
                                             .foregroundColor(.green)
                                     }
                                 }
@@ -163,7 +162,7 @@ public struct QuizEditorView: View {
                                 editedQuestions[index].correctAnswerIndex = optIdx
                             }) {
                                 Image(systemName: editedQuestions[index].correctAnswerIndex == optIdx ? "largecircle.fill.circle" : "circle")
-                                    .font(.title3)
+                                    .font(.system(size: 16 * fontScale))
                                     .foregroundColor(editedQuestions[index].correctAnswerIndex == optIdx ? LiquidGlassPalette.emeraldMint : .gray)
                             }
                             .buttonStyle(.plain)

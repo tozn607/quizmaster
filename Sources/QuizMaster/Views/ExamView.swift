@@ -38,6 +38,10 @@ public struct ExamView: View {
         activeQuestions.contains(where: { $0.skill != nil })
     }
     
+    private var isLanguageLearning: Bool {
+        project.projectType == .languageLearning || quiz.quizType == .languageLearning
+    }
+    
     private var groupedSkills: [LanguageSkill] {
         var seen = Set<LanguageSkill>()
         var result: [LanguageSkill] = []
@@ -80,20 +84,63 @@ public struct ExamView: View {
                     
                     Spacer()
                     
-                    // Exam Timer Display
-                    HStack(spacing: 4 * fontScale) {
-                        Image(systemName: "timer.circle.fill")
-                            .font(.system(size: 14 * fontScale))
-                            .foregroundColor(timeRemainingSeconds <= 300 ? LiquidGlassPalette.coralRed : LiquidGlassPalette.sunsetOrange)
-                        
-                        Text(formattedTimeString)
-                            .font(.system(size: 13 * fontScale, weight: .bold))
-                            .foregroundColor(timeRemainingSeconds <= 300 ? LiquidGlassPalette.coralRed : LiquidGlassPalette.sunsetOrange)
+                    // Exam Timer Display & Controls
+                    if isTimerConfigured {
+                        Menu {
+                            if !isLanguageLearning {
+                                Button(loc.text("disableTimer")) {
+                                    isTimerConfigured = false
+                                }
+                                Divider()
+                            }
+                            Button(loc.text("timer15m")) { setTimerDuration(minutes: 15) }
+                            Button(loc.text("timerPomodoro")) { setTimerDuration(minutes: 25) }
+                            Button(loc.text("timer45m")) { setTimerDuration(minutes: 45) }
+                            Button("⏱️ 60 " + (loc.currentLanguage == .vietnamese ? "Phút" : "Minutes")) { setTimerDuration(minutes: 60) }
+                            Divider()
+                            Button(loc.text("timerCustom")) { showCustomTimerSheet = true }
+                        } label: {
+                            HStack(spacing: 4 * fontScale) {
+                                Image(systemName: "timer.circle.fill")
+                                    .font(.system(size: 14 * fontScale))
+                                    .foregroundColor(timeRemainingSeconds <= 300 ? LiquidGlassPalette.coralRed : LiquidGlassPalette.sunsetOrange)
+                                
+                                Text(formattedTimeString)
+                                    .font(.system(size: 13 * fontScale, weight: .bold))
+                                    .foregroundColor(timeRemainingSeconds <= 300 ? LiquidGlassPalette.coralRed : LiquidGlassPalette.sunsetOrange)
+                            }
+                            .padding(.horizontal, 10 * fontScale)
+                            .padding(.vertical, 5 * fontScale)
+                            .background(timeRemainingSeconds <= 300 ? LiquidGlassPalette.coralRed.opacity(0.12) : LiquidGlassPalette.sunsetOrange.opacity(0.12))
+                            .cornerRadius(6)
+                        }
+                        .menuStyle(.borderlessButton)
+                        .help(loc.text("examTimerHelp"))
+                    } else {
+                        Menu {
+                            Button(loc.text("timer15m")) { setTimerDuration(minutes: 15) }
+                            Button(loc.text("timerPomodoro")) { setTimerDuration(minutes: 25) }
+                            Button(loc.text("timer45m")) { setTimerDuration(minutes: 45) }
+                            Button("⏱️ 60 " + (loc.currentLanguage == .vietnamese ? "Phút" : "Minutes")) { setTimerDuration(minutes: 60) }
+                            Divider()
+                            Button(loc.text("timerCustom")) { showCustomTimerSheet = true }
+                        } label: {
+                            HStack(spacing: 4 * fontScale) {
+                                Image(systemName: "timer")
+                                    .font(.system(size: 14 * fontScale))
+                                    .foregroundColor(.secondary)
+                                Text(loc.text("examTimerLabel"))
+                                    .font(.system(size: 12 * fontScale, weight: .medium))
+                                    .foregroundColor(.secondary)
+                            }
+                            .padding(.horizontal, 8 * fontScale)
+                            .padding(.vertical, 4 * fontScale)
+                            .background(Color.secondary.opacity(0.1))
+                            .cornerRadius(6)
+                        }
+                        .menuStyle(.borderlessButton)
+                        .help(loc.text("examTimerHelp"))
                     }
-                    .padding(.horizontal, 10 * fontScale)
-                    .padding(.vertical, 5 * fontScale)
-                    .background(timeRemainingSeconds <= 300 ? LiquidGlassPalette.coralRed.opacity(0.12) : LiquidGlassPalette.sunsetOrange.opacity(0.12))
-                    .cornerRadius(6)
                     
                     // Toggle Question Navigator Sidebar
                     Button(action: { withAnimation { showNavPane.toggle() } }) {
@@ -303,6 +350,9 @@ public struct ExamView: View {
         .sheet(isPresented: $showMandatoryTimerDialog) {
             mandatoryTimerSheet
         }
+        .sheet(isPresented: $showCustomTimerSheet) {
+            customTimerSheet
+        }
         .sheet(isPresented: $showEndingView) {
             if let prog = project.progressMap[quiz.id] {
                 EndingView(project: project, quiz: quiz, progress: prog)
@@ -330,11 +380,20 @@ public struct ExamView: View {
             Text(loc.text("sectionLockedWarningMsg"))
         }
         .onAppear {
-            if let duration = quiz.durationMinutes, duration > 0 {
-                setTimerDuration(minutes: duration)
-                showMandatoryTimerDialog = false
+            if isLanguageLearning {
+                if let duration = quiz.durationMinutes, duration > 0 {
+                    setTimerDuration(minutes: duration)
+                    showMandatoryTimerDialog = false
+                } else {
+                    showMandatoryTimerDialog = true
+                }
             } else {
-                showMandatoryTimerDialog = true
+                if let duration = quiz.durationMinutes, duration > 0 {
+                    setTimerDuration(minutes: duration)
+                } else {
+                    isTimerConfigured = false
+                }
+                showMandatoryTimerDialog = false
             }
             setupExamQuestions()
             setupKeyboardMonitor()
@@ -371,11 +430,11 @@ public struct ExamView: View {
             }
             
             VStack(spacing: 10 * fontScale) {
-                HStack(spacing: 12 * fontScale) {
-                    timerPresetButton(title: "15 phút", minutes: 15)
-                    timerPresetButton(title: "30 phút", minutes: 30)
-                    timerPresetButton(title: "45 phút", minutes: 45)
-                    timerPresetButton(title: "60 phút", minutes: 60)
+                HStack(spacing: 10 * fontScale) {
+                    timerPresetButton(title: "15p", minutes: 15)
+                    timerPresetButton(title: "🍅 25p", minutes: 25)
+                    timerPresetButton(title: "45p", minutes: 45)
+                    timerPresetButton(title: "60p", minutes: 60)
                 }
                 
                 HStack {
@@ -412,6 +471,47 @@ public struct ExamView: View {
         }
         .padding(28 * fontScale)
         .frame(width: 440 * fontScale)
+    }
+    
+    // MARK: - Custom Timer Sheet
+    private var customTimerSheet: some View {
+        VStack(spacing: 16 * fontScale) {
+            Text(loc.text("customTimerTitle"))
+                .font(.system(size: 16 * fontScale, weight: .bold))
+            
+            Text(loc.text("customTimerSubtitle"))
+                .font(.system(size: 13 * fontScale))
+                .foregroundColor(.secondary)
+            
+            HStack(spacing: 8 * fontScale) {
+                TextField("45", text: $customTimerInputMinutes)
+                    .textFieldStyle(.roundedBorder)
+                    .multilineTextAlignment(.center)
+                    .frame(width: 80 * fontScale)
+                
+                Text(loc.currentLanguage == .vietnamese ? "phút" : "minutes")
+                    .font(.system(size: 13 * fontScale))
+            }
+            
+            HStack(spacing: 12 * fontScale) {
+                SecondaryButton(title: loc.text("cancel"), icon: "xmark") {
+                    showCustomTimerSheet = false
+                }
+                
+                Spacer()
+                
+                PrimaryButton(title: loc.text("save"), icon: "checkmark", color: LiquidGlassPalette.sunsetOrange) {
+                    if let mins = Int(customTimerInputMinutes.trimmingCharacters(in: .whitespacesAndNewlines)), mins > 0 {
+                        setTimerDuration(minutes: mins)
+                        isTimerConfigured = true
+                    }
+                    showCustomTimerSheet = false
+                }
+            }
+            .padding(.top, 8 * fontScale)
+        }
+        .padding(20 * fontScale)
+        .frame(width: 340 * fontScale)
     }
     
     private func timerPresetButton(title: String, minutes: Int) -> some View {

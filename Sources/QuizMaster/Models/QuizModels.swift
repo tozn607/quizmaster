@@ -10,28 +10,107 @@ public enum AppTheme: String, CaseIterable, Identifiable, Codable {
 }
 
 public enum AppFontSize: String, CaseIterable, Identifiable, Codable {
-    case small = "small"
-    case medium = "medium"
-    case large = "large"
-    case xLarge = "xLarge"
+    case smaller = "smaller"
+    case standard = "default"
+    case larger = "larger"
+    case extraLarge = "extraLarge"
     
     public var id: String { rawValue }
     
     public var displayName: String {
         switch self {
-        case .small: return "Nhỏ"
-        case .medium: return "Vừa"
-        case .large: return "Lớn"
-        case .xLarge: return "Rất lớn"
+        case .smaller: return "Nhỏ hơn"
+        case .standard: return "Mặc định"
+        case .larger: return "Lớn hơn"
+        case .extraLarge: return "Rất lớn"
+        }
+    }
+    
+    public var localizationKey: String {
+        switch self {
+        case .smaller: return "scaleSmaller"
+        case .standard: return "scaleDefault"
+        case .larger: return "scaleLarger"
+        case .extraLarge: return "scaleExtraLarge"
         }
     }
     
     public var scaleFactor: CGFloat {
         switch self {
-        case .small: return 0.88
-        case .medium: return 1.0
-        case .large: return 1.18
-        case .xLarge: return 1.35
+        case .smaller: return 0.80
+        case .standard: return 1.0
+        case .larger: return 1.20
+        case .extraLarge: return 1.45
+        }
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let raw = (try? container.decode(String.self)) ?? "default"
+        switch raw {
+        case "smaller", "small":
+            self = .smaller
+        case "extraLarge", "xLarge":
+            self = .extraLarge
+        case "larger", "large":
+            self = .larger
+        case "default", "standard", "medium":
+            self = .standard
+        default:
+            self = .standard
+        }
+    }
+}
+
+public enum AppUIScale: String, CaseIterable, Identifiable, Codable {
+    case smaller = "smaller"
+    case standard = "default"
+    case larger = "larger"
+    case extraLarge = "extraLarge"
+    
+    public var id: String { rawValue }
+    
+    public var displayName: String {
+        switch self {
+        case .smaller: return "Nhỏ hơn"
+        case .standard: return "Mặc định"
+        case .larger: return "Lớn hơn"
+        case .extraLarge: return "Rất lớn"
+        }
+    }
+    
+    public var localizationKey: String {
+        switch self {
+        case .smaller: return "scaleSmaller"
+        case .standard: return "scaleDefault"
+        case .larger: return "scaleLarger"
+        case .extraLarge: return "scaleExtraLarge"
+        }
+    }
+    
+    public var scaleFactor: CGFloat {
+        switch self {
+        case .smaller: return 0.85
+        case .standard: return 1.0
+        case .larger: return 1.18
+        case .extraLarge: return 1.35
+        }
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let raw = (try? container.decode(String.self)) ?? "default"
+        switch raw {
+        case "smaller", "small":
+            self = .smaller
+        case "extraLarge", "xLarge":
+            self = .extraLarge
+        case "larger", "large":
+            self = .larger
+        case "default", "standard", "medium":
+            self = .standard
+        default:
+            self = .standard
         }
     }
 }
@@ -182,7 +261,7 @@ public struct VocabularyCard: Identifiable, Codable, Equatable, Hashable {
 }
 
 public struct AppVersionInfo {
-    public static let currentVersion = "v2.0.0"
+    public static let currentVersion = "v2.0.1"
     
     public static var buildNumber: String {
         if let path = Bundle.main.path(forResource: "build_number", ofType: "txt"),
@@ -198,10 +277,20 @@ private struct AppFontScaleKey: EnvironmentKey {
     static let defaultValue: CGFloat = 1.0
 }
 
+// SwiftUI Environment Key for App UI / Window Scaling
+private struct AppUiScaleKey: EnvironmentKey {
+    static let defaultValue: CGFloat = 1.0
+}
+
 extension EnvironmentValues {
     public var appFontScale: CGFloat {
         get { self[AppFontScaleKey.self] }
         set { self[AppFontScaleKey.self] = newValue }
+    }
+    
+    public var appUiScale: CGFloat {
+        get { self[AppUiScaleKey.self] }
+        set { self[AppUiScaleKey.self] = newValue }
     }
 }
 
@@ -227,6 +316,7 @@ public struct AppSettings: Codable, Equatable {
     public var defaultOutputDirectory: String
     public var theme: AppTheme
     public var fontSize: AppFontSize
+    public var uiScale: AppUIScale
     public var isShuffleEnabled: Bool
     public var hasCompletedFirstTimeSetup: Bool
     
@@ -235,7 +325,8 @@ public struct AppSettings: Codable, Equatable {
         defaultInputDirectory: String = (FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first?.path ?? ""),
         defaultOutputDirectory: String = (FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first?.path ?? ""),
         theme: AppTheme = .system,
-        fontSize: AppFontSize = .medium,
+        fontSize: AppFontSize = .standard,
+        uiScale: AppUIScale = .standard,
         isShuffleEnabled: Bool = true,
         hasCompletedFirstTimeSetup: Bool = false
     ) {
@@ -244,8 +335,21 @@ public struct AppSettings: Codable, Equatable {
         self.defaultOutputDirectory = defaultOutputDirectory
         self.theme = theme
         self.fontSize = fontSize
+        self.uiScale = uiScale
         self.isShuffleEnabled = isShuffleEnabled
         self.hasCompletedFirstTimeSetup = hasCompletedFirstTimeSetup
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.apiKey = (try? container.decode(String.self, forKey: .apiKey)) ?? ""
+        self.defaultInputDirectory = (try? container.decode(String.self, forKey: .defaultInputDirectory)) ?? (FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first?.path ?? "")
+        self.defaultOutputDirectory = (try? container.decode(String.self, forKey: .defaultOutputDirectory)) ?? (FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first?.path ?? "")
+        self.theme = (try? container.decode(AppTheme.self, forKey: .theme)) ?? .system
+        self.fontSize = (try? container.decode(AppFontSize.self, forKey: .fontSize)) ?? .standard
+        self.uiScale = (try? container.decode(AppUIScale.self, forKey: .uiScale)) ?? .standard
+        self.isShuffleEnabled = (try? container.decode(Bool.self, forKey: .isShuffleEnabled)) ?? true
+        self.hasCompletedFirstTimeSetup = (try? container.decode(Bool.self, forKey: .hasCompletedFirstTimeSetup)) ?? false
     }
     
     public static var defaultSettings: AppSettings {

@@ -12,8 +12,9 @@ struct QuizMasterApp: App {
                 .environmentObject(storage)
                 .environmentObject(loc)
                 .environment(\.appFontScale, storage.settings.fontSize.scaleFactor)
+                .environment(\.appUiScale, storage.settings.uiScale.scaleFactor)
                 .preferredColorScheme(colorScheme(for: storage.settings.theme))
-                .frame(minWidth: 1120, minHeight: 720)
+                .frame(minWidth: 1120 * storage.settings.uiScale.scaleFactor, minHeight: 720 * storage.settings.uiScale.scaleFactor)
         }
         .windowStyle(.titleBar)
         .commands {

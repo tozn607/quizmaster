@@ -1,7 +1,7 @@
 {
-  "version": "2.0.0",
-  "buildNumber": 178,
-  "releaseTag": "v2.0.0-b178",
-  "buildDate": "2026-08-14T05:47:30Z",
-  "releaseNotes": "QuizMaster v2.0.0:\n- Kiến trúc cửa sổ độc lập, tự do thay đổi kích thước\n- Thuật toán xáo trộn câu hỏi và đáp án chuẩn xác\n- Tối ưu hệ thống phím tắt và trải nghiệm ôn tập\n- Thử nghiệm Chế độ Học Ngoại ngữ (WIP)"
+  "version": "2.0.1",
+  "buildNumber": 182,
+  "releaseTag": "v2.0.1-b182",
+  "buildDate": "2026-08-14T06:13:33Z",
+  "releaseNotes": "QuizMaster v2.0.1:\n- Tách biệt Cỡ chữ và Thu phóng giao diện độc lập với 4 mức kích thước (Nhỏ hơn, Mặc định, Lớn hơn, Rất lớn)\n- Phóng to/thu nhỏ đồng bộ toàn diện trên toàn ứng dụng\n- Tùy biến đồng hồ Thi thử linh hoạt, thi không giới hạn thời gian và khôi phục đồng hồ Pomodoro 25 phút"
 }

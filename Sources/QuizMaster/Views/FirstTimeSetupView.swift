@@ -5,6 +5,7 @@ public struct FirstTimeSetupView: View {
     @EnvironmentObject var storage: StorageManager
     @EnvironmentObject var loc: LocalizationManager
     @Environment(\.appFontScale) var fontScale
+    @Environment(\.appUiScale) var uiScale
     @Environment(\.dismiss) var dismiss
     
     @State private var currentStep: Int = 1
@@ -48,7 +49,7 @@ public struct FirstTimeSetupView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .frame(width: 740 * fontScale, height: 660 * fontScale)
+        .frame(width: 740 * uiScale, height: 680 * uiScale)
         .onAppear {
             apiKeyInput = storage.settings.apiKey
             if !apiKeyInput.isEmpty {
@@ -313,11 +314,27 @@ public struct FirstTimeSetupView: View {
                         Spacer()
                         Picker("", selection: $storage.settings.fontSize) {
                             ForEach(AppFontSize.allCases) { size in
-                                Text(size.displayName).tag(size)
+                                Text(loc.text(size.localizationKey)).tag(size)
                             }
                         }
                         .pickerStyle(.segmented)
-                        .frame(width: 240 * fontScale)
+                        .frame(width: 280 * uiScale)
+                    }
+                    
+                    Divider()
+                    
+                    // Window Scaling
+                    HStack {
+                        Text(loc.text("windowScalingLabel"))
+                            .font(.system(size: 13 * fontScale, weight: .semibold))
+                        Spacer()
+                        Picker("", selection: $storage.settings.uiScale) {
+                            ForEach(AppUIScale.allCases) { scale in
+                                Text(loc.text(scale.localizationKey)).tag(scale)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                        .frame(width: 280 * uiScale)
                     }
                 }
                 .padding(14 * fontScale)

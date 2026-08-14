@@ -1,9 +1,9 @@
-# HƯỚNG DẪN SỬ DỤNG CHI TIẾT QUIZMASTER (v2.0.0)
+# HƯỚNG DẪN SỬ DỤNG CHI TIẾT QUIZMASTER (v2.0.1)
 
 Tác giả: **@tozn607**  
 Nền tảng: macOS (Swift / SwiftUI Native)  
 Ngày soạn: **14 Tháng 8 năm 2026**  
-Dành cho phiên bản: **v2.0.0**
+Dành cho phiên bản: **v2.0.1**
 
 
 ## CHƯƠNG 1: MÀN HÌNH HƯỚNG DẪN CẤU HÌNH BAN ĐẦU & API KEY

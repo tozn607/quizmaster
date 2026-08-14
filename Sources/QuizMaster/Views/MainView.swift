@@ -4,6 +4,7 @@ public struct MainView: View {
     @EnvironmentObject var storage: StorageManager
     @EnvironmentObject var loc: LocalizationManager
     @Environment(\.appFontScale) var fontScale
+    @Environment(\.appUiScale) var uiScale
     @ObservedObject var updateChecker = UpdateChecker.shared
     
     @State private var selectedProject: StudyProject?
@@ -52,16 +53,15 @@ public struct MainView: View {
                     if updateChecker.hasUpdateAvailable {
                         HStack(spacing: 12) {
                             Image(systemName: "arrow.triangle.2.circlepath.circle.fill")
-                                .font(.title3)
+                                .font(.system(size: 16 * fontScale))
                                 .foregroundColor(.accentColor)
                             
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Phiên bản mới \(updateChecker.latestVersionTag) đã có sẵn trên GitHub!")
-                                    .font(.subheadline)
-                                    .fontWeight(.bold)
+                                    .font(.system(size: 13 * fontScale, weight: .bold))
                                     .foregroundColor(.accentColor)
                                 Text("Hãy cập nhật ứng dụng để trải nghiệm các tính năng và sửa lỗi mới nhất.")
-                                    .font(.caption)
+                                    .font(.system(size: 11 * fontScale))
                                     .foregroundColor(.secondary)
                             }
                             
@@ -98,6 +98,7 @@ public struct MainView: View {
             await updateChecker.checkForUpdates()
         }
         .environment(\.appFontScale, storage.settings.fontSize.scaleFactor)
+        .environment(\.appUiScale, storage.settings.uiScale.scaleFactor)
 
         .sheet(isPresented: $showFirstTimeSetupSheet) {
             FirstTimeSetupView()
@@ -122,8 +123,7 @@ public struct MainView: View {
         .sheet(item: $quizToRename) { quiz in
             VStack(spacing: 16) {
                 Text(loc.text("renameQuiz"))
-                    .font(.headline)
-                    .fontWeight(.bold)
+                    .font(.system(size: 16 * fontScale, weight: .bold))
                 
                 TextField("Nhập tên bộ đề thi mới...", text: $renameTitleInput)
                     .textFieldStyle(.roundedBorder)
@@ -196,11 +196,10 @@ public struct MainView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(project.name)
-                        .font(.title)
-                        .fontWeight(.bold)
+                        .font(.system(size: 24 * fontScale, weight: .bold))
                     
                     Text("\(project.quizzes.count) bộ đề thi • \(project.totalQuestions) câu hỏi trắc nghiệm")
-                        .font(.subheadline)
+                        .font(.system(size: 13 * fontScale))
                         .foregroundColor(.secondary)
                 }
                 
@@ -215,14 +214,14 @@ public struct MainView: View {
                 }) {
                     HStack(spacing: 6) {
                         Image(systemName: storage.settings.isShuffleEnabled ? "shuffle.circle.fill" : "shuffle.circle")
-                            .font(.system(size: 15, weight: .bold))
-                            .frame(width: 18, height: 18)
+                            .font(.system(size: 15 * fontScale, weight: .bold))
+                            .frame(width: 18 * uiScale, height: 18 * uiScale)
                         Text(loc.text("toggleShuffle"))
-                            .font(.system(size: 13, weight: .bold))
+                            .font(.system(size: 13 * fontScale, weight: .bold))
                     }
                     .foregroundColor(storage.settings.isShuffleEnabled ? .white : .primary)
-                    .padding(.horizontal, 14)
-                    .frame(height: 36)
+                    .padding(.horizontal, 14 * uiScale)
+                    .frame(height: 36 * uiScale)
                     .background(
                         storage.settings.isShuffleEnabled
                         ? LiquidGlassPalette.oceanBlue
@@ -247,14 +246,14 @@ public struct MainView: View {
                 }) {
                     HStack(spacing: 6) {
                         Image(systemName: isMultiSelectMode ? "checkmark.circle.fill" : "checklist")
-                            .font(.system(size: 15, weight: .bold))
-                            .frame(width: 18, height: 18)
+                            .font(.system(size: 15 * fontScale, weight: .bold))
+                            .frame(width: 18 * uiScale, height: 18 * uiScale)
                         Text(isMultiSelectMode ? loc.text("exitMultiSelect") : loc.text("multiSelectQuizzes"))
-                            .font(.system(size: 13, weight: .bold))
+                            .font(.system(size: 13 * fontScale, weight: .bold))
                     }
                     .foregroundColor(isMultiSelectMode ? .white : .primary)
-                    .padding(.horizontal, 14)
-                    .frame(height: 36)
+                    .padding(.horizontal, 14 * uiScale)
+                    .frame(height: 36 * uiScale)
                     .background(
                         isMultiSelectMode
                         ? LiquidGlassPalette.deepPurple
@@ -284,9 +283,9 @@ public struct MainView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(.accentColor)
+                            .font(.system(size: 14 * fontScale))
                         Text("Đã chọn \(selectedQuizIds.count) bộ đề thi")
-                            .font(.subheadline)
-                            .fontWeight(.bold)
+                            .font(.system(size: 13 * fontScale, weight: .bold))
                             .foregroundColor(.accentColor)
                     }
                     
@@ -300,7 +299,7 @@ public struct MainView: View {
                             let combinedTitle = "Luyện tập: Tổ hợp \(selectedQuizzes.count) bộ đề"
                             let combinedQuestions = selectedQuizzes.flatMap { $0.questions }
                             let combinedQuiz = Quiz(id: combinedId, title: combinedTitle, description: "Luyện tập tổng hợp", questions: combinedQuestions)
-                            WindowManager.shared.openPracticeWindow(project: project, quiz: combinedQuiz, storage: storage, loc: loc, fontScale: fontScale)
+                            WindowManager.shared.openPracticeWindow(project: project, quiz: combinedQuiz, storage: storage, loc: loc, fontScale: fontScale, uiScale: uiScale)
                         } label: {
                             Label(loc.text("practiceMode"), systemImage: "pencil.and.outline")
                         }
@@ -311,7 +310,7 @@ public struct MainView: View {
                             let combinedTitle = "Thi: Tổ hợp \(selectedQuizzes.count) bộ đề"
                             let combinedQuestions = selectedQuizzes.flatMap { $0.questions }
                             let combinedQuiz = Quiz(id: combinedId, title: combinedTitle, description: "Thi tổng hợp", questions: combinedQuestions)
-                            WindowManager.shared.openExamWindow(project: project, quiz: combinedQuiz, storage: storage, loc: loc, fontScale: fontScale)
+                            WindowManager.shared.openExamWindow(project: project, quiz: combinedQuiz, storage: storage, loc: loc, fontScale: fontScale, uiScale: uiScale)
                         } label: {
                             Label(loc.text("examMode"), systemImage: "timer")
                         }
@@ -322,7 +321,7 @@ public struct MainView: View {
                             let combinedTitle = "Flashcard: Tổ hợp \(selectedQuizzes.count) bộ đề"
                             let combinedQuestions = selectedQuizzes.flatMap { $0.questions }
                             let combinedQuiz = Quiz(id: combinedId, title: combinedTitle, description: "Thẻ ghi nhớ tổng hợp", questions: combinedQuestions)
-                            WindowManager.shared.openFlashcardWindow(project: project, quiz: combinedQuiz, storage: storage, loc: loc, fontScale: fontScale)
+                            WindowManager.shared.openFlashcardWindow(project: project, quiz: combinedQuiz, storage: storage, loc: loc, fontScale: fontScale, uiScale: uiScale)
                         } label: {
                             Label(loc.text("flashcardMode"), systemImage: "rectangle.on.rectangle.angled")
                         }
@@ -376,10 +375,12 @@ public struct MainView: View {
                 HStack {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundColor(.green)
+                        .font(.system(size: 14 * fontScale))
                     Text(note)
-                        .font(.subheadline)
+                        .font(.system(size: 13 * fontScale))
                     Spacer()
                     Button("Đóng") { exportNotificationMessage = nil }
+                        .font(.system(size: 13 * fontScale))
                         .buttonStyle(.plain)
                 }
                 .padding()
@@ -392,15 +393,15 @@ public struct MainView: View {
                     if project.quizzes.isEmpty {
                         VStack(spacing: 16) {
                             Image(systemName: "doc.text.magnifyingglass")
-                                .font(.system(size: 54))
+                                .font(.system(size: 54 * fontScale))
                                 .foregroundColor(.gray.opacity(0.6))
                             Text(loc.text("noQuizzesInProject"))
-                                .font(.headline)
+                                .font(.system(size: 16 * fontScale, weight: .bold))
                                 .foregroundColor(.secondary)
                             PrimaryButton(title: loc.text("importDoc"), icon: "plus", color: .accentColor) {
-                                 showImportSheet = true
-                             }
-}
+                                showImportSheet = true
+                            }
+                        }
                          .frame(maxWidth: .infinity, minHeight: 300)
                      } else {
                          LazyVGrid(columns: [GridItem(.adaptive(minimum: 420), spacing: 20)], spacing: 20) {
@@ -470,7 +471,7 @@ public struct MainView: View {
                                 }
                             }) {
                                 Image(systemName: isSelectedInMulti ? "checkmark.square.fill" : "square")
-                                    .font(.title2)
+                                    .font(.system(size: 16 * fontScale))
                                     .foregroundColor(isSelectedInMulti ? .accentColor : .gray)
                             }
                             .buttonStyle(.plain)
@@ -495,7 +496,7 @@ public struct MainView: View {
                             showMoveModal = true
                         }) {
                             Image(systemName: "folder.arrow.up")
-                                .font(.subheadline)
+                                .font(.system(size: 13 * fontScale))
                                 .foregroundColor(.accentColor.opacity(0.8))
                         }
                         .buttonStyle(.plain)
@@ -507,7 +508,7 @@ public struct MainView: View {
                             renameTitleInput = quiz.title
                         }) {
                             Image(systemName: "pencil")
-                                .font(.subheadline)
+                                .font(.system(size: 13 * fontScale))
                                 .foregroundColor(.accentColor.opacity(0.8))
                         }
                         .buttonStyle(.plain)
@@ -522,11 +523,11 @@ public struct MainView: View {
                                         get: { storage.projects[pIdx].quizzes[qIdx] },
                                         set: { storage.projects[pIdx].quizzes[qIdx] = $0; storage.saveProjects() }
                                     )
-                                    WindowManager.shared.openEditorWindow(projectId: project.id, quizBinding: binding, storage: storage, loc: loc, fontScale: fontScale)
+                                    WindowManager.shared.openEditorWindow(projectId: project.id, quizBinding: binding, storage: storage, loc: loc, fontScale: fontScale, uiScale: uiScale)
                                 }
                             }) {
                                 Image(systemName: "square.and.pencil")
-                                    .font(.subheadline)
+                                    .font(.system(size: 13 * fontScale))
                                     .foregroundColor(LiquidGlassPalette.cyanTeal)
                             }
                             .buttonStyle(.plain)
@@ -539,7 +540,7 @@ public struct MainView: View {
                             showResetProgressConfirmation = true
                         }) {
                             Image(systemName: "arrow.counterclockwise")
-                                .font(.subheadline)
+                                .font(.system(size: 13 * fontScale))
                                 .foregroundColor(.accentColor.opacity(0.8))
                         }
                         .buttonStyle(.plain)
@@ -551,7 +552,7 @@ public struct MainView: View {
                             showDeleteQuizConfirmation = true
                         }) {
                             Image(systemName: "trash")
-                                .font(.subheadline)
+                                .font(.system(size: 13 * fontScale))
                                 .foregroundColor(.gray.opacity(0.7))
                         }
                         .buttonStyle(.plain)
@@ -562,16 +563,15 @@ public struct MainView: View {
                     HStack(alignment: .top, spacing: 6) {
                         if isLL {
                             Image(systemName: "text.bubble.fill")
-                                .font(.system(size: 13))
+                                .font(.system(size: 13 * fontScale))
                                 .foregroundColor(LiquidGlassPalette.deepPurple)
                                 .padding(.top, 3)
                         }
                         
                         Text(quiz.title)
-                            .font(.title3)
-                            .fontWeight(.bold)
+                            .font(.system(size: 15 * fontScale, weight: .bold))
                             .lineLimit(2)
-                            .frame(height: 48, alignment: .topLeading)
+                            .frame(height: 48 * fontScale, alignment: .topLeading)
                     }
                     
                     // Uniform Progress Bar Slot (Same height for all cards)
@@ -579,26 +579,25 @@ public struct MainView: View {
                         if let prog = prog, !prog.userAnswers.isEmpty {
                             HStack {
                                 Text("Đã luyện tập (\(prog.userAnswers.count) / \(quiz.questions.count) câu)")
-                                    .font(.caption)
+                                    .font(.system(size: 11 * fontScale))
                                     .foregroundColor(.secondary)
                                 Spacer()
                                 Text("\(prog.wrongQuestionIds.isEmpty ? 100 : Int(Double(quiz.questions.count - prog.wrongQuestionIds.count) / Double(quiz.questions.count) * 100))%")
-                                    .font(.caption)
-                                    .fontWeight(.bold)
+                                    .font(.system(size: 11 * fontScale, weight: .bold))
                                     .foregroundColor(.green)
                             }
                             ProgressBar(value: Double(prog.userAnswers.count) / Double(quiz.questions.count), height: 4, color: isFullyCompleted ? .green : (isLL ? LiquidGlassPalette.deepPurple : .blue))
                         } else {
                             HStack {
                                 Text("Chưa bắt đầu ôn tập")
-                                    .font(.caption)
+                                    .font(.system(size: 11 * fontScale))
                                     .foregroundColor(.secondary)
                                 Spacer()
                             }
                             ProgressBar(value: 0, height: 4, color: .gray.opacity(0.3))
                         }
                     }
-                    .frame(height: 28)
+                    .frame(height: 28 * fontScale)
                     
                     Divider()
                     
@@ -609,11 +608,11 @@ public struct MainView: View {
                         VStack(spacing: 8) {
                             HStack(spacing: 10) {
                                 PrimaryButton(title: loc.text("practiceMode"), icon: "pencil.and.outline", color: LiquidGlassPalette.oceanBlue) {
-                                    WindowManager.shared.openPracticeWindow(project: project, quiz: quiz, storage: storage, loc: loc, fontScale: fontScale)
+                                    WindowManager.shared.openPracticeWindow(project: project, quiz: quiz, storage: storage, loc: loc, fontScale: fontScale, uiScale: uiScale)
                                 }
                                 
                                 PrimaryButton(title: loc.text("examMode"), icon: "timer", color: LiquidGlassPalette.sunsetOrange) {
-                                    WindowManager.shared.openExamWindow(project: project, quiz: quiz, storage: storage, loc: loc, fontScale: fontScale)
+                                    WindowManager.shared.openExamWindow(project: project, quiz: quiz, storage: storage, loc: loc, fontScale: fontScale, uiScale: uiScale)
                                 }
                             }
                             
@@ -622,7 +621,7 @@ public struct MainView: View {
                                 icon: isLL ? "character.book.closed.fill" : "rectangle.on.rectangle.angled",
                                 color: LiquidGlassPalette.deepPurple
                             ) {
-                                WindowManager.shared.openFlashcardWindow(project: project, quiz: quiz, storage: storage, loc: loc, fontScale: fontScale)
+                                WindowManager.shared.openFlashcardWindow(project: project, quiz: quiz, storage: storage, loc: loc, fontScale: fontScale, uiScale: uiScale)
                             }
                         }
                         .frame(maxWidth: 360)
@@ -650,7 +649,7 @@ public struct MainView: View {
                             get: { storage.projects[pIdx].quizzes[qIdx] },
                             set: { storage.projects[pIdx].quizzes[qIdx] = $0; storage.saveProjects() }
                         )
-                        WindowManager.shared.openEditorWindow(projectId: project.id, quizBinding: binding, storage: storage, loc: loc, fontScale: fontScale)
+                        WindowManager.shared.openEditorWindow(projectId: project.id, quizBinding: binding, storage: storage, loc: loc, fontScale: fontScale, uiScale: uiScale)
                     }
                 } label: {
                     Label("Chỉnh sửa câu hỏi & đáp án...", systemImage: "square.and.pencil")
@@ -717,12 +716,11 @@ public struct MainView: View {
          
          return VStack(alignment: .leading, spacing: 16) {
              Text(loc.text("moveQuizTitle"))
-                 .font(.headline)
-                 .fontWeight(.bold)
+                 .font(.system(size: 16 * fontScale, weight: .bold))
              
              if compatibleProjects.isEmpty {
                  Text("Không có dự án cùng loại nào khác (\(currentSelectedProject?.projectType.displayName ?? "")). Hãy tạo một dự án mới cùng loại ở thanh bên trước khi chuyển.")
-                     .font(.subheadline)
+                     .font(.system(size: 13 * fontScale))
                      .foregroundColor(.secondary)
                      .padding(.vertical, 8)
                  
@@ -736,8 +734,7 @@ public struct MainView: View {
              } else {
                  VStack(alignment: .leading, spacing: 8) {
                      Text(loc.text("selectTargetProject"))
-                         .font(.subheadline)
-                         .fontWeight(.semibold)
+                         .font(.system(size: 13 * fontScale, weight: .semibold))
                      
                      Picker("", selection: $targetMoveProjectId) {
                          ForEach(compatibleProjects) { proj in
@@ -774,16 +771,16 @@ public struct MainView: View {
              }
          }
          .padding(24)
-         .frame(width: 440)
+         .frame(width: 440 * uiScale)
      }
      
      private var emptyDetailView: some View {
          VStack(spacing: 12) {
              Image(systemName: "sidebar.left")
-                 .font(.system(size: 48))
+                 .font(.system(size: 48 * fontScale))
                  .foregroundColor(.gray)
              Text("Chọn hoặc tạo một Dự án ở bên trái để bắt đầu ôn tập.")
-                 .font(.subheadline)
+                 .font(.system(size: 14 * fontScale))
                  .foregroundColor(.secondary)
          }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
